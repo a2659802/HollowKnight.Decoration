@@ -4,7 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 
-namespace DecorationMaster
+namespace DecorationMaster.UI
 {
     // TO DO Inspector UI
     class Inspector

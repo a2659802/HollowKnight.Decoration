@@ -1,4 +1,5 @@
 ﻿using DecorationMaster.Attr;
+using DecorationMaster.MyBehaviour;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -17,13 +18,19 @@ namespace DecorationMaster
         public static readonly Dictionary<(string, Func<GameObject, GameObject>), (string, string)> ObjectList = new Dictionary<(string, Func<GameObject, GameObject>), (string, string)>
         {
             {
-                ("saw", obj =>
-                {
-                    return obj;
-                }
-                ),
+                ("saw", null),
                 ("White_Palace_18","saw_collection/wp_saw")
             },
+            { 
+                ("trap_spike",null),("White_Palace_07","wp_trap_spikes")
+            },
+            {
+                ("flip_platform",null),("Mines_31","Mines Platform")
+            },
+            {
+                ("fly",null), ("White_Palace_18","White Palace Fly")
+            }
+
         };
         public static Dictionary<string, GameObject> InstantiableObjects { get; } = new Dictionary<string, GameObject>();
         public static GameObject CloneDecoration(string key)
@@ -51,6 +58,7 @@ namespace DecorationMaster
                 GameObject go = Object.Instantiate(obj);
                 go = modify?.Invoke(go) ?? go;
                 Object.DontDestroyOnLoad(go);
+                go.transform.localScale = Vector3.one;
                 go.SetActive(false);
                 return go;
             }
@@ -72,7 +80,8 @@ namespace DecorationMaster
             {
                 var imggo = ImageLoader.CreateImageGo(imgN);
                 Object.DontDestroyOnLoad(imggo);
-                imggo?.SetActive(false);
+                imggo.transform.localScale = Vector3.one;
+                imggo.SetActive(false);
                 return imggo;
             }
             ImageLoader.Load();
@@ -189,7 +198,23 @@ namespace DecorationMaster
                     }
                 }
             }
-
+        }
+        public static void RegisterSharedBehaviour<T>()
+        {
+            var shareAttr = typeof(T).GetCustomAttributes(typeof(DecorationAttribute), false).OfType<DecorationAttribute>();
+            foreach(var attr in shareAttr)
+            {
+                if (attr == null)
+                    continue;
+                string poolname = attr.Name;
+                if (!ObjectLoader.InstantiableObjects.TryGetValue(poolname, out GameObject prefab))
+                    continue;
+                var d = prefab.AddComponent<DefaultBehaviour>();
+                d.item = new ItemDef.DefaultItem
+                {
+                    pname = poolname
+                };
+            }
         }
     }
 }

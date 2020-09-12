@@ -14,8 +14,10 @@ namespace DecorationMaster
     [Serializable]
     public abstract class Item : ICloneable
     {
+        [InspectIgnore]
         public string sceneName;
         public virtual string pname { get; set; }
+        [InspectIgnore]
         public V2 position;
         //public float x;
         //public float y;
@@ -126,6 +128,7 @@ namespace DecorationMaster
         {
             public int span = 3;
             public int speed;
+            [InspectIgnore]
             public V2 Center;
             /*public override void Setup(Operation op, object val)
             {

@@ -24,6 +24,7 @@ namespace DecorationMaster
             ObjectLoader.Load(preloadedObjects);
             BehaviourProcessor.RegisterBehaviour<OtherBehaviour>();
             BehaviourProcessor.RegisterBehaviour<AreaBehaviour>();
+            BehaviourProcessor.RegisterSharedBehaviour<DefaultBehaviour>();
             ModHooks.Instance.HeroUpdateHook += OperateItem;
             UnityEngine.SceneManagement.SceneManager.sceneLoaded += SpawnFromSettings;
 
@@ -78,12 +79,7 @@ namespace DecorationMaster
                 ItemManager.Instance.Operate(Operation.SetPos, mousePos);
             }
 
-            if (Input.GetMouseButtonDown((int)MouseButton.Middle))  // rotate GO
-            {
-                //manager.Current.transform.eulerAngles += new Vector3(0, 0, 90);
-                //ItemManager.Instance.Operate(Operation)
-            }
-            else if (Input.GetMouseButtonUp((int)MouseButton.Left)) // Confirm Go
+            if (Input.GetMouseButtonUp((int)MouseButton.Left)) // Confirm Go
             {
                 ItemManager.Instance.AddCurrent();
             }
