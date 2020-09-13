@@ -28,6 +28,7 @@ namespace DecorationMaster
             ModHooks.Instance.HeroUpdateHook += OperateItem;
             UnityEngine.SceneManagement.SceneManager.sceneLoaded += SpawnFromSettings;
 
+            
         }
 
         private void SpawnFromSettings(Scene arg0, LoadSceneMode arg1)
@@ -86,6 +87,11 @@ namespace DecorationMaster
             else if (Input.GetMouseButtonUp((int)MouseButton.Right)) // Discard Go
             {
                 ItemManager.Instance.RemoveCurrent();
+            }
+
+            if(Input.GetKeyDown(KeyCode.F5))
+            {
+                new Test();
             }
         }
 

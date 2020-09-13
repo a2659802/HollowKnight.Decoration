@@ -27,6 +27,7 @@ namespace DecorationMaster
 
         SetSpan, // Saw
         SetSpeed,
+        SetTinkVoice,
     }
     
     [Serializable]

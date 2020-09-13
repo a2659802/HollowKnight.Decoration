@@ -15,54 +15,42 @@ namespace DecorationMaster
     public abstract class Item : ICloneable
     {
         [InspectIgnore]
-        public string sceneName;
+        public string sceneName { get; set; }
         public virtual string pname { get; set; }
         [InspectIgnore]
-        public V2 position;
-        //public float x;
-        //public float y;
-        public virtual void Setup(Operation op, object val)
+        [Handle(Operation.SetPos)]
+        public V2 position { get; set; }
+        public void Setup(Operation op, object val)
         {
-            /*
-            switch (op)
-            {
-                case Operation.SetPos:
-                    HandlePos((Vector2)val);
-                    break;
-                case Operation.Serialize:
-                    HandleInit((Item)val);
-                    break;
-                default:
-                    break;
-            }*/
+            var handle_prop = this.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance)
+                .Where(x => x.GetCustomAttributes(typeof(HandleAttribute), true).OfType<HandleAttribute>()
+                .Where(y => y.handleType == op).Any());
 
-            //var handlers = this.GetType().GetCustomAttributes(typeof(HandleAttribute), true).OfType<HandleAttribute>().Where(x => x.handleType == op);
-            // Find a method with HandleAttribue which can handle current operation
-            var handlers = this.GetType().GetMethods(BindingFlags.Public | BindingFlags.Instance)
-                .Where(x=>x.GetCustomAttributes(typeof(HandleAttribute),true).OfType<HandleAttribute>()
-                .Where(y=>y.handleType == op).Any());
-            //Logger.LogDebug($"Get Method:{handlers.FirstOrDefault()} in type:{GetType()} while handle Operation {op.ToString()}");
-            foreach(var m in handlers)
+            foreach (var prop in handle_prop)
             {
-                object[] args = new object[] { val, };
-                m.Invoke(this, args);
-                break; // if there more than one method can handle an operation, this inst should be removed
+                try
+                {
+                    if(val.GetType()==typeof(Vector2))
+                    {
+                        prop.SetValue(this, new V2((Vector2)val),null);
+                    }
+                    else
+                    {
+                        prop.SetValue(this, val, null);
+                    }
+                }
+                catch (ArgumentException e)
+                {
+                    Logger.LogDebug($" ### Val Type:{val.GetType()},Prop Type:{prop.PropertyType}");
+                    throw e;
+                }
+                
+                /*
+                var setter = prop.GetSetMethod();
+                setter.Invoke(this, new object[] { val, });*/
             }
         }
-
-        [Handle(Operation.Serialize)]
-        public virtual void HandleInit(Item dat)
-        {
-            pname = dat.pname;
-            HandlePos(dat.position);
-        }
         
-        [Handle(Operation.SetPos)]
-        public virtual void HandlePos(Vector2 p)
-        {
-            position = new V2(p);
-        }
-
         public object Clone()
         {
             IFormatter formatter = new BinaryFormatter();
@@ -78,41 +66,11 @@ namespace DecorationMaster
     [Serializable]
     public abstract class ResizableItem : Item
     {
-        public float size = 1;
-        public float angle;
-
-        /*public override void Setup(Operation op, object val)
-        {
-            base.Setup(op, val);
-            switch(op)
-            {
-                case Operation.SetSize:
-                    HandleSize((float)val);
-                    break;
-                case Operation.SetRot:
-                    HandleRot((float)val);
-                    break;
-                default:
-                    break;
-            }
-        }*/
-        public override void HandleInit(Item dat)
-        {
-            base.HandleInit(dat);
-            ResizableItem ritem = dat as ResizableItem;
-            HandleSize(ritem.size);
-            HandleRot(ritem.angle);
-        }
         [Handle(Operation.SetSize)]
-        public void HandleSize(float size)
-        {
-            this.size = size;
-        }
+        public float size { get; set; } = 1;
         [Handle(Operation.SetRot)]
-        public void HandleRot(float angle)
-        {
-            this.angle = angle;
-        }
+        public float angle { get; set; }
+
     }
     
     public class ItemDef
@@ -126,48 +84,16 @@ namespace DecorationMaster
         [Decoration("HK_saw")]
         public class SawItem : ResizableItem
         {
-            public int span = 3;
-            public int speed;
-            [InspectIgnore]
-            public V2 Center;
-            /*public override void Setup(Operation op, object val)
-            {
-                base.Setup(op, val);
-                switch(op)
-                {
-                    case Operation.SetSpan:
-                        HandleSpan((int)val);
-                        break;
-                    case Operation.SetSpeed:
-                        HandleSpeed((int)val);
-                        break;
-                    default:
-                        break;
-                }
-            }*/
             [Handle(Operation.SetSpan)]
-            public void HandleSpan(int span)
-            {
-                this.span = span;
-            }
+            public int span { get; set; } = 3;
             [Handle(Operation.SetSpeed)]
-            public void HandleSpeed(int speed)
-            {
-                this.speed = speed;
-            }
-            public override void HandleInit(Item dat)
-            {
-                base.HandleInit(dat);
-                var sitem = dat as SawItem;
-                HandleSpan(sitem.span);
-                HandleSpeed(sitem.speed);
-            }
+            public int speed { get; set; }
+            [Handle(Operation.SetTinkVoice)]
+            public float pitch { get; set; } = 1;
             [Handle(Operation.SetPos)]
-            public override void HandlePos(Vector2 p)
-            {
-                base.HandlePos(p);
-                Center = new V2(p);
-            }
+            [InspectIgnore]
+            public V2 Center { get; set; }
+           
         }
     }
 }

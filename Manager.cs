@@ -105,8 +105,7 @@ namespace DecorationMaster
             Logger.LogDebug($"Item Null?{cd?.item == null},Prefab Item Null?{ObjectLoader.InstantiableObjects[poolname].GetComponent<CustomDecoration>()?.item == null}");
             go?.SetActive(true);
 
-            //go.PrintSceneHierarchyTree();
-            //ObjectLoader.InstantiableObjects[poolname].PrintSceneHierarchyTree();
+            Test.TestGo(go);
             return cd;
         }
         public void Operate(Operation op,object val)
@@ -120,12 +119,16 @@ namespace DecorationMaster
         }
         public void AddCurrent()
         {
+            if (currentSelect == null)
+                return;
             var decoration = currentSelect.GetComponent<CustomDecoration>();
             decoration.Add();
             currentSelect = null;
         }
         public void RemoveCurrent()
         {
+            if (currentSelect == null)
+                return;
             currentSelect.SetActive(false);
             Object.DestroyImmediate(currentSelect);
             currentSelect = null;

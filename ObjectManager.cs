@@ -21,7 +21,7 @@ namespace DecorationMaster
                 ("saw", null),
                 ("White_Palace_18","saw_collection/wp_saw")
             },
-            { 
+            /*{ 
                 ("trap_spike",null),("White_Palace_07","wp_trap_spikes")
             },
             {
@@ -29,7 +29,7 @@ namespace DecorationMaster
             },
             {
                 ("fly",null), ("White_Palace_18","White Palace Fly")
-            }
+            }*/
 
         };
         public static Dictionary<string, GameObject> InstantiableObjects { get; } = new Dictionary<string, GameObject>();
@@ -122,7 +122,6 @@ namespace DecorationMaster
                             string[] split = res.Split('.');
                             string internalName = split[split.Length - 2];
                             images.Add(internalName, tex);
-                            loaded = true;
                         }
                         catch
                         {
@@ -130,6 +129,7 @@ namespace DecorationMaster
                         }
                     }
                 }
+                loaded = true;
             }
             public static GameObject CreateDestroyableTex(Texture2D tex)
             {

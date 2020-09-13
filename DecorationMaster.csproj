@@ -50,6 +50,10 @@
     <Reference Include="UnityEngine">
       <HintPath>..\dll\UnityEngine.dll</HintPath>
     </Reference>
+    <Reference Include="UnityEngine.AudioModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\dll\UnityEngine.AudioModule.dll</HintPath>
+    </Reference>
     <Reference Include="UnityEngine.CoreModule">
       <HintPath>..\dll\UnityEngine.CoreModule.dll</HintPath>
     </Reference>
@@ -77,6 +81,7 @@
     <Compile Include="DecorationMaster.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="MyBehaviour\DefaultBehaviour.cs" />
+    <Compile Include="Test.cs" />
     <Compile Include="UI\Inspector.cs" />
     <Compile Include="ItemDef.cs" />
     <Compile Include="Manager.cs" />
@@ -87,6 +92,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="UI\Panel.cs" />
+    <Compile Include="WavUtility.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="images\back.png" />
@@ -95,6 +101,9 @@
     <EmbeddedResource Include="images\MantisClaw.png" />
     <EmbeddedResource Include="images\MonarchWings.png" />
     <EmbeddedResource Include="images\MothwingCloak.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="11.wav" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

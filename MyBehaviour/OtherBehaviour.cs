@@ -17,7 +17,21 @@ namespace DecorationMaster.MyBehaviour
                 float dy = span * Mathf.Sin(Time.time * speed);
                 return new Vector3(center.x, center.y + dy, center.z);
             }
+            public override void Hit(HitInstance damageInstance)
+            {
+                if(damageInstance.AttackType == AttackTypes.Nail)
+                    base.Hit(damageInstance);
+                else
+                {
+                    float pitch = gameObject.GetComponent<MyTinkEffect>().pitch;
+                }
+            }
+            [Handle(Operation.SetTinkVoice)]
+            public void HandleVoice(object val)
+            {
 
+            }
         }
+
     }
 }

@@ -29,33 +29,22 @@ namespace DecorationMaster
         public Item item;
         /// <summary>
         /// Setup the value of item, and do some effect base on item
+        /// To Deal with An Operation, you must Add a Method with HandleAttribute that match OP enum
         /// </summary>
         /// <param name="op"></param>
-        /// <param name="val"></param>
-        public virtual void Setup(Operation op, object val)
+        /// <param name="val">the type must base on Item Prop</param>
+        public void Setup(Operation op, object val)
         {
             item.Setup(op, val);
 
-            /*switch (op)
-            {
-                case Operation.SetPos:
-                    HandlePos((Vector2)val);
-                    break;
-                case Operation.Serialize:
-                    HandleInit((Item)val);
-                    break;
-                default:
-                    break;
-            }*/
             var handlers = this.GetType().GetMethods(BindingFlags.Public | BindingFlags.Instance)
                 .Where(x => x.GetCustomAttributes(typeof(HandleAttribute), true).OfType<HandleAttribute>()
                 .Where(y => y.handleType == op).Any());
-            //Logger.LogDebug($"Get Method:{handlers.FirstOrDefault()} in type:{GetType()} while handle Operation {op.ToString()}");
+            
             foreach (var m in handlers)
             {
-                object[] args = new object[] { val, };
+                object[] args = new object[] { val.GetType()==typeof(V2)?((Vector2)((V2)val)):val, };
                 m.Invoke(this, args);
-                break; // if there more than one method can handle an operation, this inst should be removed
             }
         }
         /// <summary>
@@ -75,12 +64,25 @@ namespace DecorationMaster
             gameObject.transform.position = val;
         }
         [Handle(Operation.Serialize)]
-        public virtual void HandleInit(Item i)
+        public void HandleInit(Item i)
         {
             if (item != i)
                 item = i;
 
-            HandlePos(i.position);
+            //HandlePos(i.position);
+
+            //search all Handleable Property in item
+            var handlableProps = i.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance)
+                .Where(x => x.GetCustomAttributes(typeof(HandleAttribute), true).OfType<HandleAttribute>().Any());
+
+            foreach(var prop in handlableProps)
+            {
+                HandleAttribute attr = prop.GetCustomAttributes(typeof(HandleAttribute), true).OfType<HandleAttribute>().FirstOrDefault();
+                if (attr == null || attr.handleType==Operation.None)
+                    continue;
+                Setup(attr.handleType,prop.GetValue(i, null));
+            }
+
             gameObject.SetActive(true);
         }
 
@@ -97,28 +99,6 @@ namespace DecorationMaster
     }
     public abstract class Resizeable : CustomDecoration
     {
-        /*public override void Setup(Operation op, object val)
-        {
-            base.Setup(op, val);
-            switch (op)
-            {
-                case Operation.SetSize:
-                    HandleSize((float)val);
-                    break;
-                case Operation.SetRot:
-                    HandleRot((float)val);
-                    break;
-                default:
-                    break;
-            }
-        }*/
-        public override void HandleInit(Item dat)
-        {
-            base.HandleInit(dat);
-            ResizableItem ritem = dat as ResizableItem;
-            HandleSize(ritem.size);
-            HandleRot(ritem.angle);
-        }
         [Handle(Operation.SetSize)]
         public void HandleSize(float size)
         {
@@ -144,13 +124,6 @@ namespace DecorationMaster
             
         }
         public abstract Vector3 Move(Vector3 center, Vector3 current, float speed, float span);
-
-        public override void HandlePos(Vector2 val)
-        {
-            //set center pos instead of real pos
-            var sitem = item as ItemDef.SawItem;
-            sitem.Center = val;
-        }
     }
 
     public abstract class BoolBinding : CustomDecoration
