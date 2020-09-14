@@ -17,10 +17,22 @@ namespace DecorationMaster
             if (SetupMode)
                 Remove();
         }
-        public abstract void Add(); //add this item to global
-        public virtual void Remove() //remove this item from global
+        public abstract void Add(object self=null); //add this item to global
+        public virtual void Remove(object self=null) //remove this item from global
         {
-            Destroy(gameObject);
+            if (self == null)
+                Destroy(gameObject);
+            else
+            {
+                try
+                {
+                    Destroy(self as GameObject);
+                }
+                catch
+                {
+                    Logger.LogWarn("An Exception ocurr on Editable.Remove()");
+                }
+            }
         }
     }
 
@@ -33,30 +45,36 @@ namespace DecorationMaster
         /// </summary>
         /// <param name="op"></param>
         /// <param name="val">the type must base on Item Prop</param>
-        public void Setup(Operation op, object val)
+        public object Setup(Operation op, object val)
         {
             item.Setup(op, val);
 
             var handlers = this.GetType().GetMethods(BindingFlags.Public | BindingFlags.Instance)
                 .Where(x => x.GetCustomAttributes(typeof(HandleAttribute), true).OfType<HandleAttribute>()
                 .Where(y => y.handleType == op).Any());
-            
+
+            object _return = null;
             foreach (var m in handlers)
             {
                 object[] args = new object[] { val.GetType()==typeof(V2)?((Vector2)((V2)val)):val, };
-                m.Invoke(this, args);
+                object mechod_ret = m.Invoke(this, args);
+                _return = mechod_ret == null ? _return: mechod_ret;
             }
+            return _return;
         }
         /// <summary>
         /// Add Object's Setting To Global Settings
         /// </summary>
-        public override void Add()
+        [Handle(Operation.ADD)]
+        public override void Add(object self = null)
         {
+            if (self == null)
+                self = item;
             var settings = DecorationMaster.instance.Settings;
-            if (item == null)
+            if (self == null)
                 throw new NullReferenceException("Item Null Exception");
             item.sceneName = GameManager.instance.sceneName;
-            settings.items.Add(item);
+            settings.items.Add((Item)self);
         }
         [Handle(Operation.SetPos)]
         public virtual void HandlePos(Vector2 val)
@@ -85,17 +103,26 @@ namespace DecorationMaster
 
             gameObject.SetActive(true);
         }
-
-        public override void Remove()
+        [Handle(Operation.REMOVE)]
+        public override void Remove(object self = null)
         {
+            if (self == null)
+                self = item;
             Logger.LogDebug("remove self");
             var settings = DecorationMaster.instance.Settings;
-            if (item == null)
+            if (self == null)
                 throw new NullReferenceException("Item Null Exception");
-            settings.items.Remove(item);
+            settings.items.Remove((Item)self);
             base.Remove();
         }
-        
+        [Handle(Operation.COPY)]
+        public GameObject CopySelf(object self = null)
+        {
+            var item_clone = item.Clone() as Item;
+            var clone = Instantiate(gameObject);
+            clone.GetComponent<CustomDecoration>().item = item_clone;
+            return clone;
+        }
     }
     public abstract class Resizeable : CustomDecoration
     {
@@ -119,11 +146,11 @@ namespace DecorationMaster
         private void Update()
         {
             var sitem = item as ItemDef.SawItem;
-            var nextPoint = Move(sitem.Center, gameObject.transform.position, sitem.speed,sitem.span);
+            var nextPoint = Move(sitem.Center, gameObject.transform.position, sitem.speed,sitem.span,sitem.offset);
             gameObject.transform.position = nextPoint;
             
         }
-        public abstract Vector3 Move(Vector3 center, Vector3 current, float speed, float span);
+        public abstract Vector3 Move(Vector3 center, Vector3 current, float speed, float span,int offset);
     }
 
     public abstract class BoolBinding : CustomDecoration

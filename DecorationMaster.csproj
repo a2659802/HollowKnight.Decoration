@@ -105,6 +105,9 @@
   <ItemGroup>
     <EmbeddedResource Include="11.wav" />
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="images\arrow.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>echo copying

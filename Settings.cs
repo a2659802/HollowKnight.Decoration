@@ -18,7 +18,11 @@ namespace DecorationMaster
     }
     public enum Operation
     {
-        None,
+        None, // DataBase
+        ADD,
+        REMOVE,
+        COPY,
+
         Serialize, // Default
         SetPos,
 
@@ -28,6 +32,7 @@ namespace DecorationMaster
         SetSpan, // Saw
         SetSpeed,
         SetTinkVoice,
+        SetOffset,
     }
     
     [Serializable]

@@ -12,9 +12,9 @@ namespace DecorationMaster.MyBehaviour
         [Decoration("HK_saw")]
         public class Saw : SawMovement
         {
-            public override Vector3 Move(Vector3 center, Vector3 current, float speed, float span)
+            public override Vector3 Move(Vector3 center, Vector3 current, float speed, float span,int offset)
             {
-                float dy = span * Mathf.Sin(Time.time * speed);
+                float dy = span * Mathf.Sin(speed * Time.time + offset * Mathf.PI);
                 return new Vector3(center.x, center.y + dy, center.z);
             }
             public override void Hit(HitInstance damageInstance)

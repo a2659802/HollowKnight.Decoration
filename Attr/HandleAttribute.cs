@@ -9,9 +9,16 @@ namespace DecorationMaster.Attr
     public class HandleAttribute  : Attribute
     {
         public Operation handleType;
-        public HandleAttribute(Operation op)
+        public Type ArgType;
+        /// <summary>
+        /// use this to handle Setup(Operation op,object val)
+        /// </summary>
+        /// <param name="op"> Operation Enum</param>
+        /// <param name="argType">Operation calling argument's type</param>
+        public HandleAttribute(Operation op,Type argType = default)
         {
             handleType = op;
+            ArgType = argType;
         }
     }
 }

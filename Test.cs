@@ -10,25 +10,21 @@ namespace DecorationMaster
 {
     public class Test
     {
-        public Test()
+		class TestBehaviour : MonoBehaviour
+		{
+			private void Update()
+            {
+				gameObject.transform.position = DecorationMaster.GetMousePos();
+            }
+		}
+		public Test()
         {
-			return;
+			
             Modding.Logger.LogDebug("Start Test");
-            AudioLoader.Load();
-            var saw = ObjectLoader.InstantiableObjects["HK_saw"];
-            var tinkeff = saw.GetComponent<TinkEffect>();
-			//var blockhit = UnityEngine.Object.Instantiate(tinkeff.blockEffect,HeroController.instance.transform.position,Quaternion.Euler(Vector3.zero));
-			//UnityEngine.Object.DestroyImmediate(blockhit.GetComponent<AudioSource>());
-			//blockhit.AddComponent<AudioSource>().clip = AudioLoader.audioclips["11"];
-			//blockhit.name = "MyBlock";
-			//tinkeff.blockEffect = blockhit;
-			//blockhit.SetActive(false);
-			//blockhit.SetActive(true);
-			var oriblockhit = tinkeff.blockEffect;
-			saw.AddComponent<MyTinkEffect>().blockEffect = oriblockhit;
-			UnityEngine.Object.DestroyImmediate(tinkeff);
-            
-            Modding.Logger.LogDebug("End Test"+ ObjectLoader.InstantiableObjects["HK_saw"].GetComponent<TinkEffect>() == null);
+			var arrow = ObjectLoader.InstantiableObjects["IMG_arrow"];
+			arrow.AddComponent<TestBehaviour>();
+			arrow.SetActive(true);
+            Modding.Logger.LogDebug("End Test");
 
             
         }

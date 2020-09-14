@@ -93,7 +93,9 @@ namespace DecorationMaster
             [Handle(Operation.SetPos)]
             [InspectIgnore]
             public V2 Center { get; set; }
-           
+
+            [Handle(Operation.SetOffset)]
+            public int offset { get; set; }
         }
     }
 }

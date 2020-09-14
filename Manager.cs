@@ -6,6 +6,7 @@ using TMPro;
 using UnityEngine;
 using Object = UnityEngine.Object;
 using ModCommon;
+using DecorationMaster.Attr;
 namespace DecorationMaster
 {
     public class ItemManager
@@ -113,16 +114,13 @@ namespace DecorationMaster
             if (currentSelect == null)
                 return;
             var d = currentSelect.GetComponent<CustomDecoration>();
-            
-            
             d.Setup(op, val);
         }
         public void AddCurrent()
         {
             if (currentSelect == null)
                 return;
-            var decoration = currentSelect.GetComponent<CustomDecoration>();
-            decoration.Add();
+            Operate(Operation.ADD, null);
             currentSelect = null;
         }
         public void RemoveCurrent()

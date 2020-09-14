@@ -14,10 +14,11 @@ using UnityEngine.SceneManagement;
 
 namespace DecorationMaster
 {
+    public delegate int SelectItem();
     public class DecorationMaster : Mod//,ITogglableMod
     {
         public static DecorationMaster instance;
-        
+        public SelectItem SelectGetter;
         public override void Initialize(Dictionary<string, Dictionary<string, GameObject>> preloadedObjects)
         {
             instance = this;
@@ -28,7 +29,9 @@ namespace DecorationMaster
             ModHooks.Instance.HeroUpdateHook += OperateItem;
             UnityEngine.SceneManagement.SceneManager.sceneLoaded += SpawnFromSettings;
 
-            
+            SelectGetter = GetKeyPress;
+
+            new Test();
         }
 
         private void SpawnFromSettings(Scene arg0, LoadSceneMode arg1)
@@ -70,7 +73,13 @@ namespace DecorationMaster
                 ItemManager.Instance.SwitchGroup();
             }
 
-            int idx = GetKeyPress();    // Get user Selection
+            int idx = -1;
+            foreach(SelectItem selector in SelectGetter.GetInvocationList())// Get user Selection
+            {
+                int res = selector.Invoke();
+                if (res != -1)
+                    idx = res;
+            }
             ItemManager.Instance.Select(idx);
 
             var cur_mousePos = GetMousePos();   //Update Mouse Pos
@@ -91,7 +100,7 @@ namespace DecorationMaster
 
             if(Input.GetKeyDown(KeyCode.F5))
             {
-                new Test();
+                //new Test();
             }
         }
 
@@ -127,7 +136,7 @@ namespace DecorationMaster
             }
             return -1;
         }
-        private static Vector2 GetMousePos()
+        public static Vector2 GetMousePos()
         {
             var screenPos = Camera.main.WorldToScreenPoint(HeroController.instance.transform.position);
             var mousePosOnScreen = Input.mousePosition;
