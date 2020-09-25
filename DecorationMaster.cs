@@ -11,14 +11,17 @@ using HutongGames.PlayMaker;
 using Modding;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-
+using DecorationMaster.UI;
 namespace DecorationMaster
 {
     public delegate int SelectItem();
     public class DecorationMaster : Mod//,ITogglableMod
     {
+        private static GameManager _gm;
+
         public static DecorationMaster instance;
         public SelectItem SelectGetter;
+        internal static GameManager GM => _gm != null ? _gm : (_gm = GameManager.instance);
         public override void Initialize(Dictionary<string, Dictionary<string, GameObject>> preloadedObjects)
         {
             instance = this;
@@ -30,8 +33,12 @@ namespace DecorationMaster
             UnityEngine.SceneManagement.SceneManager.sceneLoaded += SpawnFromSettings;
 
             SelectGetter = GetKeyPress;
+            SelectGetter += PickPanel.SelectFocus;
 
-            new Test();
+            GameObject UIObj = new GameObject();
+            UIObj.AddComponent<GUIController>();
+            UnityEngine.Object.DontDestroyOnLoad(UIObj);
+            GUIController.Instance.BuildMenus();
         }
 
         private void SpawnFromSettings(Scene arg0, LoadSceneMode arg1)
@@ -82,7 +89,7 @@ namespace DecorationMaster
             }
             ItemManager.Instance.Select(idx);
 
-            var cur_mousePos = GetMousePos();   //Update Mouse Pos
+            Vector2 cur_mousePos = GetMousePos();   //Update Mouse Pos
             if(cur_mousePos != mousePos)
             {
                 mousePos = cur_mousePos;
@@ -136,9 +143,10 @@ namespace DecorationMaster
             }
             return -1;
         }
-        public static Vector2 GetMousePos()
+        public static Vector3 GetMousePos()
         {
-            var screenPos = Camera.main.WorldToScreenPoint(HeroController.instance.transform.position);
+            //var screenPos = Camera.main.WorldToScreenPoint(HeroController.instance.transform.position);
+            var screenPos = Camera.main.WorldToScreenPoint(new Vector3(0,0,-20));
             var mousePosOnScreen = Input.mousePosition;
             mousePosOnScreen.z = screenPos.z;
             return Camera.main.ScreenToWorldPoint(mousePosOnScreen);

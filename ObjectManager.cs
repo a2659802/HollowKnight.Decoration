@@ -16,12 +16,12 @@ namespace DecorationMaster
     public static partial class ObjectLoader
     {
         public static readonly Dictionary<(string, Func<GameObject, GameObject>), (string, string)> ObjectList = new Dictionary<(string, Func<GameObject, GameObject>), (string, string)>
-        {
+        {/*
             {
                 ("saw", null),
                 ("White_Palace_18","saw_collection/wp_saw")
             },
-            /*{ 
+            { 
                 ("trap_spike",null),("White_Palace_07","wp_trap_spikes")
             },
             {
@@ -96,9 +96,10 @@ namespace DecorationMaster
                 Logger.LogDebug(k);
             }
         }
-        private static class ImageLoader
+        public static class ImageLoader
         {
             public static readonly Dictionary<string, Texture2D> images = new Dictionary<string, Texture2D>();
+            public static readonly Dictionary<string, byte[]> raw_images = new Dictionary<string, byte[]>();
             public static bool loaded { get; private set; }
             public static void Load()
             {
@@ -108,6 +109,7 @@ namespace DecorationMaster
                 string[] resourceNames = Assembly.GetExecutingAssembly().GetManifestResourceNames();
                 foreach (string res in resourceNames)
                 {
+                    Logger.LogDebug($"Find Embeded Resource:{res}");
                     if (res.EndsWith(".png"))
                     {
                         try
@@ -115,13 +117,19 @@ namespace DecorationMaster
                             Stream imageStream = Assembly.GetExecutingAssembly().GetManifestResourceStream(res);
                             byte[] buffer = new byte[imageStream.Length];
                             imageStream.Read(buffer, 0, buffer.Length);
-
-                            Texture2D tex = new Texture2D(1, 1);
-                            tex.LoadImage(buffer.ToArray());
-
                             string[] split = res.Split('.');
                             string internalName = split[split.Length - 2];
-                            images.Add(internalName, tex);
+
+                            if (res.Contains("images.objects"))
+                            {
+                                Texture2D tex = new Texture2D(1, 1);
+                                tex.LoadImage(buffer.ToArray());
+                                images.Add(internalName, tex);
+                            }
+                            else
+                            {
+                                raw_images.Add(internalName, buffer);
+                            }
                         }
                         catch
                         {

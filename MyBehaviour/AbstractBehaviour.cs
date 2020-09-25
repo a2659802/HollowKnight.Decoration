@@ -1,6 +1,7 @@
 ﻿using DecorationMaster.Attr;
 using Modding;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -56,7 +57,17 @@ namespace DecorationMaster
             object _return = null;
             foreach (var m in handlers)
             {
-                object[] args = new object[] { val.GetType()==typeof(V2)?((Vector2)((V2)val)):val, };
+                object[] args;
+                if (val == null)
+                {
+                    ArrayList objList = new ArrayList();
+                    for (int i = 0; i < m.GetParameters().Length; i++)
+                        objList.Add(null);
+                    args = objList.ToArray();
+                    Logger.LogDebug($"argument null,fill with {args.Length} null");
+                } 
+                else
+                    args = new object[] { val.GetType() == typeof(V2) ? ((Vector2)((V2)val)) : val, };
                 object mechod_ret = m.Invoke(this, args);
                 _return = mechod_ret == null ? _return: mechod_ret;
             }

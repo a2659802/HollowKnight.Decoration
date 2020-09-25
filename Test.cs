@@ -5,6 +5,9 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using UnityEngine;
+using Vasi;
+using Modding;
+using UnityEngine.UI;
 
 namespace DecorationMaster
 {
@@ -19,15 +22,25 @@ namespace DecorationMaster
 		}
 		public Test()
         {
-			
             Modding.Logger.LogDebug("Start Test");
-			var arrow = ObjectLoader.InstantiableObjects["IMG_arrow"];
-			arrow.AddComponent<TestBehaviour>();
-			arrow.SetActive(true);
-            Modding.Logger.LogDebug("End Test");
+			GameObject canvas;
+			canvas = new GameObject();
+			canvas.AddComponent<Canvas>().renderMode = RenderMode.ScreenSpaceOverlay;
+			CanvasScaler scaler = canvas.AddComponent<CanvasScaler>();
+			scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+			scaler.referenceResolution = new Vector2(1920f, 1080f);
+			canvas.AddComponent<GraphicRaycaster>();
+			Texture2D arrowtex = ObjectLoader.ImageLoader.images["arrow"];
+			var arrowSp = Sprite.Create(arrowtex, new Rect(0, 0, arrowtex.width, arrowtex.height), new Vector2(0.5f, 0.5f));
+			Vector2 sizedelta = new Vector2(arrowtex.width, arrowtex.height);
+			Vector2 anchorpos = Input.mousePosition;
+			var p = CanvasUtil.CreateImagePanel(canvas, arrowSp, new CanvasUtil.RectData(sizedelta, anchorpos,Vector2.zero, Vector2.zero, Vector2.zero));
+			p.SetActive(true);
+			Modding.Logger.LogDebug($"End Test {p.transform.position}");
 
             
         }
+
         public static void TestGo(GameObject go)
         {
 			/*
