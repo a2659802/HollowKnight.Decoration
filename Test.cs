@@ -8,7 +8,7 @@ using UnityEngine;
 using Vasi;
 using Modding;
 using UnityEngine.UI;
-
+using DecorationMaster.UI;
 namespace DecorationMaster
 {
     public class Test
@@ -17,28 +17,14 @@ namespace DecorationMaster
 		{
 			private void Update()
             {
-				gameObject.transform.position = DecorationMaster.GetMousePos();
+				
             }
 		}
 		public Test()
         {
             Modding.Logger.LogDebug("Start Test");
-			GameObject canvas;
-			canvas = new GameObject();
-			canvas.AddComponent<Canvas>().renderMode = RenderMode.ScreenSpaceOverlay;
-			CanvasScaler scaler = canvas.AddComponent<CanvasScaler>();
-			scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
-			scaler.referenceResolution = new Vector2(1920f, 1080f);
-			canvas.AddComponent<GraphicRaycaster>();
-			Texture2D arrowtex = ObjectLoader.ImageLoader.images["arrow"];
-			var arrowSp = Sprite.Create(arrowtex, new Rect(0, 0, arrowtex.width, arrowtex.height), new Vector2(0.5f, 0.5f));
-			Vector2 sizedelta = new Vector2(arrowtex.width, arrowtex.height);
-			Vector2 anchorpos = Input.mousePosition;
-			var p = CanvasUtil.CreateImagePanel(canvas, arrowSp, new CanvasUtil.RectData(sizedelta, anchorpos,Vector2.zero, Vector2.zero, Vector2.zero));
-			p.SetActive(true);
-			Modding.Logger.LogDebug($"End Test {p.transform.position}");
 
-            
+			Modding.Logger.LogDebug($"End Test");
         }
 
         public static void TestGo(GameObject go)
@@ -53,7 +39,15 @@ namespace DecorationMaster
             Logger.LogDebug($"{tinkeff.blockEffect.name}==={tink_au.clip.name}");
             Logger.LogDebug($"{ObjectLoader.InstantiableObjects["HK_saw"].GetComponent<TinkEffect>().blockEffect.name}");*/
         }
-    }
+		public static void TestOnce()
+        {
+			if(Input.GetKeyDown(KeyCode.T))
+            {
+				
+			}
+        }
+		
+	}
     public static class AudioLoader
     {
         public static readonly Dictionary<string, AudioClip> audioclips = new Dictionary<string, AudioClip>();
@@ -88,7 +82,7 @@ namespace DecorationMaster
         }
         
     }
-
+	
 	public class MyTinkEffect : MonoBehaviour
 	{
 		// Token: 0x06001F5C RID: 8028 RVA: 0x000B93E6 File Offset: 0x000B77E6

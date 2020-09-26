@@ -5,7 +5,7 @@ using System.Text;
 
 namespace DecorationMaster.Attr
 {
-    [AttributeUsage(AttributeTargets.Property,AllowMultiple =false,Inherited = false)]
+    [AttributeUsage(AttributeTargets.Property,AllowMultiple =false,Inherited = true)]
     public sealed class InspectIgnoreAttribute : Attribute
     {
     }

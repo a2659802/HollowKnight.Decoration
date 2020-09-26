@@ -63,22 +63,11 @@ namespace DecorationMaster.UI
             canvas.AddComponent<GraphicRaycaster>();
 
             PickPanel.BuildMenu(canvas);
+            InspectPanel.BuildMenu(canvas);
 
             DontDestroyOnLoad(canvas);
 
-            On.InputHandler.OnGUI += ShowArrow;
             ItemManager.Instance.SwitchGroup(0);
-        }
-
-        private void ShowArrow(On.InputHandler.orig_OnGUI orig, InputHandler self)
-        {
-            if (PickPanel.ActiveSelf())
-            {
-                SetCursorVisible.Invoke(self, new object[] { true });
-                return;
-            }
-                
-            orig(self);
         }
 
         private void LoadResources()

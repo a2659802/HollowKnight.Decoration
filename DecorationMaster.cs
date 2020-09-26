@@ -25,6 +25,8 @@ namespace DecorationMaster
         public override void Initialize(Dictionary<string, Dictionary<string, GameObject>> preloadedObjects)
         {
             instance = this;
+
+            
             ObjectLoader.Load(preloadedObjects);
             BehaviourProcessor.RegisterBehaviour<OtherBehaviour>();
             BehaviourProcessor.RegisterBehaviour<AreaBehaviour>();
@@ -80,17 +82,9 @@ namespace DecorationMaster
                 ItemManager.Instance.SwitchGroup();
             }
 
-            int idx = -1;
-            foreach(SelectItem selector in SelectGetter.GetInvocationList())// Get user Selection
-            {
-                int res = selector.Invoke();
-                if (res != -1)
-                    idx = res;
-            }
-            ItemManager.Instance.Select(idx);
-
-            Vector2 cur_mousePos = GetMousePos();   //Update Mouse Pos
-            if(cur_mousePos != mousePos)
+            //Vector2 cur_mousePos = GetMousePos();   //Update Mouse Pos
+            Vector2 cur_mousePos = MyCursor.CursorPosition;
+            if (cur_mousePos != mousePos)
             {
                 mousePos = cur_mousePos;
                 ItemManager.Instance.Operate(Operation.SetPos, mousePos);
@@ -105,10 +99,17 @@ namespace DecorationMaster
                 ItemManager.Instance.RemoveCurrent();
             }
 
-            if(Input.GetKeyDown(KeyCode.F5))
+            int idx = -1;
+            foreach (SelectItem selector in SelectGetter.GetInvocationList())// Get user Selection
             {
-                //new Test();
+                int res = selector.Invoke();
+                if (res != -1)
+                    idx = res;
             }
+            if (ItemManager.Instance.Select(idx) == null)
+                return;
+
+            Test.TestOnce();
         }
 
         private static int GetKeyPress()
@@ -146,7 +147,7 @@ namespace DecorationMaster
         public static Vector3 GetMousePos()
         {
             //var screenPos = Camera.main.WorldToScreenPoint(HeroController.instance.transform.position);
-            var screenPos = Camera.main.WorldToScreenPoint(new Vector3(0,0,-20));
+            var screenPos = Camera.main.WorldToScreenPoint(new Vector3(0,0,0));
             var mousePosOnScreen = Input.mousePosition;
             mousePosOnScreen.z = screenPos.z;
             return Camera.main.ScreenToWorldPoint(mousePosOnScreen);

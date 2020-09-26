@@ -9,6 +9,7 @@ using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
 using System.Reflection;
+using DecorationMaster.UI;
 namespace DecorationMaster
 {
     [Serializable]
@@ -17,6 +18,7 @@ namespace DecorationMaster
         [InspectIgnore]
         public string sceneName { get; set; }
         public virtual string pname { get; set; }
+
         [InspectIgnore]
         [Handle(Operation.SetPos)]
         public V2 position { get; set; }
@@ -49,6 +51,7 @@ namespace DecorationMaster
                 var setter = prop.GetSetMethod();
                 setter.Invoke(this, new object[] { val, });*/
             }
+            Inspector.InspectProps(this);
         }
         
         public object Clone()
@@ -69,7 +72,7 @@ namespace DecorationMaster
         [Handle(Operation.SetSize)]
         public float size { get; set; } = 1;
         [Handle(Operation.SetRot)]
-        public float angle { get; set; }
+        public float angle { get; set; } = 0;
 
     }
     
@@ -77,7 +80,7 @@ namespace DecorationMaster
     {
         [Serializable]
         [Decoration("default")]
-        public class DefaultItem : Item
+        public class DefaultItem : ResizableItem
         {
         }
         [Serializable]

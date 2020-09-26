@@ -60,6 +60,10 @@
     <Reference Include="UnityEngine.ImageConversionModule">
       <HintPath>..\dll\UnityEngine.ImageConversionModule.dll</HintPath>
     </Reference>
+    <Reference Include="UnityEngine.IMGUIModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\dll\UnityEngine.IMGUIModule.dll</HintPath>
+    </Reference>
     <Reference Include="UnityEngine.ParticleSystemModule">
       <HintPath>..\dll\UnityEngine.ParticleSystemModule.dll</HintPath>
     </Reference>
@@ -95,6 +99,7 @@
     <Compile Include="Attr\ItemAttribute.cs" />
     <Compile Include="DecorationMaster.cs" />
     <Compile Include="Extensions.cs" />
+    <Compile Include="UI\InputElements.cs" />
     <Compile Include="MyBehaviour\DefaultBehaviour.cs" />
     <Compile Include="Test.cs" />
     <Compile Include="UI\CanvasButton.cs" />
@@ -133,9 +138,14 @@
     <EmbeddedResource Include="images\UIelements\pickupBorder.png" />
     <EmbeddedResource Include="images\UIelements\selected.png" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <EmbeddedResource Include="images\UIelements\InspectorBorder.png" />
+  </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="images\icons\defaultIcon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="images\UIelements\InspectItem.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

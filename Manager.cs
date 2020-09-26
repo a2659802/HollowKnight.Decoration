@@ -9,6 +9,7 @@ using ModCommon;
 using DecorationMaster.Attr;
 using System.Reflection;
 using DecorationMaster.UI;
+
 namespace DecorationMaster
 {
     public class ItemManager
@@ -163,14 +164,14 @@ namespace DecorationMaster
             text.outlineWidth = 0.1f;
             SetupFlag.AddComponent<KeepWorldScalePositive>();
             //SetupFlag.AddComponent<HookCursor>();
-            //SetupFlag.AddComponent<MyCursor>();
+            SetupFlag.AddComponent<MyCursor>();
             SetupFlag.transform.SetScaleX(0.2f);
             SetupFlag.transform.SetScaleY(0.2f);
             SetupFlag.SetActive(false);
             Object.DontDestroyOnLoad(SetupFlag);
 
         }
-        /*private class HookCursor : MonoBehaviour
+        private class HookCursor : MonoBehaviour
         {
             private void OnEnable()
             {
@@ -186,27 +187,38 @@ namespace DecorationMaster
                 On.InputHandler.OnGUI -= InputHandler_OnGUI;
             }
         }
-        private class MyCursor : MonoBehaviour
+        
+    }
+    public class MyCursor : MonoBehaviour
+    {
+        //private static GameObject arrow;
+        private static bool draw = false;
+        private static Texture2D cursorTexture;
+        public static Vector3 CursorPosition;
+        private void Awake()
         {
-            private static GameObject arrow;
-            private void Awake()
-            {
-                arrow = ObjectLoader.InstantiableObjects["IMG_arrow"];
-                //arrow.transform.SetPosition3D()
-            }
-            private void OnEnable()
-            {
-                arrow.SetActive(true);
-            }
-            private void OnDisable()
-            {
-                arrow.SetActive(false);
-            }
-            private void OnGUI()
-            {
-                arrow.transform.position = DecorationMaster.GetMousePos();
-                //Logger.LogDebug($"{mpos}->{pos}");
-            }
-        }*/
+            var tex = GUIController.Instance.images["arrow"];
+            cursorTexture = tex;
+        }
+        private void OnGUI()
+        {
+            if (!draw)
+                return;
+            var mousePos = Input.mousePosition;
+            GUI.DrawTexture(new Rect(mousePos.x, Screen.height - mousePos.y, cursorTexture.width, cursorTexture.height), cursorTexture);
+            var screenPos = Camera.main.WorldToScreenPoint(new Vector3(0, 0, 0));
+            mousePos.z = screenPos.z;
+            CursorPosition = Camera.main.ScreenToWorldPoint(mousePos);
+        }
+        
+        private void OnEnable()
+        {
+            draw = true;
+        }
+        private void OnDisable()
+        {
+            draw = false;
+        }
+
     }
 }

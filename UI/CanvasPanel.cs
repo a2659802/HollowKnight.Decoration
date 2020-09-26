@@ -63,7 +63,15 @@ namespace DecorationMaster.UI
 
             texts.Add(name, t);
         }
-
+        public void AddSlider(string name, Vector2 pos, Vector2 sz, Rect bgSubSection)
+        {
+            var slider = new CanvasSlider(canvas, position + pos, size + sz, bgSubSection);
+            Logger.LogDebug("Try Add Slider");
+            foreach(var fi in slider.slider.GetType().GetProperties(System.Reflection.BindingFlags.Public|System.Reflection.BindingFlags.Instance))
+            {
+                Logger.LogDebug($"name:{fi.Name},type:{fi.GetType()},value:{fi.GetValue(slider.slider,null) == null}");
+            }
+        }
         public CanvasButton GetButton(string buttonName, string panelName = null)
         {
             if (panelName != null && panels.ContainsKey(panelName))
