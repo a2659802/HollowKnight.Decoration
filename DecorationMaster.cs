@@ -26,6 +26,7 @@ namespace DecorationMaster
         {
             instance = this;
 
+            new Test();
             
             ObjectLoader.Load(preloadedObjects);
             BehaviourProcessor.RegisterBehaviour<OtherBehaviour>();
@@ -52,6 +53,7 @@ namespace DecorationMaster
             }
             IEnumerator WaitSceneLoad(Scene arg0)
             {
+                int count = 0;
                 Logger.LogDebug("Try to spawn setting");
                 string sceneName = arg0.name;
                 yield return new WaitUntil(() => (arg0.isLoaded));
@@ -63,10 +65,12 @@ namespace DecorationMaster
                     var poolname = r.pname;
                     //var prefab = ObjectLoader.InstantiableObjects[poolname];
                     var decorationGo = ObjectLoader.CloneDecoration(poolname);
-                    decorationGo.GetComponent<CustomDecoration>().HandleInit(r);
+                    //decorationGo.GetComponent<CustomDecoration>().HandleInit(r);
+                    decorationGo.GetComponent<CustomDecoration>().Setup(Operation.Serialize, r);
+                    count++;
 
                 }
-                Modding.Logger.LogDebug("All Fine");
+                Modding.Logger.LogDebug($"All Fine,Spawn {count}");
             }
         }
 

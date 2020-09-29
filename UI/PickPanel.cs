@@ -5,7 +5,7 @@ using System.Text;
 using HutongGames.PlayMaker;
 using Modding;
 using UnityEngine;
-
+using ModCommon;
 namespace DecorationMaster.UI
 {
     public static class PickPanel
@@ -13,6 +13,7 @@ namespace DecorationMaster.UI
         private static CanvasPanel panel;
         private static CanvasImage selected;
         public static int current_focus { get; private set; } = -1;
+        public static int current_group_count = 0;
         public static void BuildMenu(GameObject canvas)
         {
             panel = new CanvasPanel(canvas, new Texture2D(1, 1), new Vector2(0,0),Vector2.zero, new Rect(0, 0, 1, 1));
@@ -139,6 +140,16 @@ namespace DecorationMaster.UI
             }
             btn.UpdateSprite(tex, new Rect(0,0,tex.width,tex.height));
         }
+        public static void SetBtnActive(int i,bool b)
+        {
+            var btn = panel.GetPanel("Border").GetPanel($"ItemBorder{i}").GetButton($"Item_{i}");
+            if (btn == null)
+            {
+                Logger.LogWarn($"Item{i} not Found");
+                return;
+            }
+            btn.SetActive(b);
+        }
         public static void SetItemTxt(int i,string text="")
         {
             var btn = panel.GetPanel("Border").GetPanel($"ItemBorder{i}").GetButton($"Item_{i}");
@@ -152,11 +163,13 @@ namespace DecorationMaster.UI
     
         public static void UpdateItemList(string[] poolNames)
         {
+            UnFocus();
+            current_group_count = poolNames.Length;
             for(int i=0;i<poolNames.Length;i++)
             {
                 string p = poolNames[i];
                 LogDebug(p);
-                if(p.StartsWith("IMG_"))
+                if(p.StartsWith("IMG_")) //apply itself images
                 {
                     string imgName = p.Split('_')[1];
                     var tex = ObjectLoader.ImageLoader.images[imgName];
@@ -164,8 +177,30 @@ namespace DecorationMaster.UI
                 }
                 else
                 {
-
+                    if(GUIController.Instance.images.TryGetValue(p,out var customTex)) //apply custom imgage
+                    {
+                        SetItemTexture(i + 1, customTex);
+                    }
+                    else
+                    {
+                        var objprefab = ObjectLoader.InstantiableObjects[p];
+                        Sprite s = objprefab.GetComponent<SpriteRenderer>()?.sprite;
+                        var btn = panel.GetPanel("Border").GetPanel($"ItemBorder{i + 1}").GetButton($"Item_{i + 1}");
+                        if (s != null) //try to apply gameobject's sprite
+                            btn.UpdateSprite(s, new Rect());
+                        else // apply empty image
+                        {
+                            var img_defaultIcon = GUIController.Instance.images["defaultIcon"];
+                            SetItemTexture(i + 1, img_defaultIcon);
+                        }
+                    }
                 }
+                SetItemTxt(i + 1, p); // update text
+                SetBtnActive(i + 1 ,true);
+            }
+            for(int i=poolNames.Length+1;i<= ItemManager.GroupMax;i++) //hide unused button
+            {
+                SetBtnActive(i, false);
             }
         }
 

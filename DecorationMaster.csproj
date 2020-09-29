@@ -147,6 +147,9 @@
   <ItemGroup>
     <EmbeddedResource Include="images\UIelements\InspectItem.png" />
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="canvas" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>echo copying

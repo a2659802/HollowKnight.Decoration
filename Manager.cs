@@ -129,17 +129,19 @@ namespace DecorationMaster
             Test.TestGo(go);
             return cd;
         }
-        public void Operate(Operation op,object val)
+        internal void orig_Operate(Operation op,object val)
         {
             if (currentSelect == null)
                 return;
             var d = currentSelect.GetComponent<CustomDecoration>();
             d.Setup(op, val);
         }
+        public void Operate(Operation op, object val)
+        {
+            orig_Operate(op, val);
+        }
         public void AddCurrent()
         {
-            if (currentSelect == null)
-                return;
             Operate(Operation.ADD, null);
             currentSelect = null;
         }

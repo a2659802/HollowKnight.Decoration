@@ -51,7 +51,6 @@ namespace DecorationMaster
                 var setter = prop.GetSetMethod();
                 setter.Invoke(this, new object[] { val, });*/
             }
-            Inspector.InspectProps(this);
         }
         
         public object Clone()

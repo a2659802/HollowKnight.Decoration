@@ -15,12 +15,14 @@ namespace DecorationMaster
         public virtual bool SetupMode { get => ItemManager.Instance.setupMode; }
         public virtual void Hit(HitInstance damageInstance)
         {
+           // Logger.LogDebug($"Hit Mode:{SetupMode}");
             if (SetupMode)
                 Remove();
         }
         public abstract void Add(object self=null); //add this item to global
         public virtual void Remove(object self=null) //remove this item from global
         {
+            
             if (self == null)
                 Destroy(gameObject);
             else
@@ -98,8 +100,6 @@ namespace DecorationMaster
             if (item != i)
                 item = i;
 
-            //HandlePos(i.position);
-
             //search all Handleable Property in item
             var handlableProps = i.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance)
                 .Where(x => x.GetCustomAttributes(typeof(HandleAttribute), true).OfType<HandleAttribute>().Any());
@@ -113,16 +113,21 @@ namespace DecorationMaster
             }
 
             gameObject.SetActive(true);
+
+            Logger.LogDebug($"{i.pname} Serialize");
         }
         [Handle(Operation.REMOVE)]
         public override void Remove(object self = null)
         {
+            Logger.LogDebug($"{((Item)self).pname} - remove self");
+
             if (self == null)
                 self = item;
-            Logger.LogDebug("remove self");
+            
             var settings = DecorationMaster.instance.Settings;
             if (self == null)
                 throw new NullReferenceException("Item Null Exception");
+
             settings.items.Remove((Item)self);
             base.Remove();
         }

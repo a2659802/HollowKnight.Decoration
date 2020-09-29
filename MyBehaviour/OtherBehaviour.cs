@@ -33,5 +33,25 @@ namespace DecorationMaster.MyBehaviour
             }
         }
 
+        //[Decoration("HK_fly")]
+        public class Fly:CustomDecoration
+        {
+            void OnTriggerEnter2D(Collider2D col)
+            {
+                Logger.LogDebug($"Trigger {col.name}");
+            }
+            void OnCollisionEnter2D(Collision2D col)
+            {
+                Logger.LogDebug($"Collistion {col.collider.name}");
+            }
+            public void Awake()
+            {
+                Logger.LogDebug("Awake FlyFlyFlyFlyFlyFlyFlyFlyFlyFly");
+            }
+            public void OnDestroy()
+            {
+                Logger.LogDebug("DIE FlyFlyFlyFlyFlyFlyFlyFlyFlyFly");
+            }
+        }
     }
 }

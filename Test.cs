@@ -9,6 +9,10 @@ using Vasi;
 using Modding;
 using UnityEngine.UI;
 using DecorationMaster.UI;
+using ModCommon.Util;
+using UnityEngine.Events;
+using ModCommon;
+using MonoMod.RuntimeDetour;
 namespace DecorationMaster
 {
     public class Test
@@ -17,16 +21,28 @@ namespace DecorationMaster
 		{
 			private void Update()
             {
-				
+				      
             }
 		}
 		public Test()
         {
             Modding.Logger.LogDebug("Start Test");
-
-			Modding.Logger.LogDebug($"End Test");
+            //ModHooks.Instance.SlashHitHook += Instance_SlashHitHook;
+			//new Detour(typeof(ItemManager).GetMethod("Operate", BindingFlags.Public | BindingFlags.Instance), typeof(Test).GetMethod("testhook",BindingFlags.NonPublic|BindingFlags.Static));
+			Modding.Logger.LogDebug($"End Test"); 
         }
 
+        private void Instance_SlashHitHook(Collider2D otherCollider, GameObject gameObject)
+        {
+			Logger.LogDebug($"{otherCollider.name}");
+        }
+
+        private static void testhook(ItemManager self, Operation op, object val)
+        {
+			Logger.LogDebug($"HooK!!!{self.GetType()}");
+			self.orig_Operate(op, val);
+			
+        }
         public static void TestGo(GameObject go)
         {
 			/*
@@ -48,6 +64,7 @@ namespace DecorationMaster
         }
 		
 	}
+	
     public static class AudioLoader
     {
         public static readonly Dictionary<string, AudioClip> audioclips = new Dictionary<string, AudioClip>();

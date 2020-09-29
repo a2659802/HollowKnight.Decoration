@@ -62,10 +62,9 @@ namespace DecorationMaster.UI
             scaler.referenceResolution = new Vector2(1920f, 1080f);
             canvas.AddComponent<GraphicRaycaster>();
 
-            PickPanel.BuildMenu(canvas);
-            InspectPanel.BuildMenu(canvas);
-
             DontDestroyOnLoad(canvas);
+
+            PickPanel.BuildMenu(canvas);
 
             ItemManager.Instance.SwitchGroup(0);
         }
@@ -114,6 +113,8 @@ namespace DecorationMaster.UI
         public void Update()
         {
             PickPanel.Update();
+
+
         }
     }
 }

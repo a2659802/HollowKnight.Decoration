@@ -6,43 +6,107 @@ using System.Reflection;
 using System.Text;
 using Modding;
 using UnityEngine;
-
+using System.IO;
+using UnityEngine.Events;
+using UnityEngine.UI;
+using MonoMod;
+using MonoMod.RuntimeDetour;
+using Mono.Cecil;
 namespace DecorationMaster.UI
 {
-    public static class InspectPanel
+    public class InspectPanel
     {
-        private static CanvasPanel panel;
-        public const int PageMax = 6;
-        public static void BuildMenu(GameObject canvas)
+        
+        private static GameObject _canvas;
+        public static GameObject Canvas
         {
-            var img_inspect_border = GUIController.Instance.images["InspectorBorder"];
-            var img_back = GUIController.Instance.images["back"];
-            panel = new CanvasPanel(canvas, new Texture2D(1, 1), new Vector2(1920 - img_inspect_border.width, (1080 - img_inspect_border.height) / 2), Vector2.zero, new Rect(0, 0, 1, 1));
-
-            panel.AddPanel("background", img_back, Vector2.zero, Vector2.zero, new Rect(0, 0, img_back.width, img_back.height));
-            panel.AddPanel("Border", img_inspect_border, Vector2.zero, Vector2.zero, new Rect(0, 0, img_inspect_border.width, img_inspect_border.height));
-            panel.AddPanel("PropSpace", new Texture2D(1, 1), Vector2.zero, Vector2.zero, new Rect(0, 0, 1, 1));
-
-        }
-        public static void AddItem(Type t,string name,object val)
-        {
-            var img_prop_item = GUIController.Instance.images["InspectItem"];
-            if (panel.GetPanel("PropSpace") == null)
-                panel.AddPanel("PropSpace", new Texture2D(1, 1), Vector2.zero, Vector2.zero, new Rect(0, 0, 1, 1));
-
-            int i;
-            for(i=0;i<PageMax;i++)
+            get
             {
-                if (panel.GetPanel("PropSpace").GetPanel($"Prop_{i}") == null)
-                    break;
+                if (_canvas != null)
+                {
+                    return _canvas;
+                }
+                string bundleN = "canvas";
+                AssetBundle ab = null;  // You probably want this to be defined somewhere more global.
+                Assembly asm = Assembly.GetExecutingAssembly();
+                foreach (string res in asm.GetManifestResourceNames())
+                {
+                    using (Stream s = asm.GetManifestResourceStream(res))
+                    {
+                        if (s == null) continue;
+                        byte[] buffer = new byte[s.Length];
+                        s.Read(buffer, 0, buffer.Length);
+                        s.Dispose();
+                        string bundleName = Path.GetExtension(res).Substring(1);
+                        if (bundleName != bundleN) continue;
+                        Logger.Log("Loading bundle " + bundleName);
+                        ab = AssetBundle.LoadFromMemory(buffer); // Store this somewhere you can access again.
+                    }
+                }
+                _canvas = ab.LoadAsset<GameObject>("canvas");
+                return _canvas;
             }
-            var propPanel = panel.GetPanel("PropSpace").AddPanel($"Prop_{i}", img_prop_item, new Vector2(0, i * img_prop_item.height), Vector2.zero, new Rect(0, 0, img_prop_item.width, img_prop_item.height));
-            propPanel.AddText($"Prop_{i}", name, Vector2.zero, Vector2.zero, GUIController.Instance.arial,24,FontStyle.Bold);
-            propPanel.AddSlider($"Prop_{i}", new Vector2(img_prop_item.width / 2, 0), Vector2.zero, new Rect(0, 0, img_prop_item.width / 2, img_prop_item.height));
         }
-        public static void Update()
-        {
+        public GameObject Panel;
+        private List<GameObject> PropPanels = new List<GameObject>();
 
+        public InspectPanel()
+        {
+            var newCanvas = UnityEngine.Object.Instantiate(Canvas);
+            var panel = newCanvas.transform.Find("Panel");
+            var propPanel = panel.Find("PropPanel");
+            Panel = panel.gameObject;
+            var PropPanel = propPanel.gameObject;
+            PropPanels.Add(PropPanel);
+
+        }
+        public void UpdateName(int idx, string name)
+        {
+            var PropPanel = PropPanels[idx];
+            PropPanel.transform.Find("Name").GetComponent<Text>().text = name;
+        }
+        public void AppendPropPanel(float min = 0, float max = 1, UnityAction<float> listener = null)
+        {
+            var prefab = PropPanels[PropPanels.Count - 1];
+            var propp = UnityEngine.Object.Instantiate(prefab);
+            var idx = PropPanels.Count;
+            propp.transform.SetParent(Panel.transform, false);
+            var rect = propp.GetComponent<RectTransform>();
+            var prefabRect = prefab.GetComponent<RectTransform>();
+            rect.anchoredPosition = new Vector2(0, -1 * idx * (prefabRect.rect.height));
+            if (listener == null)
+                listener = DefaultValueChange;
+            PropPanels.Add(propp);
+
+            AddListener(idx, listener);
+            UpdateName(idx, "Clone1");
+            UpdateSliderConstrain(idx, min, max);
+            Logger.LogDebug($"Add another,{propp.transform.position},{prefab.transform.position}");
+            //Canvas.PrintSceneHierarchyTree();
+        }
+        public void UpdateSliderConstrain(int idx, float min, float max)
+        {
+            var PropPanel = PropPanels[idx];
+            var slider = PropPanel.transform.Find("Slider").GetComponent<Slider>();
+            slider.minValue = min;
+            slider.maxValue = max;
+        }
+        public void UpdateValue(int idx, float value)
+        {
+            var PropPanel = PropPanels[idx];
+            var slider = PropPanel.transform.Find("Slider").GetComponent<Slider>();
+            slider.value = value;
+            PropPanel.transform.Find("Value").GetComponent<Text>().text = value.ToString();
+        }
+        public void AddListener(int idx, UnityAction<float> func)
+        {
+            var PropPanel = PropPanels[idx];
+            var slider = PropPanel.transform.Find("Slider").GetComponent<Slider>();
+            slider.onValueChanged.AddListener(func);
+        }
+        public static void DefaultValueChange(float val)
+        {
+            Logger.LogDebug($"Slider Value Change :{val}");
         }
     }
     class Inspector
@@ -96,7 +160,7 @@ namespace DecorationMaster.UI
                         Type propType = kv.Value.PropertyType;
                         object value = kv.Value.GetValue(item, null);
                         LogProp(propType, name, value);
-                        InspectPanel.AddItem(propType, name, value);
+
                     }
                 }
             }

@@ -7,7 +7,7 @@ namespace DecorationMaster.MyBehaviour
 {
     [Decoration("HK_trap_spike")]
     [Decoration("HK_flip_platform")]
-    [Decoration("HK_fly")]
+    
 
     public class DefaultBehaviour : CustomDecoration
     {

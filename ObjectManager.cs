@@ -29,8 +29,8 @@ namespace DecorationMaster
             },
             {
                 ("fly",null), ("White_Palace_18","White Palace Fly")
-            }*/
-
+            }
+            */
         };
         public static Dictionary<string, GameObject> InstantiableObjects { get; } = new Dictionary<string, GameObject>();
         public static GameObject CloneDecoration(string key)
@@ -195,7 +195,7 @@ namespace DecorationMaster
                             var item = Activator.CreateInstance(i) as Item;
                             item.pname = poolname;
                             d.item = item;
-                            Logger.LogDebug($"Fill Item to Component");
+                            Logger.LogDebug($"Match Item-Decoration:{item}-{d}");
                             break;
                         }
                     }
@@ -218,10 +218,8 @@ namespace DecorationMaster
                 if (!ObjectLoader.InstantiableObjects.TryGetValue(poolname, out GameObject prefab))
                     continue;
                 var d = prefab.AddComponent<DefaultBehaviour>();
-                d.item = new ItemDef.DefaultItem
-                {
-                    pname = poolname
-                };
+                d.item = new ItemDef.DefaultItem { pname = poolname };
+                Logger.LogDebug($"Match DefaultItem-Decoration:{d}");
             }
         }
     }
