@@ -119,11 +119,10 @@ namespace DecorationMaster
         [Handle(Operation.REMOVE)]
         public override void Remove(object self = null)
         {
-            Logger.LogDebug($"{((Item)self).pname} - remove self");
-
             if (self == null)
                 self = item;
-            
+
+            Logger.LogDebug($"{((Item)self).pname} - remove self");
             var settings = DecorationMaster.instance.Settings;
             if (self == null)
                 throw new NullReferenceException("Item Null Exception");

@@ -16,7 +16,7 @@ namespace DecorationMaster
     public static partial class ObjectLoader
     {
         public static readonly Dictionary<(string, Func<GameObject, GameObject>), (string, string)> ObjectList = new Dictionary<(string, Func<GameObject, GameObject>), (string, string)>
-        {/*
+        {
             {
                 ("saw", null),
                 ("White_Palace_18","saw_collection/wp_saw")
@@ -30,7 +30,7 @@ namespace DecorationMaster
             {
                 ("fly",null), ("White_Palace_18","White Palace Fly")
             }
-            */
+            
         };
         public static Dictionary<string, GameObject> InstantiableObjects { get; } = new Dictionary<string, GameObject>();
         public static GameObject CloneDecoration(string key)
