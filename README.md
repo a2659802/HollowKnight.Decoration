@@ -13,10 +13,11 @@ A mod for making area harder by adding spike and saw or other things
 the keys are changing now
 current Operation:
 Key8 to switch group
-key 0-6 select item
+key 0-6 select item or use Pickup UI above the screen
+middle mouse key toggle attribute inspector
 
 ###TODO:
-- ADD UI / Inspector
+- ADD UI / Inspector [x]
 - ADD More Object
 - Finished Serialize 
 - ADD Music Box
