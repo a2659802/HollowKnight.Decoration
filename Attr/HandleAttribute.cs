@@ -5,8 +5,8 @@ using System.Text;
 
 namespace DecorationMaster.Attr
 {
-    [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class | AttributeTargets.Property ,AllowMultiple =true,Inherited =true)]
-    public class HandleAttribute  : Attribute
+    [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class | AttributeTargets.Property ,AllowMultiple =false,Inherited =true)]
+    public sealed class HandleAttribute  : Attribute
     {
         public Operation handleType;
         public Type ArgType;

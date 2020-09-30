@@ -144,7 +144,7 @@ namespace DecorationMaster
         [Handle(Operation.SetSize)]
         public void HandleSize(float size)
         {
-            gameObject.transform.localScale *= size;
+            gameObject.transform.localScale = size * Vector3.one;
         }
         [Handle(Operation.SetRot)]
         public void HandleRot(float angle)
@@ -152,7 +152,7 @@ namespace DecorationMaster
             gameObject.transform.eulerAngles = new Vector3(0, 0, angle);
         }
     }
-    public abstract class SawMovement : CustomDecoration
+    public abstract class SawMovement : Resizeable
     {
         private void Start()
         {
@@ -168,7 +168,7 @@ namespace DecorationMaster
         public abstract Vector3 Move(Vector3 center, Vector3 current, float speed, float span,int offset);
     }
 
-    public abstract class BoolBinding : CustomDecoration
+    public abstract class BoolBinding : Resizeable
     {
         public virtual string BindBoolValue { get; private set; }
         private void OnEnable()

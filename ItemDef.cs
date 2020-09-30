@@ -69,9 +69,12 @@ namespace DecorationMaster
     public abstract class ResizableItem : Item
     {
         [Handle(Operation.SetSize)]
+        [FloatConstraint(0.2f,2f)]
         public float size { get; set; } = 1;
+
         [Handle(Operation.SetRot)]
-        public float angle { get; set; } = 0;
+        [IntConstraint(0,360)]
+        public int angle { get; set; } = 0;
 
     }
     
@@ -82,21 +85,29 @@ namespace DecorationMaster
         public class DefaultItem : ResizableItem
         {
         }
+
         [Serializable]
         [Decoration("HK_saw")]
         public class SawItem : ResizableItem
         {
             [Handle(Operation.SetSpan)]
+            [IntConstraint(0,5)]
             public int span { get; set; } = 3;
+
             [Handle(Operation.SetSpeed)]
+            [IntConstraint(-3,3)]
             public int speed { get; set; }
+
             [Handle(Operation.SetTinkVoice)]
+            [FloatConstraint(0.1f,1)]
             public float pitch { get; set; } = 1;
+
             [Handle(Operation.SetPos)]
             [InspectIgnore]
             public V2 Center { get; set; }
 
             [Handle(Operation.SetOffset)]
+            [IntConstraint(0,5)]
             public int offset { get; set; }
         }
     }

@@ -16,7 +16,7 @@ namespace DecorationMaster
     {
         private static ItemManager _instance;
         private  GameObject _setup_flag_backing;
-        private static GameObject currentSelect;
+        public GameObject currentSelect { get; private set; }
         public delegate void GroupSwitchHandler(string[] nextGroup);
         public event GroupSwitchHandler GroupSwitchEventHandler;
         private  GameObject SetupFlag { get

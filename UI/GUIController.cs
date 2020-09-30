@@ -114,7 +114,14 @@ namespace DecorationMaster.UI
         {
             PickPanel.Update();
 
-
+            if(ItemManager.Instance.currentSelect!=null && Inspector.ToggleInspect())
+            {
+                if (!Inspector.IsToggle())
+                    Inspector.Show();
+                else
+                    Inspector.Hide();
+            }
         }
+        
     }
 }

@@ -26,7 +26,7 @@ namespace DecorationMaster.MyBehaviour
                     float pitch = gameObject.GetComponent<MyTinkEffect>().pitch;
                 }
             }
-            [Handle(Operation.SetTinkVoice)]
+            //[Handle(Operation.SetTinkVoice)]
             public void HandleVoice(object val)
             {
 
