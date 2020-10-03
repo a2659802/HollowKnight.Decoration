@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 
-namespace DecorationMaster
+namespace DecorationMaster.Util
 {
     public static class Extensions
     {

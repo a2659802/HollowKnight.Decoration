@@ -6,10 +6,14 @@ using HutongGames.PlayMaker;
 using Modding;
 using UnityEngine;
 using ModCommon;
+using System.Collections;
+
 namespace DecorationMaster.UI
 {
     public static class PickPanel
     {
+        public static GameObject[] Prefabs = new GameObject[1];
+
         private static CanvasPanel panel;
         private static CanvasImage selected;
         public static int current_focus { get; private set; } = -1;
@@ -25,17 +29,21 @@ namespace DecorationMaster.UI
             var img_itemborder = GUIController.Instance.images["itemBorder"];
             var img_selected = GUIController.Instance.images["selected"];
             var img_defaultIcon = GUIController.Instance.images["defaultIcon"];
+            var img_savedborder = GUIController.Instance.images["savedBorder"];
 
             panel.AddPanel("Border", img_pickborder, new Vector2((1920f - img_pickborder.width) / 2, 0), Vector2.zero, new Rect(0,0, img_pickborder.width, img_pickborder.height));
             Vector2 itemborderOffset = Vector2.zero;
             for(int i=1;i<=ItemManager.GroupMax;i++)
             {
                 var itemPanel = panel.GetPanel("Border").AddPanel($"ItemBorder{i}", img_itemborder, itemborderOffset, Vector2.zero, new Rect(0, 0, img_itemborder.width, img_itemborder.height));
-                itemborderOffset.x += img_itemborder.width + 3f;
                 itemPanel.AddButton($"Item_{i}", img_defaultIcon, Vector2.zero, Vector2.zero, ItemClicked, new Rect(0, 0, img_defaultIcon.width, img_defaultIcon.height),GUIController.Instance.arial,$"Item_{i}");
+                itemborderOffset.x += img_itemborder.width + 3f;
             }
+            itemborderOffset.x += img_savedborder.width + 3f;
+            var prefabPanel = panel.GetPanel("Border").AddPanel($"PrefabBorder{1}", img_savedborder, itemborderOffset, Vector2.zero, new Rect(0, 0, img_savedborder.width, img_savedborder.height));
+            prefabPanel.AddButton($"Prefab_{1}", img_defaultIcon, Vector2.zero, Vector2.zero, PrefabClicked, new Rect(0, 0, img_defaultIcon.width, img_defaultIcon.height), GUIController.Instance.arial, $"Prefab_{1}");
+            
             selected = panel.GetPanel("Border").AddImage("selected", img_selected, Vector2.zero, Vector2.zero, new Rect(0, 0, img_selected.width, img_selected.height));
-
 
             ItemManager.Instance.GroupSwitchEventHandler += UpdateItemList;
             LogDebug("PickPanel Built");
@@ -59,14 +67,83 @@ namespace DecorationMaster.UI
         }
         public static int SelectFocus()
         {
+            if(current_focus >= 100)
+            {
+                var pidx = current_focus % 100;
+                var prefab = pidx < Prefabs.Length ? Prefabs[pidx] : null;
+                ItemManager.Instance.Select(prefab);
+            }
             return current_focus;
         }
         private static void ItemClicked(string btnName)
         {
             int itemIdx = Convert.ToInt32(btnName.Split('_')[1]);
             LogDebug(itemIdx);
+            HeroController.instance.StartCoroutine(WaitFrame());
 
-            Focus(itemIdx);
+            IEnumerator WaitFrame()
+            {
+                yield return new WaitForEndOfFrame();
+                Focus(itemIdx);
+            }
+        }
+        private static void _setPrefab(GameObject go)
+        {
+            if (Prefabs[0] != null)
+                UnityEngine.Object.Destroy(Prefabs[0]);
+            Prefabs[0] = go;
+            UnityEngine.Object.DontDestroyOnLoad(go);
+        }
+        public static void SetPrefab(Texture2D tex,GameObject go)
+        {
+            GetPrefabButton(1).UpdateSprite(tex, new Rect(0, 0, tex.width, tex.height));
+            _setPrefab(go);
+        }
+        public static void SetPrefab(Sprite s,GameObject go)
+        {
+            GetPrefabButton(1).UpdateSprite(s, new Rect());
+            _setPrefab(go);
+
+        }
+        public static void SetCurrentToPrefab()
+        {
+            GameObject go = ItemManager.Instance.currentSelect;
+            if (go == null)
+                return;
+            int index = -1;
+            string pn = go.GetComponent<CustomDecoration>().item.pname;
+            string[] pnames = ItemManager.group[ItemManager.Instance.CurrentGroup];
+            for(int i=0;i<pnames.Length;i++)
+            {
+                if(pnames[i] == pn)
+                {
+                    index = i;
+                    break;
+                }
+            }
+            go = go.GetComponent<CustomDecoration>().Setup(Operation.COPY, null) as GameObject;
+            go?.SetActive(false);
+            Sprite s = GetButton(index + 1).GetSprite();
+            SetPrefab(s, go);
+        }
+
+        private static void PrefabClicked(string btnName)
+        {
+            if (Prefabs[0] == null)
+                return;
+            HeroController.instance.StartCoroutine(WaitFrame());
+
+            var pos = panel.GetPanel("Border").GetPanel($"PrefabBorder{1}").GetPosition();
+            selected.SetPosition(pos);
+            current_focus = 100;
+            selected.SetActive(true);
+
+            IEnumerator WaitFrame()
+            {
+                yield return new WaitForEndOfFrame();
+                ItemManager.Instance.Select(Prefabs[0]);
+            }
+
         }
         public static bool ActiveSelf()
         {
@@ -75,6 +152,7 @@ namespace DecorationMaster.UI
         public static void SetActive(bool b)
         {
             panel.SetActive(b, true);
+            selected.SetActive(false);
         }
         public static void Update()
         {
@@ -87,7 +165,7 @@ namespace DecorationMaster.UI
             {
                 if (panel.active)
                 {
-                    panel.SetActive(false, true);
+                    SetActive(false);
                 }
 
                 return;
@@ -95,7 +173,8 @@ namespace DecorationMaster.UI
             
             if (Input.GetKeyDown(KeyCode.F5))
             {
-                panel.SetActive(!panel.active, true);
+                SetActive(!panel.active);
+                
                 Logger.LogDebug("Toggle PickPanel");
             }
 
@@ -105,64 +184,28 @@ namespace DecorationMaster.UI
                 {
                     UnFocus();
                 }
-                if (Input.GetKeyDown(KeyCode.UpArrow))
+                if(Input.GetKeyDown(KeyCode.Space))
                 {
-
-                }
-                if (Input.GetKeyDown(KeyCode.DownArrow))
-                {
-
-                }
-                if (Input.GetKeyDown(KeyCode.LeftArrow))
-                {
-
-                }
-                if (Input.GetKeyDown(KeyCode.RightArrow))
-                {
-                    //current_selected = (current_selected + 1) % ItemManager.GroupMax;
-                    //Focus(current_selected);
+                    SetCurrentToPrefab();
                 }
             }
         }
     
-        public static void SetItemTexture(int i,Texture2D tex)
+        
+        private static CanvasButton GetButton(int i = 1)
         {
             var btn = panel.GetPanel("Border").GetPanel($"ItemBorder{i}").GetButton($"Item_{i}");
-            if(btn == null)
-            {
-                Logger.LogWarn($"Item{i} not Found");
-                return;
-            }
-            if(tex == null)
-            {
-                Logger.LogError($"Item{i}'s texture2d null");
-                return;
-            }
-            btn.UpdateSprite(tex, new Rect(0,0,tex.width,tex.height));
+            return btn;
         }
-        public static void SetBtnActive(int i,bool b)
+        private static CanvasButton GetPrefabButton(int i = 1)
         {
-            var btn = panel.GetPanel("Border").GetPanel($"ItemBorder{i}").GetButton($"Item_{i}");
-            if (btn == null)
-            {
-                Logger.LogWarn($"Item{i} not Found");
-                return;
-            }
-            btn.SetActive(b);
-        }
-        public static void SetItemTxt(int i,string text="")
-        {
-            var btn = panel.GetPanel("Border").GetPanel($"ItemBorder{i}").GetButton($"Item_{i}");
-            if (btn == null)
-            {
-                Logger.LogWarn($"Item{i} not Found");
-                return;
-            }
-            btn.UpdateText(text);
+            var btn = panel.GetPanel("Border").GetPanel($"PrefabBorder{i}").GetButton($"Prefab_{i}");
+            return btn;
         }
     
         public static void UpdateItemList(string[] poolNames)
         {
+            SetActive(true);
             UnFocus();
             current_group_count = poolNames.Length;
             for(int i=0;i<poolNames.Length;i++)
@@ -173,34 +216,43 @@ namespace DecorationMaster.UI
                 {
                     string imgName = p.Split('_')[1];
                     var tex = ObjectLoader.ImageLoader.images[imgName];
-                    SetItemTexture(i + 1, tex);
+                    GetButton(i+1)?.UpdateSprite(tex, new Rect(0,0,tex.width,tex.height));
+                    GetButton(i + 1)?.UpdateText("");
                 }
                 else
                 {
                     if(GUIController.Instance.images.TryGetValue(p,out var customTex)) //apply custom imgage
                     {
-                        SetItemTexture(i + 1, customTex);
+                        GetButton(i + 1)?.UpdateSprite(customTex, new Rect(0, 0, customTex.width, customTex.height));
+                        GetButton(i + 1)?.UpdateText("");
                     }
                     else
                     {
                         var objprefab = ObjectLoader.InstantiableObjects[p];
                         Sprite s = objprefab.GetComponent<SpriteRenderer>()?.sprite;
-                        var btn = panel.GetPanel("Border").GetPanel($"ItemBorder{i + 1}").GetButton($"Item_{i + 1}");
+                        var btn = GetButton(i + 1); 
                         if (s != null) //try to apply gameobject's sprite
+                        {
                             btn.UpdateSprite(s, new Rect());
+                        }
                         else // apply empty image
                         {
                             var img_defaultIcon = GUIController.Instance.images["defaultIcon"];
-                            SetItemTexture(i + 1, img_defaultIcon);
+                            GetButton(i + 1)?.UpdateSprite(img_defaultIcon, new Rect(0, 0, img_defaultIcon.width, img_defaultIcon.height));
                         }
+                        GetButton(i + 1)?.UpdateText(p);
                     }
                 }
-                SetItemTxt(i + 1, p); // update text
-                SetBtnActive(i + 1 ,true);
+                
+                GetButton(i + 1)?.SetActive(true);
             }
             for(int i=poolNames.Length+1;i<= ItemManager.GroupMax;i++) //hide unused button
             {
-                SetBtnActive(i, false);
+                GetButton(i)?.SetActive(false);
+            }
+            if(!ItemManager.Instance.setupMode)
+            {
+                SetActive(false);
             }
         }
 

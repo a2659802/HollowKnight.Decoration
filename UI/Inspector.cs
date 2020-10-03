@@ -61,6 +61,8 @@ namespace DecorationMaster.UI
             PropPanels.Add(PropPanel);
 
             AddListener(0, UpdateTextDelegate(0));
+
+            UnityEngine.Object.DontDestroyOnLoad(CurrentCanvas);
         }
         public void UpdateName(int idx, string name)
         {

@@ -7,7 +7,8 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using UnityEngine;
-
+using ModCommon;
+using DecorationMaster.Util;
 namespace DecorationMaster
 {
     public abstract class Editable : MonoBehaviour, IHitResponder
@@ -37,6 +38,7 @@ namespace DecorationMaster
                 }
             }
         }
+    
     }
 
     public abstract class CustomDecoration : Editable
@@ -50,7 +52,7 @@ namespace DecorationMaster
         /// <param name="val">the type must base on Item Prop</param>
         public object Setup(Operation op, object val)
         {
-            item.Setup(op, val);
+            item?.Setup(op, val);
 
             var handlers = this.GetType().GetMethods(BindingFlags.Public | BindingFlags.Instance)
                 .Where(x => x.GetCustomAttributes(typeof(HandleAttribute), true).OfType<HandleAttribute>()
@@ -154,18 +156,13 @@ namespace DecorationMaster
     }
     public abstract class SawMovement : Resizeable
     {
-        private void Start()
-        {
-            
-        }
         private void Update()
         {
             var sitem = item as ItemDef.SawItem;
-            var nextPoint = Move(sitem.Center, gameObject.transform.position, sitem.speed,sitem.span,sitem.offset);
+            var nextPoint = Move(gameObject.transform.position);
             gameObject.transform.position = nextPoint;
-            
         }
-        public abstract Vector3 Move(Vector3 center, Vector3 current, float speed, float span,int offset);
+        public abstract Vector3 Move(Vector3 current);
     }
 
     public abstract class BoolBinding : Resizeable
@@ -189,6 +186,10 @@ namespace DecorationMaster
     
     public abstract class BreakableBoolBinding : BoolBinding
     {
+        private void Awake()
+        {
+            gameObject.AddComponent<NonBouncer>();
+        }
         public override void Hit(HitInstance hit)
         {
             base.Hit(hit);

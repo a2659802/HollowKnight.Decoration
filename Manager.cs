@@ -31,7 +31,7 @@ namespace DecorationMaster
                 _setup_flag_backing = value;
             }
         }
-        private static Dictionary<int, string[]> group = new Dictionary<int, string[]>();
+        public static Dictionary<int, string[]> group = new Dictionary<int, string[]>();
         public const int GroupMax = 6;
         public int CurrentGroup { get; private set; } = 1;
         public bool setupMode { get; private set; }
@@ -108,12 +108,13 @@ namespace DecorationMaster
         {
             if (!setupMode)
                 return null;
-            if (idx < 1 || idx > group[CurrentGroup].Length)
-                return null;
-            
+
             if (currentSelect != null)
                 return currentSelect.GetComponent<CustomDecoration>();
 
+            if (idx < 1 || idx > group[CurrentGroup].Length)
+                return null;
+             
             string poolname = group[CurrentGroup][idx - 1];
             Logger.LogDebug($"Selected {idx},{poolname}");
             GameObject go = ObjectLoader.CloneDecoration(poolname);
@@ -128,6 +129,17 @@ namespace DecorationMaster
 
             Test.TestGo(go);
             return cd;
+        }
+        public CustomDecoration Select(GameObject prefab)
+        {
+            if (prefab == null)
+                return null;
+            if (currentSelect != null)
+                return currentSelect.GetComponent<CustomDecoration>();
+            var clone = prefab.GetComponent<CustomDecoration>().Setup(Operation.COPY, null) as GameObject;
+            currentSelect = clone;
+            currentSelect.SetActive(true);
+            return clone.GetComponent<CustomDecoration>();
         }
         internal void orig_Operate(Operation op,object val)
         {

@@ -73,6 +73,12 @@ namespace DecorationMaster.UI
                // buttonObj.GetComponent<Image>().sprite = Sprite.Create(tex, new Rect(bgSubSection.x, tex.height - bgSubSection.height, bgSubSection.width, bgSubSection.height), Vector2.zero);
             }
         }
+        internal Sprite GetSprite()
+        {
+            if (buttonObj != null)
+                return buttonObj.GetComponent<Image>().sprite;
+            return null;
+        }
         public void AddClickEvent(UnityAction<string> action)
         {
             if (buttonObj != null)

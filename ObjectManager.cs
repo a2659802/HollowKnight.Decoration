@@ -1,5 +1,6 @@
 ﻿using DecorationMaster.Attr;
 using DecorationMaster.MyBehaviour;
+using DecorationMaster.Util;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -7,6 +8,8 @@ using System.Linq;
 using System.Reflection;
 using UnityEngine;
 using Object = UnityEngine.Object;
+using ModCommon.Util;
+
 namespace DecorationMaster
 {
     // Create a objectpool name InstantiableObjects which can be access with name
@@ -28,8 +31,81 @@ namespace DecorationMaster
                 ("flip_platform",null),("Mines_31","Mines Platform")
             },
             {
+                ("conveyor",null),("Mines_31","conveyor_belt_01")
+            },
+            {
+                ("gate",(go)=>{
+                    go.LocateMyFSM("Toll Gate").SetState("Idle");
+                    return go;
+                }),
+                ("Crossroads_03", "_Props/Toll Gate")
+            },
+            {
+                ("lever",(go)=>{
+                    PlayMakerFSM playMakerFSM = go.LocateMyFSM("toll switch");
+                    FsmutilExt.RemoveAction(playMakerFSM, "Initiate", 4);
+                    FsmutilExt.RemoveAction(playMakerFSM, "Initiate", 3);
+                    playMakerFSM.SetState("Pause");
+                    playMakerFSM.RemoveTransition("Initiate","ACTIVATED");
+                    playMakerFSM.Fsm.SaveActions();
+                    return go;
+                }),
+                ("Crossroads_03", "_Props/Toll Gate Switch")
+            },
+            {
+                ("spike",null),
+                ("Crossroads_25","Cave Spikes tile")
+            },
+            {
+                ("soul_totem",null),
+                ("Crossroads_25","Soul Totem mini_two_horned")
+            },
+            {
+                ("respawn_point",null),
+                ("Crossroads_25","Hazard Respawn Trigger v2")
+            },
+            {
+                ("lazer_bug",null),
+                ("Mines_05","Crystallised Lazer Bug")
+            },
+            {
+                ("platform_rect",null),
+                ("Mines_05","plat_float_08")
+            },
+            {
+                ("crystal_barrel",null),
+                ("Mines_05","crystal_barrel")
+            },
+            {
+                ("platform_small",null),
+                ("Mines_05","plat_float_03")
+            },
+            {
+                ("crystal",null),
+                ("Mines_05","brk_Crystal3")
+            },
+            {
                 ("fly",null), ("White_Palace_18","White Palace Fly")
+            },
+            {
+                ("bounce_shroom",null),
+                ("Fungus2_11","Bounce Shroom B")
+            },
+            {
+                ("turret",null),
+                ("Fungus2_11","Mushroom Turret")
+            },
+            {
+                ("stomper",null),
+                ("Mines_19","_Scenery/stomper_1")
             }
+            /*
+            {
+                ("cameralock",null),
+                ("Crossroads_25","CameraLockArea")
+            },
+            */
+
             
         };
         public static Dictionary<string, GameObject> InstantiableObjects { get; } = new Dictionary<string, GameObject>();
@@ -46,7 +122,9 @@ namespace DecorationMaster
                     return null;
                 Item item = prefab_item.Clone() as Item;
                 go = Object.Instantiate(prefab);
-                go.GetComponent<CustomDecoration>().item = item;
+                go.name = go.name.Replace("(Clone)", "");
+                //go.GetComponent<CustomDecoration>().item = item;
+                go.GetComponent<CustomDecoration>().Setup(Operation.Serialize, item);
                 Modding.Logger.LogDebug($"Clone Item:{prefab_item==null},{item==null}");
             }
             return go;
@@ -217,9 +295,11 @@ namespace DecorationMaster
                 string poolname = attr.Name;
                 if (!ObjectLoader.InstantiableObjects.TryGetValue(poolname, out GameObject prefab))
                     continue;
-                var d = prefab.AddComponent<DefaultBehaviour>();
-                d.item = new ItemDef.DefaultItem { pname = poolname };
-                Logger.LogDebug($"Match DefaultItem-Decoration:{d}");
+                var d = prefab.AddComponent(typeof(T)) as CustomDecoration;
+                var ti = typeof(T).GetNestedTypes(BindingFlags.Public).Where(x => x.IsSubclassOf(typeof(Item))).FirstOrDefault();
+                d.item = Activator.CreateInstance(ti) as Item;
+                d.item.pname = poolname;
+                Logger.LogDebug($"Match {ti}-Decoration:{d}");
             }
         }
     }

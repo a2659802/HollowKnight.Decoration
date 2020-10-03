@@ -32,6 +32,7 @@ namespace DecorationMaster
             BehaviourProcessor.RegisterBehaviour<OtherBehaviour>();
             BehaviourProcessor.RegisterBehaviour<AreaBehaviour>();
             BehaviourProcessor.RegisterSharedBehaviour<DefaultBehaviour>();
+            BehaviourProcessor.RegisterSharedBehaviour<UnVisableBehaviour>();
             ModHooks.Instance.HeroUpdateHook += OperateItem;
             UnityEngine.SceneManagement.SceneManager.sceneLoaded += SpawnFromSettings;
 
@@ -66,9 +67,11 @@ namespace DecorationMaster
                     //var prefab = ObjectLoader.InstantiableObjects[poolname];
                     var decorationGo = ObjectLoader.CloneDecoration(poolname);
                     //decorationGo.GetComponent<CustomDecoration>().HandleInit(r);
-                    decorationGo.GetComponent<CustomDecoration>().Setup(Operation.Serialize, r);
-                    count++;
-
+                    if(decorationGo != null)
+                    {
+                        decorationGo.GetComponent<CustomDecoration>().Setup(Operation.Serialize, r);
+                        count++;
+                    }
                 }
                 Modding.Logger.LogDebug($"All Fine,Spawn {count}");
             }
@@ -94,15 +97,17 @@ namespace DecorationMaster
                 ItemManager.Instance.Operate(Operation.SetPos, mousePos);
             }
 
-            if (Input.GetMouseButtonUp((int)MouseButton.Left)) // Confirm Go
+            if(GM != null && !GM.isPaused && !GM.IsInSceneTransition)
             {
-                ItemManager.Instance.AddCurrent();
+                if (Input.GetMouseButtonUp((int)MouseButton.Left)) // Confirm Go
+                {
+                    ItemManager.Instance.AddCurrent();
+                }
+                else if (Input.GetMouseButtonUp((int)MouseButton.Right)) // Discard Go
+                {
+                    ItemManager.Instance.RemoveCurrent();
+                }
             }
-            else if (Input.GetMouseButtonUp((int)MouseButton.Right)) // Discard Go
-            {
-                ItemManager.Instance.RemoveCurrent();
-            }
-
             int idx = -1;
             foreach (SelectItem selector in SelectGetter.GetInvocationList())// Get user Selection
             {
@@ -183,7 +188,7 @@ namespace DecorationMaster
             return $"{ver}-{hash.Substring(0, 6)}";
         }
         public const KeyCode ToggleEdit = KeyCode.Keypad7;
-        public const KeyCode SwitchGroup = KeyCode.Keypad8;
+        public const KeyCode SwitchGroup = KeyCode.Tab;
     }
     public static class Logger
     {

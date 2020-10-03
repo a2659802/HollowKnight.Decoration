@@ -13,6 +13,8 @@ using ModCommon.Util;
 using UnityEngine.Events;
 using ModCommon;
 using MonoMod.RuntimeDetour;
+using DecorationMaster.Util;
+
 namespace DecorationMaster
 {
     public class Test
@@ -21,15 +23,22 @@ namespace DecorationMaster
 		{
 			private void Update()
             {
-				      
+				 
             }
 		}
 		public Test()
         {
             Modding.Logger.LogDebug("Start Test");
+            //On.SceneManager.Start += SceneManager_Start;
             //ModHooks.Instance.SlashHitHook += Instance_SlashHitHook;
 			//new Detour(typeof(ItemManager).GetMethod("Operate", BindingFlags.Public | BindingFlags.Instance), typeof(Test).GetMethod("testhook",BindingFlags.NonPublic|BindingFlags.Static));
 			Modding.Logger.LogDebug($"End Test"); 
+        }
+
+        private void SceneManager_Start(On.SceneManager.orig_Start orig, SceneManager self)
+        {
+			self.darknessLevel = 1;
+			orig(self);
         }
 
         private void Instance_SlashHitHook(Collider2D otherCollider, GameObject gameObject)
@@ -59,11 +68,12 @@ namespace DecorationMaster
         {
 			if(Input.GetKeyDown(KeyCode.T))
             {
-				
+				//UnityEngine.SceneManagement.SceneManager.LoadScene("Mines_31");
 			}
         }
-		
-	}
+
+
+    }
 	
     public static class AudioLoader
     {

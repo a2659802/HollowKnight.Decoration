@@ -99,7 +99,7 @@
     <Compile Include="Attr\InspectIgnoreAttribute.cs" />
     <Compile Include="Attr\ItemAttribute.cs" />
     <Compile Include="DecorationMaster.cs" />
-    <Compile Include="Extensions.cs" />
+    <Compile Include="Util\Extensions.cs" />
     <Compile Include="MyBehaviour\DefaultBehaviour.cs" />
     <Compile Include="Test.cs" />
     <Compile Include="UI\CanvasButton.cs" />
@@ -117,7 +117,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="UI\PickPanel.cs" />
-    <Compile Include="WavUtility.cs" />
+    <Compile Include="Util\NameDisp.cs" />
+    <Compile Include="Util\ShowColliders.cs" />
+    <Compile Include="Util\WavUtility.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="images\UIelements\back.png" />
@@ -139,16 +141,32 @@
     <EmbeddedResource Include="images\UIelements\selected.png" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="images\UIelements\InspectorBorder.png" />
-  </ItemGroup>
-  <ItemGroup>
     <EmbeddedResource Include="images\icons\defaultIcon.png" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="images\UIelements\InspectItem.png" />
+    <EmbeddedResource Include="canvas" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="canvas" />
+    <EmbeddedResource Include="images\UIelements\savedBorder.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="images\icons\HK_flip_platform.png" />
+    <EmbeddedResource Include="images\icons\HK_trap_spike.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="images\icons\HK_bounce_shroom.png" />
+    <EmbeddedResource Include="images\icons\HK_crystal_barrel.png" />
+    <EmbeddedResource Include="images\icons\HK_fly.png" />
+    <EmbeddedResource Include="images\icons\HK_gate.png" />
+    <EmbeddedResource Include="images\icons\HK_lazer_bug.png" />
+    <EmbeddedResource Include="images\icons\HK_lever.png" />
+    <EmbeddedResource Include="images\icons\HK_turret.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="images\icons\HK_respawn_point.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="images\icons\HK_stomper.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

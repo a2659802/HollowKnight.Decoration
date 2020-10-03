@@ -91,14 +91,14 @@ namespace DecorationMaster
         public class SawItem : ResizableItem
         {
             [Handle(Operation.SetSpan)]
-            [IntConstraint(0,5)]
+            [IntConstraint(0,8)]
             public int span { get; set; } = 3;
 
             [Handle(Operation.SetSpeed)]
-            [IntConstraint(-3,3)]
+            [IntConstraint(-4,4)]
             public int speed { get; set; }
 
-            [Handle(Operation.SetTinkVoice)]
+            //[Handle(Operation.SetTinkVoice)]
             [FloatConstraint(0.1f,1)]
             public float pitch { get; set; } = 1;
 
@@ -107,8 +107,27 @@ namespace DecorationMaster
             public V2 Center { get; set; }
 
             [Handle(Operation.SetOffset)]
-            [IntConstraint(0,5)]
+            [IntConstraint(0,4)]
             public int offset { get; set; }
         }
+    
+    
+        [Serializable]
+        [Decoration("HK_lever")]
+        public class LeverItem : ResizableItem
+        {
+            public const string GateNamePrefix = "CustomTollGate_";
+
+            [Handle(Operation.SetGate)]
+            [IntConstraint(1, 10)]
+            public int GateNumber { get; set; } = 1;
+        }
+
+        [Serializable]
+        [Decoration("HK_gate")]
+        public class GateItem : LeverItem
+        {
+        }
+
     }
 }

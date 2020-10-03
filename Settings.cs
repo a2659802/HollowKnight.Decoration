@@ -33,6 +33,8 @@ namespace DecorationMaster
         SetSpeed,
         SetTinkVoice,
         SetOffset,
+
+        SetGate,
     }
     
     [Serializable]
