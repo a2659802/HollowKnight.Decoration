@@ -13,12 +13,13 @@ namespace DecorationMaster.MyBehaviour
     [Decoration("HK_spike")]
     [Decoration("HK_platform_rect")]
     [Decoration("HK_soul_totem")]
-    [Decoration("HK_lazer_bug")]
     [Decoration("HK_crystal_barrel")]
     [Decoration("HK_platform_small")]
     [Decoration("HK_crystal")]
     [Decoration("HK_bounce_shroom")]
     [Decoration("HK_stomper")]
+    [Decoration("HK_lazer_bug")]
+    
     //[Decoration("HK_conveyor")]
     public class DefaultBehaviour : Resizeable
     {
@@ -28,27 +29,46 @@ namespace DecorationMaster.MyBehaviour
         }
     }
 
-    [Decoration("HK_respawn_point")]
+    
     public class UnVisableBehaviour : CustomDecoration
     {
         [Serializable]
         public class SharedItem : Item
         {
         }
-
+        private class AttackReact : MonoBehaviour
+        {
+            public CustomDecoration parent;
+            private void Awake()
+            {
+                gameObject.AddComponent<NonBouncer>();
+                gameObject.AddComponent<BoxCollider2D>().size = Vector2.one;
+                if(ItemManager.Instance.setupMode)
+                    gameObject.AddComponent<ShowColliders>();
+            }
+            public void OnTriggerEnter2D(Collider2D col)
+            {
+                if (col.gameObject.layer == (int)GlobalEnums.PhysLayers.HERO_ATTACK)
+                {
+                    if (ItemManager.Instance.setupMode)
+                        parent?.Remove();
+                }
+            }
+        }
         public ShowColliders colDisp;
         public void Awake()
         {
-            gameObject.layer = (int)GlobalEnums.PhysLayers.ENEMIES;
+            var child = new GameObject();
+            child.transform.SetParent(gameObject.transform);
+            child.layer = (int)GlobalEnums.PhysLayers.PROJECTILES;
+            child.AddComponent<AttackReact>().parent = this;
+            
             gameObject.AddComponent<NonBouncer>();
-            colDisp = gameObject.AddComponent<ShowColliders>();
+            if(SetupMode)
+                colDisp = gameObject.AddComponent<ShowColliders>();
             Logger.LogDebug("Awake Unvisable");
             
         }
-        public void OnDestroy()
-        {
-            Logger.LogDebug("DIE Unvisiable");
-        }
-
+        
     }
 }

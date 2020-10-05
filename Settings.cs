@@ -35,6 +35,8 @@ namespace DecorationMaster
         SetOffset,
 
         SetGate,
+
+        SetMana,
     }
     
     [Serializable]

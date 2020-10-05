@@ -46,7 +46,7 @@ namespace DecorationMaster.MyBehaviour
         {
             public void OnTriggerEnter2D(Collider2D col)
             {
-                if(col.name.Contains("Slash"))
+                if(col.gameObject.layer == (int)GlobalEnums.PhysLayers.HERO_ATTACK)
                 {
                     if (SetupMode)
                         Remove();
@@ -59,7 +59,7 @@ namespace DecorationMaster.MyBehaviour
         {
             public void OnTriggerEnter2D(Collider2D col)
             {
-                if (col.name.Contains("Slash"))
+                if (col.gameObject.layer == (int)GlobalEnums.PhysLayers.HERO_ATTACK)
                 {
                     if (SetupMode)
                         Remove();
@@ -79,9 +79,9 @@ namespace DecorationMaster.MyBehaviour
             }
             public void Start()
             {
-                gameObject.transform.eulerAngles = new Vector3(0, 0, ((ResizableItem)item).angle);
-                int gateNum = ((ItemDef.LeverItem)item).GateNumber;
-                var gateName = $"{ItemDef.LeverItem.GateNamePrefix}{gateNum}";
+                //gameObject.transform.eulerAngles = new Vector3(0, 0, ((ResizableItem)item).angle);
+                int gateNum = ((ItemDef.LeverGateItem)item).GateNumber;
+                var gateName = $"{ItemDef.LeverGateItem.GateNamePrefix}{gateNum}";
                 playMakerFSM.GetAction<FindGameObject>("Initiate", 2).objectName = gateName;
 
                 if(ItemManager.Instance.setupMode)
@@ -102,8 +102,8 @@ namespace DecorationMaster.MyBehaviour
             private GameObject numDisp;
             public void Start()
             {
-                int gateNum = ((ItemDef.GateItem)item).GateNumber;
-                var gateName = $"{ItemDef.GateItem.GateNamePrefix}{gateNum}";
+                int gateNum = ((ItemDef.LeverGateItem)item).GateNumber;
+                var gateName = $"{ItemDef.LeverGateItem.GateNamePrefix}{gateNum}";
                 gameObject.name = gateName;
 
                 if(ItemManager.Instance.setupMode)
@@ -120,5 +120,51 @@ namespace DecorationMaster.MyBehaviour
             }
         }
 
+        [Decoration("IMG_RespawnPoint")]
+        public class RespawnTrigger : Resizeable
+        {
+            private HazardRespawnMarker respawnMarker;
+            private void Awake()
+            {
+                gameObject.transform.localScale *= 2.5f;
+                gameObject.layer = (int)GlobalEnums.PhysLayers.PROJECTILES;
+                respawnMarker = gameObject.AddComponent<HazardRespawnMarker>();
+            }
+            private void Start()
+            {
+                if (!SetupMode)
+                    gameObject.GetComponent<SpriteRenderer>().enabled = false;
+            }
+            private void OnTriggerEnter2D(Collider2D otherCollider)
+            {
+                int layer = otherCollider.gameObject.layer;
+                if (layer == (int)GlobalEnums.PhysLayers.PLAYER || layer == (int)GlobalEnums.PhysLayers.HERO_BOX)
+                {
+                    PlayerData.instance.SetHazardRespawn(respawnMarker);
+                }
+            }
+            
+        }
+
+        [Decoration("HK_break_wall")]
+        public class BreakWall : Resizeable
+        {
+            private void Awake()
+            {
+                var fsm = gameObject.GetComponent<PlayMakerFSM>();
+                fsm.RemoveTransition("Initiate", "ACTIVATE");
+                fsm.RemoveAction("Initiate", 11);
+                fsm.SetState("Pause");
+            }
+        }
+
+        //[Decoration("HK_inspect_region")]
+        public class InspectRegion : UnVisableBehaviour
+        {
+            public void Start()
+            {
+                gameObject.GetComponent<PlayMakerFSM>().FsmVariables.GetFsmString("Game Text Convo").Value = "Decoration_Test";
+            }
+        }
     }
 }

@@ -29,29 +29,17 @@ namespace DecorationMaster
 		public Test()
         {
             Modding.Logger.LogDebug("Start Test");
-            //On.SceneManager.Start += SceneManager_Start;
-            //ModHooks.Instance.SlashHitHook += Instance_SlashHitHook;
-			//new Detour(typeof(ItemManager).GetMethod("Operate", BindingFlags.Public | BindingFlags.Instance), typeof(Test).GetMethod("testhook",BindingFlags.NonPublic|BindingFlags.Static));
+            On.DialogueBox.SetConversation += DialogueBox_SetConversation;
 			Modding.Logger.LogDebug($"End Test"); 
         }
 
-        private void SceneManager_Start(On.SceneManager.orig_Start orig, SceneManager self)
+       
+        private void DialogueBox_SetConversation(On.DialogueBox.orig_SetConversation orig, DialogueBox self, string convName, string sheetName)
         {
-			self.darknessLevel = 1;
-			orig(self);
+			Logger.Log(Language.Language.Get(convName, sheetName));
+			orig(self,convName,sheetName);
         }
 
-        private void Instance_SlashHitHook(Collider2D otherCollider, GameObject gameObject)
-        {
-			Logger.LogDebug($"{otherCollider.name}");
-        }
-
-        private static void testhook(ItemManager self, Operation op, object val)
-        {
-			Logger.LogDebug($"HooK!!!{self.GetType()}");
-			self.orig_Operate(op, val);
-			
-        }
         public static void TestGo(GameObject go)
         {
 			/*
@@ -68,7 +56,7 @@ namespace DecorationMaster
         {
 			if(Input.GetKeyDown(KeyCode.T))
             {
-				//UnityEngine.SceneManagement.SceneManager.LoadScene("Mines_31");
+				
 			}
         }
 

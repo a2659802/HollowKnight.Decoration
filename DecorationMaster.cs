@@ -31,6 +31,7 @@ namespace DecorationMaster
             ObjectLoader.Load(preloadedObjects);
             BehaviourProcessor.RegisterBehaviour<OtherBehaviour>();
             BehaviourProcessor.RegisterBehaviour<AreaBehaviour>();
+            BehaviourProcessor.RegisterBehaviour<Mana>();
             BehaviourProcessor.RegisterSharedBehaviour<DefaultBehaviour>();
             BehaviourProcessor.RegisterSharedBehaviour<UnVisableBehaviour>();
             ModHooks.Instance.HeroUpdateHook += OperateItem;
@@ -43,7 +44,11 @@ namespace DecorationMaster
             UIObj.AddComponent<GUIController>();
             UnityEngine.Object.DontDestroyOnLoad(UIObj);
             GUIController.Instance.BuildMenus();
+
+            ModHooks.Instance.LanguageGetHook += DLanguage.MyLanguage;
         }
+
+
 
         private void SpawnFromSettings(Scene arg0, LoadSceneMode arg1)
         {
@@ -80,6 +85,8 @@ namespace DecorationMaster
         private Vector2 mousePos;
         private void OperateItem()
         {
+            Test.TestOnce();
+
             if (Input.GetKeyDown(ToggleEdit))    // Toggle Edit Model
             {
                 ItemManager.Instance.ToggleSetup();
@@ -118,7 +125,6 @@ namespace DecorationMaster
             if (ItemManager.Instance.Select(idx) == null)
                 return;
 
-            Test.TestOnce();
         }
 
         private static int GetKeyPress()

@@ -11,6 +11,7 @@ using UnityEngine.Events;
 using UnityEngine.UI;
 using MonoMod.RuntimeDetour;
 using HutongGames.PlayMaker;
+using DecorationMaster.MyBehaviour;
 
 namespace DecorationMaster.UI
 {
@@ -247,7 +248,13 @@ namespace DecorationMaster.UI
                         }
                         //insp.AddListener(idx, (v) => { kv.Value.SetValue(item, Convert.ChangeType(v, kv.Value.PropertyType), null); });
                         insp.AddListener(idx, (v) => {
-                            object val = Convert.ChangeType(v, kv.Value.PropertyType);
+                            object val;
+                            if (kv.Value.PropertyType.IsSubclassOf(typeof(Enum)))
+                            {
+                                val = Enum.Parse(kv.Value.PropertyType, v.ToString("0"));
+                            }
+                            else
+                               val = Convert.ChangeType(v, kv.Value.PropertyType);
                             ItemManager.Instance.currentSelect.GetComponent<CustomDecoration>().Setup(handler[kv.Value], val);
                         });
                         idx++;

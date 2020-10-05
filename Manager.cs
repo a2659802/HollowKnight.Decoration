@@ -9,7 +9,7 @@ using ModCommon;
 using DecorationMaster.Attr;
 using System.Reflection;
 using DecorationMaster.UI;
-
+using DecorationMaster.MyBehaviour;
 namespace DecorationMaster
 {
     public class ItemManager

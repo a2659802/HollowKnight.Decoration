@@ -5,7 +5,7 @@ using System.Text;
 
 namespace DecorationMaster.Attr
 {
-    [AttributeUsage(AttributeTargets.Class,AllowMultiple = true,Inherited = false)]
+    [AttributeUsage(AttributeTargets.Class, AllowMultiple = true, Inherited = false)]
     public sealed class DecorationAttribute : Attribute
     {
         public string Name { get; }
@@ -17,18 +17,23 @@ namespace DecorationMaster.Attr
         {
             return Name;
         }
-        /*public override bool Equals(object obj)
+        public override bool Equals(object obj)
         {
-            if (obj == null)
-                return false;
-            if (!obj.GetType().Equals(typeof(DecorationAttribute)))
-                return false;
-            DecorationAttribute d = obj as DecorationAttribute;
-            return Name.Equals(d.Name);
+            return (obj as DecorationAttribute)?.Name == this.Name;
         }
         public override int GetHashCode()
         {
             return Name.GetHashCode();
-        }*/
+        }
+        public static bool operator ==(DecorationAttribute a, DecorationAttribute b)
+        {
+            if (a is null)
+                return b is null;
+            return a.Equals(b);
+        }
+        public static bool operator !=(DecorationAttribute a, DecorationAttribute b)
+        {
+            return !(a==b);
+        }
     }
 }

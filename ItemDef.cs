@@ -10,6 +10,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
 using System.Reflection;
 using DecorationMaster.UI;
+using DecorationMaster.MyBehaviour;
 namespace DecorationMaster
 {
     [Serializable]
@@ -77,14 +78,25 @@ namespace DecorationMaster
         public int angle { get; set; } = 0;
 
     }
-    
+
+    [Serializable]
+    public abstract class ManaItem : Item
+    {
+        [Handle(Operation.SetMana)]
+        public virtual ManaType mType { get; set; }
+    }
     public class ItemDef
     {
         [Serializable]
         [Decoration("default")]
-        public class DefaultItem : ResizableItem
-        {
-        }
+        public class DefaultItem : Item { }
+
+        [Serializable]
+        [Decoration("IMG_MothwingCloak")]
+        [Decoration("IMG_MonarchWings")]
+        [Decoration("IMG_MantisClaw")]
+        [Decoration("IMG_Lantern")]
+        public class BindingItem : ResizableItem { }
 
         [Serializable]
         [Decoration("HK_saw")]
@@ -114,7 +126,8 @@ namespace DecorationMaster
     
         [Serializable]
         [Decoration("HK_lever")]
-        public class LeverItem : ResizableItem
+        [Decoration("HK_gate")]
+        public class LeverGateItem : ResizableItem
         {
             public const string GateNamePrefix = "CustomTollGate_";
 
@@ -124,10 +137,12 @@ namespace DecorationMaster
         }
 
         [Serializable]
-        [Decoration("HK_gate")]
-        public class GateItem : LeverItem
+        [Decoration("Mana_Source")]
+        public class ManaSourceItem : ManaItem
         {
+            [Handle(Operation.SetMana)]
+            [IntConstraint((int)ManaType.U,(int)ManaType.C-1)]
+            public override ManaType mType { get => base.mType; set => base.mType = value; }
         }
-
     }
 }

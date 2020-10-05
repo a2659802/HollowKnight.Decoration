@@ -9,7 +9,8 @@ using System.Reflection;
 using UnityEngine;
 using Object = UnityEngine.Object;
 using ModCommon.Util;
-
+using ModCommon;
+using HutongGames.PlayMaker;
 namespace DecorationMaster
 {
     // Create a objectpool name InstantiableObjects which can be access with name
@@ -20,6 +21,8 @@ namespace DecorationMaster
     {
         public static readonly Dictionary<(string, Func<GameObject, GameObject>), (string, string)> ObjectList = new Dictionary<(string, Func<GameObject, GameObject>), (string, string)>
         {
+            {("inspect_region",null),("White_Palace_18","Inspect Region")}
+            /*
             {
                 ("saw", null),
                 ("White_Palace_18","saw_collection/wp_saw")
@@ -29,9 +32,6 @@ namespace DecorationMaster
             },
             {
                 ("flip_platform",null),("Mines_31","Mines Platform")
-            },
-            {
-                ("conveyor",null),("Mines_31","conveyor_belt_01")
             },
             {
                 ("gate",(go)=>{
@@ -60,10 +60,7 @@ namespace DecorationMaster
                 ("soul_totem",null),
                 ("Crossroads_25","Soul Totem mini_two_horned")
             },
-            {
-                ("respawn_point",null),
-                ("Crossroads_25","Hazard Respawn Trigger v2")
-            },
+            
             {
                 ("lazer_bug",null),
                 ("Mines_05","Crystallised Lazer Bug")
@@ -98,11 +95,22 @@ namespace DecorationMaster
             {
                 ("stomper",null),
                 ("Mines_19","_Scenery/stomper_1")
+            },
+            {
+                ("break_wall",null),
+                ("Crossroads_03","_Scenery/Break Wall 2")
             }
             /*
             {
                 ("cameralock",null),
                 ("Crossroads_25","CameraLockArea")
+            },
+            {
+                ("conveyor",null),("Mines_31","conveyor_belt_01")
+            },
+            {
+                ("respawn_point",null),
+                ("Crossroads_25","Hazard Respawn Trigger v2")
             },
             */
 
@@ -259,30 +267,38 @@ namespace DecorationMaster
                     continue;
 
                 string poolname = attr.Name;
-                if(ObjectLoader.InstantiableObjects.ContainsKey(poolname))
+                if(!ObjectLoader.InstantiableObjects.ContainsKey(poolname))
                 {
-                    GameObject prefab = ObjectLoader.InstantiableObjects[poolname];
-                    CustomDecoration d = prefab.AddComponent(b) as CustomDecoration;
-                    foreach(Type i in items)
+                    GameObject empty = new GameObject();
+                    Object.DontDestroyOnLoad(empty);
+                    empty.SetActive(false);
+                    ObjectLoader.InstantiableObjects.Add(poolname, empty);
+                    Logger.LogWarn($"Cant find an object in InstantiableObjects, create an empty GO instead");
+                }
+                
+                GameObject prefab = ObjectLoader.InstantiableObjects[poolname];
+                CustomDecoration d = prefab.AddComponent(b) as CustomDecoration;
+                foreach(Type i in items)
+                {
+                    DecorationAttribute[] i_attr = i.GetCustomAttributes(typeof(DecorationAttribute), false).OfType<DecorationAttribute>().ToArray();
+                    if (i_attr == null || i_attr.Length == 0)
+                        continue;
+                        
+                    if(i_attr.Contains(attr))
                     {
-                        DecorationAttribute i_attr = i.GetCustomAttributes(typeof(DecorationAttribute), false).OfType<DecorationAttribute>().FirstOrDefault();
-                        if (i_attr == null)
-                            continue;
-                        if(i_attr.Name == attr.Name)   //if(i_attr.Equals(attr))
-                        {
-                            var item = Activator.CreateInstance(i) as Item;
-                            item.pname = poolname;
-                            d.item = item;
-                            Logger.LogDebug($"Match Item-Decoration:{item}-{d}");
-                            break;
-                        }
-                    }
-                    if(d.item == null)
-                    {
-                        Logger.LogWarn($"Could Not Found an Item that match {b.FullName},Attr:{attr.Name},will use default item instance");
-                        d.item = new ItemDef.DefaultItem { pname = poolname };
+                        var item = Activator.CreateInstance(i) as Item;
+                        item.pname = poolname;
+                        d.item = item;
+                        Logger.LogDebug($"Match Item-Decoration:{item}-{d}");
+                        break;
                     }
                 }
+                if(d.item == null)
+                {
+                    Logger.LogWarn($"Could Not Found an Item that match {b.FullName},Attr:{attr.Name},will use default item instance");
+                    d.item = new ItemDef.DefaultItem { pname = poolname };
+                }
+                
             }
         }
         public static void RegisterSharedBehaviour<T>()
@@ -293,8 +309,17 @@ namespace DecorationMaster
                 if (attr == null)
                     continue;
                 string poolname = attr.Name;
-                if (!ObjectLoader.InstantiableObjects.TryGetValue(poolname, out GameObject prefab))
-                    continue;
+
+                if (!ObjectLoader.InstantiableObjects.ContainsKey(poolname))
+                {
+                    GameObject empty = new GameObject();
+                    Object.DontDestroyOnLoad(empty);
+                    empty.SetActive(false);
+                    ObjectLoader.InstantiableObjects.Add(poolname, empty);
+                    Logger.LogWarn($"Cant find an object in InstantiableObjects, create an empty GO instead");
+                }
+
+                GameObject prefab = ObjectLoader.InstantiableObjects[poolname];
                 var d = prefab.AddComponent(typeof(T)) as CustomDecoration;
                 var ti = typeof(T).GetNestedTypes(BindingFlags.Public).Where(x => x.IsSubclassOf(typeof(Item))).FirstOrDefault();
                 d.item = Activator.CreateInstance(ti) as Item;

@@ -99,6 +99,8 @@
     <Compile Include="Attr\InspectIgnoreAttribute.cs" />
     <Compile Include="Attr\ItemAttribute.cs" />
     <Compile Include="DecorationMaster.cs" />
+    <Compile Include="DLanguage.cs" />
+    <Compile Include="MyBehaviour\Mana.cs" />
     <Compile Include="Util\Extensions.cs" />
     <Compile Include="MyBehaviour\DefaultBehaviour.cs" />
     <Compile Include="Test.cs" />
@@ -128,9 +130,6 @@
     <EmbeddedResource Include="images\objects\MantisClaw.png" />
     <EmbeddedResource Include="images\objects\MonarchWings.png" />
     <EmbeddedResource Include="images\objects\MothwingCloak.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="11.wav" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="images\UIelements\arrow.png" />
@@ -163,10 +162,34 @@
     <EmbeddedResource Include="images\icons\HK_turret.png" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="images\icons\HK_respawn_point.png" />
+    <EmbeddedResource Include="images\objects\RespawnPoint.png" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="images\icons\HK_stomper.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="images\magic\mana_active_b.png" />
+    <EmbeddedResource Include="images\magic\mana_active_g.png" />
+    <EmbeddedResource Include="images\magic\mana_active_r.png" />
+    <EmbeddedResource Include="images\magic\mana_active_u.png" />
+    <EmbeddedResource Include="images\magic\mana_active_w.png" />
+    <EmbeddedResource Include="images\magic\mana_require_c.png" />
+    <EmbeddedResource Include="images\magic\mana_require_b.png" />
+    <EmbeddedResource Include="images\magic\mana_require_g.png" />
+    <EmbeddedResource Include="images\magic\mana_require_r.png" />
+    <EmbeddedResource Include="images\magic\mana_require_u.png" />
+    <EmbeddedResource Include="images\magic\mana_require_w.png" />
+    <EmbeddedResource Include="images\magic\mana_source_b.png" />
+    <EmbeddedResource Include="images\magic\mana_source_g.png" />
+    <EmbeddedResource Include="images\magic\mana_source_r.png" />
+    <EmbeddedResource Include="images\magic\mana_source_u.png" />
+    <EmbeddedResource Include="images\magic\mana_source_w.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="images\icons\Mana_Source.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="images\magic\require_shower.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

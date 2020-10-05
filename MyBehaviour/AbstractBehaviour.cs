@@ -9,7 +9,7 @@ using System.Text;
 using UnityEngine;
 using ModCommon;
 using DecorationMaster.Util;
-namespace DecorationMaster
+namespace DecorationMaster.MyBehaviour
 {
     public abstract class Editable : MonoBehaviour, IHitResponder
     {
@@ -111,7 +111,15 @@ namespace DecorationMaster
                 HandleAttribute attr = prop.GetCustomAttributes(typeof(HandleAttribute), true).OfType<HandleAttribute>().FirstOrDefault();
                 if (attr == null || attr.handleType==Operation.None)
                     continue;
-                Setup(attr.handleType,prop.GetValue(i, null));
+                try
+                {
+                    Setup(attr.handleType, prop.GetValue(i, null));
+                }
+                catch
+                {
+                    Logger.LogError($"An Exception occur while Setup:Op:{attr.handleType},val:{prop.GetValue(i, null)}");
+                    throw new Exception("Initiate Exception");
+                }
             }
 
             gameObject.SetActive(true);
