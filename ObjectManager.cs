@@ -17,12 +17,14 @@ namespace DecorationMaster
     // but those object are not contains custom monobehaviour
     // to add behaviour, you should make a class with DecorationAttribute which value is name, and then
     // register will automatically add these components to pool prefab
+    // 
+    // objectname with a prefix "HK_"
     public static partial class ObjectLoader
     {
         public static readonly Dictionary<(string, Func<GameObject, GameObject>), (string, string)> ObjectList = new Dictionary<(string, Func<GameObject, GameObject>), (string, string)>
         {
-            {("inspect_region",null),("White_Palace_18","Inspect Region")}
-            /*
+            {("inspect_region",null),("White_Palace_18","Inspect Region")},
+            
             {
                 ("saw", null),
                 ("White_Palace_18","saw_collection/wp_saw")
@@ -254,6 +256,8 @@ namespace DecorationMaster
         
     }
 
+    // Processor for Instantiate Object
+    // To Register a Behaviour means add behaviour to object pool or create an empty object with this behaviour
     public static class BehaviourProcessor
     {
         public static void RegisterBehaviour<T>()

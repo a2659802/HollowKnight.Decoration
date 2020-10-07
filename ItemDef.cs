@@ -92,14 +92,20 @@ namespace DecorationMaster
         public class DefaultItem : Item { }
 
         [Serializable]
+        [Decoration("HK_break_wall")]
+        [Decoration("HK_unbreak_wall")]
         [Decoration("IMG_MothwingCloak")]
         [Decoration("IMG_MonarchWings")]
         [Decoration("IMG_MantisClaw")]
         [Decoration("IMG_Lantern")]
+        public class DefatulResizeItem : ResizableItem { }
+
+        [Serializable]
         public class BindingItem : ResizableItem { }
 
         [Serializable]
         [Decoration("HK_saw")]
+        [Decoration("move_flip_platform")]
         public class SawItem : ResizableItem
         {
             [Handle(Operation.SetSpan)]
@@ -127,13 +133,9 @@ namespace DecorationMaster
         [Serializable]
         [Decoration("HK_lever")]
         [Decoration("HK_gate")]
-        public class LeverGateItem : ResizableItem
+        public class LeverGateItem : ResizeKeyGateItem
         {
             public const string GateNamePrefix = "CustomTollGate_";
-
-            [Handle(Operation.SetGate)]
-            [IntConstraint(1, 10)]
-            public int GateNumber { get; set; } = 1;
         }
 
         [Serializable]
@@ -143,6 +145,22 @@ namespace DecorationMaster
             [Handle(Operation.SetMana)]
             [IntConstraint((int)ManaType.U,(int)ManaType.C-1)]
             public override ManaType mType { get => base.mType; set => base.mType = value; }
+        }
+
+        [Serializable]
+        [Decoration("Mana_Requirement")]
+        public class KeyGateItem : Item
+        {
+
+            public int Number { get; set; }
+        }
+
+        [Serializable]
+        public class ResizeKeyGateItem : ResizableItem
+        {
+            [Handle(Operation.SetGate)]
+            [IntConstraint(1, 10)]
+            public int Number { get; set; }
         }
     }
 }

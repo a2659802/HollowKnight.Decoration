@@ -129,6 +129,8 @@ namespace DecorationMaster.UI
             UnityEngine.Object.Destroy(CurrentCanvas);
         }
     }
+
+    
     public static class Inspector
     {
         private static InspectPanel currentEdit;

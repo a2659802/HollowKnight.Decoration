@@ -33,7 +33,7 @@ namespace DecorationMaster
             BehaviourProcessor.RegisterBehaviour<AreaBehaviour>();
             BehaviourProcessor.RegisterBehaviour<Mana>();
             BehaviourProcessor.RegisterSharedBehaviour<DefaultBehaviour>();
-            BehaviourProcessor.RegisterSharedBehaviour<UnVisableBehaviour>();
+            BehaviourProcessor.RegisterSharedBehaviour<MovablePlatform>();
             ModHooks.Instance.HeroUpdateHook += OperateItem;
             UnityEngine.SceneManagement.SceneManager.sceneLoaded += SpawnFromSettings;
 

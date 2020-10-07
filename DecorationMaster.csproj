@@ -101,6 +101,8 @@
     <Compile Include="DecorationMaster.cs" />
     <Compile Include="DLanguage.cs" />
     <Compile Include="MyBehaviour\Mana.cs" />
+    <Compile Include="MyBehaviour\MovablePlatform.cs" />
+    <Compile Include="MyBehaviour\TriggerSwitch.cs" />
     <Compile Include="Util\Extensions.cs" />
     <Compile Include="MyBehaviour\DefaultBehaviour.cs" />
     <Compile Include="Test.cs" />
@@ -190,6 +192,20 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="images\magic\require_shower.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="images\magic\circle.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="images\magic\mana_highlight_b.png" />
+    <EmbeddedResource Include="images\magic\mana_highlight_c.png" />
+    <EmbeddedResource Include="images\magic\mana_highlight_g.png" />
+    <EmbeddedResource Include="images\magic\mana_highlight_r.png" />
+    <EmbeddedResource Include="images\magic\mana_highlight_u.png" />
+    <EmbeddedResource Include="images\magic\mana_highlight_w.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="images\seal_wall.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

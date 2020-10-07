@@ -152,12 +152,12 @@ namespace DecorationMaster.MyBehaviour
     public abstract class Resizeable : CustomDecoration
     {
         [Handle(Operation.SetSize)]
-        public void HandleSize(float size)
+        public virtual void HandleSize(float size)
         {
             gameObject.transform.localScale = size * Vector3.one;
         }
         [Handle(Operation.SetRot)]
-        public void HandleRot(float angle)
+        public virtual void HandleRot(float angle)
         {
             gameObject.transform.eulerAngles = new Vector3(0, 0, angle);
         }
