@@ -36,7 +36,7 @@ namespace DecorationMaster.MyBehaviour
         public class SharedItem : Item
         {
         }
-        private class AttackReact : MonoBehaviour
+        public class AttackReact : MonoBehaviour
         {
             public CustomDecoration parent;
             private void Awake()
@@ -48,17 +48,28 @@ namespace DecorationMaster.MyBehaviour
             }
             public void OnTriggerEnter2D(Collider2D col)
             {
-                if (col.gameObject.layer == (int)GlobalEnums.PhysLayers.HERO_ATTACK)
+                if (col.gameObject.layer == (int)GlobalEnums.PhysLayers.HERO_ATTACK && col.name.Contains("Slash"))
                 {
                     if (ItemManager.Instance.setupMode)
                         parent?.Remove();
                 }
             }
+            public static void Create(GameObject parent)
+            {
+                var child = new GameObject();
+                child.transform.SetParent(parent.transform);
+                child.layer = (int)GlobalEnums.PhysLayers.PROJECTILES;
+                child.AddComponent<AttackReact>().parent = parent.GetComponent<CustomDecoration>();
+
+            }
+              
         }
         public ShowColliders colDisp;
         public void Awake()
         {
-            var child = new GameObject();
+
+            AttackReact.Create(gameObject);
+           /* var child = new GameObject();
             child.transform.SetParent(gameObject.transform);
             child.layer = (int)GlobalEnums.PhysLayers.PROJECTILES;
             child.AddComponent<AttackReact>().parent = this;
@@ -66,7 +77,7 @@ namespace DecorationMaster.MyBehaviour
             gameObject.AddComponent<NonBouncer>();
             if(SetupMode)
                 colDisp = gameObject.AddComponent<ShowColliders>();
-            Logger.LogDebug("Awake Unvisable");
+            Logger.LogDebug("Awake Unvisable");*/
             
         }
         

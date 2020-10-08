@@ -216,6 +216,16 @@
   <ItemGroup>
     <EmbeddedResource Include="images\UIelements\hidebtnbg.png" />
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="images\icons\Mana_Requirement.png" />
+    <EmbeddedResource Include="images\icons\Mana_Wall.png" />
+    <EmbeddedResource Include="images\icons\move_flip_platform.png" />
+    <EmbeddedResource Include="images\icons\twinkle_platform.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="images\icons\HK_break_wall.png" />
+    <EmbeddedResource Include="images\icons\HK_unbreak_wall.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>echo copying

@@ -52,7 +52,7 @@ namespace DecorationMaster.MyBehaviour
         {
             public void OnTriggerEnter2D(Collider2D col)
             {
-                if (col.gameObject.layer == (int)GlobalEnums.PhysLayers.HERO_ATTACK)
+                if (col.gameObject.layer == (int)GlobalEnums.PhysLayers.HERO_ATTACK && col.name.Contains("Slash"))
                 {
                     if (SetupMode)
                         Remove();
@@ -73,7 +73,7 @@ namespace DecorationMaster.MyBehaviour
             }
             public void OnTriggerEnter2D(Collider2D col)
             {
-                if (col.gameObject.layer == (int)GlobalEnums.PhysLayers.HERO_ATTACK)
+                if (col.gameObject.layer == (int)GlobalEnums.PhysLayers.HERO_ATTACK && col.name.Contains("Slash"))
                 {
                     if (SetupMode)
                         Remove();

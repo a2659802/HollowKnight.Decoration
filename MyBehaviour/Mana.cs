@@ -6,6 +6,8 @@ using UnityEngine;
 using DecorationMaster.Attr;
 using DecorationMaster.UI;
 using DecorationMaster.Util;
+using System.Collections;
+
 namespace DecorationMaster.MyBehaviour
 {
     public enum ManaType
@@ -176,7 +178,7 @@ namespace DecorationMaster.MyBehaviour
             }
         }
 
-        [Description("魔力吸收装置，收集所需魔力可以触发魔法门。\n注意：无色法术力可以用任意有色法术力代替")]
+        [Description("魔力吸收装置，收集所需魔力可以触发魔法门。\n红色的圈表示你身上携带的法术力不满足要求\n注意：无色法术力可以用任意有色法术力代替\n此物品尚未完成")]
         [Decoration("Mana_Requirement")]
         public class ManaRequireShower : CustomDecoration
         {
@@ -208,7 +210,13 @@ namespace DecorationMaster.MyBehaviour
                         {
                             g.Open?.Invoke();
                         }
-                        Destroy(gameObject); // Destroy ManaRequireShower after open the gate
+                        StartCoroutine(Unlock());
+                        IEnumerator Unlock()
+                        {
+                            yield return new WaitForSeconds(1f);
+                            Destroy(gameObject); // Destroy ManaRequireShower after open the gate
+                        }
+                        
                         return true;
                     }
                     else
@@ -313,7 +321,7 @@ namespace DecorationMaster.MyBehaviour
 
         }
 
-        [Description("魔法门，需要用魔法才能打开")]
+        [Description("魔法门，需要用魔力吸收装置才能打开")]
         [Decoration("Mana_Wall")]
         public class ManaWall : Resizeable
         {
@@ -520,6 +528,7 @@ namespace DecorationMaster.MyBehaviour
             
             circle.transform.localScale = Vector3.one * 3;
             circle.transform.localPosition = Vector3.zero;
+            sr.enabled = false;
             //circle.AddComponent<ShowColliders>();
             //sr.enabled = false;
         }
@@ -558,7 +567,7 @@ namespace DecorationMaster.MyBehaviour
             {
                 HeroEnter?.Invoke();
             }
-            else if (layer == (int)GlobalEnums.PhysLayers.HERO_ATTACK)
+            else if (layer == (int)GlobalEnums.PhysLayers.HERO_ATTACK && col.name.Contains("Slash"))
             {
                 HeroAtk?.Invoke();
             }

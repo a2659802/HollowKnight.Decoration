@@ -98,6 +98,7 @@ namespace DecorationMaster
         [Decoration("IMG_MonarchWings")]
         [Decoration("IMG_MantisClaw")]
         [Decoration("IMG_Lantern")]
+        [Decoration("HK_turret")]
         public class DefatulResizeItem : ResizableItem { }
 
         [Serializable]
@@ -161,6 +162,28 @@ namespace DecorationMaster
             [Handle(Operation.SetGate)]
             [IntConstraint(1, 10)]
             public int Number { get; set; }
+        }
+
+
+        [Serializable]
+        [Decoration("twinkle_platform")]
+        public class TempPlatItem : Item
+        {
+            [Handle(Operation.SetSize)]
+            [FloatConstraint(0.2f, 2f)]
+            public float size { get; set; } = 1;
+
+            [Handle(Operation.SetRot)]
+            [IntConstraint(0, 360)]
+            public int angle { get; set; } = 270;
+
+            [Handle(Operation.SetTime)]
+            [IntConstraint(1, 5)]
+            public int Time { get; set; } = 1;
+
+            [Handle(Operation.SetOffset)]
+            [IntConstraint(0, 1)]
+            public int Offset { get; set; } = 0;
         }
     }
 }

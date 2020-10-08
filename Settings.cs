@@ -38,6 +38,8 @@ namespace DecorationMaster
         SetGate,
 
         SetMana,
+
+        SetTime,
     }
     
     [Serializable]

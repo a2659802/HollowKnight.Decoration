@@ -171,6 +171,10 @@ namespace DecorationMaster.MyBehaviour
             gameObject.transform.position = nextPoint;
         }
         public abstract Vector3 Move(Vector3 current);
+        public override void HandleRot(float angle)
+        {
+            return;
+        }
     }
 
     public abstract class BoolBinding : Resizeable

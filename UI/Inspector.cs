@@ -128,7 +128,7 @@ namespace DecorationMaster.UI
             {
                 if (float.Parse(va) >= slider.minValue && float.Parse(va) <= slider.maxValue)
                 {
-                    slider.value = int.Parse(va);
+                    slider.value = float.Parse(va);
                 }
                 else
                 {

@@ -12,6 +12,7 @@ using Modding;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using DecorationMaster.UI;
+using DecorationMaster.Util;
 namespace DecorationMaster
 {
     public delegate int SelectItem();
@@ -37,6 +38,7 @@ namespace DecorationMaster
             BehaviourProcessor.RegisterSharedBehaviour<DefaultBehaviour>();
             ModHooks.Instance.HeroUpdateHook += OperateItem;
             UnityEngine.SceneManagement.SceneManager.sceneLoaded += SpawnFromSettings;
+            UnityEngine.SceneManagement.SceneManager.sceneLoaded += ShowRespawn;
 
             SelectGetter = GetKeyPress;
             SelectGetter += PickPanel.SelectFocus;
@@ -49,7 +51,24 @@ namespace DecorationMaster
             ModHooks.Instance.LanguageGetHook += DLanguage.MyLanguage;
         }
 
-
+        private void ShowRespawn(Scene arg0, LoadSceneMode arg1)
+        {
+            if (arg0.name.Contains("Menu_Title"))
+                return;
+            if (!ItemManager.Instance.setupMode)
+                return;
+            GameManager.instance.StartCoroutine(WaitSceneLoad(arg0));
+            IEnumerator WaitSceneLoad(Scene arg0)
+            {
+                yield return new WaitUntil(() => (arg0.isLoaded));
+                var triggers = UnityEngine.Object.FindObjectsOfType<HazardRespawnTrigger>();
+                foreach(var t in triggers)
+                {
+                    t.gameObject.AddComponent<ShowColliders>();
+                }
+                Logger.LogDebug($"found respawn :{triggers.Length}");
+            }
+        }
 
         private void SpawnFromSettings(Scene arg0, LoadSceneMode arg1)
         {
