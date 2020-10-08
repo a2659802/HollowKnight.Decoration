@@ -11,6 +11,7 @@ using Object = UnityEngine.Object;
 using ModCommon.Util;
 using ModCommon;
 using HutongGames.PlayMaker;
+using DecorationMaster.UI;
 namespace DecorationMaster
 {
     // Create a objectpool name InstantiableObjects which can be access with name
@@ -260,10 +261,44 @@ namespace DecorationMaster
     // To Register a Behaviour means add behaviour to object pool or create an empty object with this behaviour
     public static class BehaviourProcessor
     {
+        public static void Register<TDec,TItem>(string poolname) where TDec : CustomDecoration where TItem : Item
+        {
+            Register(poolname, typeof(TDec), typeof(TItem));
+        }
+        public static void Register<TDec>(string poolname,Type ti) where TDec : CustomDecoration
+        {
+            Register(poolname, typeof(TDec), ti);
+        }
+        public static void Register(string poolname,Type td,Type ti)
+        {
+            if (!(td.IsSubclassOf(typeof(CustomDecoration))) || !(ti.IsSubclassOf(typeof(Item))))
+                throw new ArgumentException($"{td}-{ti} match exception");
+
+
+            if (!ObjectLoader.InstantiableObjects.ContainsKey(poolname)) // create an empty gameobject for registion
+            {
+                GameObject empty = new GameObject();
+                Object.DontDestroyOnLoad(empty);
+                empty.SetActive(false);
+                ObjectLoader.InstantiableObjects.Add(poolname, empty);
+                Logger.LogWarn($"Cant find an object in InstantiableObjects, create an empty GO instead");
+            }
+
+            GameObject prefab = ObjectLoader.InstantiableObjects[poolname];
+            var item = Activator.CreateInstance(ti) as Item;
+            item.pname = poolname;
+            CustomDecoration d = prefab.AddComponent(td) as CustomDecoration;
+            d.item = item;
+
+            Logger.Log($"Register [{poolname}] - Behaviour : {td} - DataStruct : {ti}");
+            //ItemDescriptor.Register(td,poolname);
+        }
+        
         public static void RegisterBehaviour<T>()
         {
             Type[] behaviours = typeof(T).GetNestedTypes(BindingFlags.Public);
             Type[] items = typeof(ItemDef).GetNestedTypes(BindingFlags.Public | BindingFlags.Instance);
+
             foreach (Type b in behaviours)
             {
                 DecorationAttribute attr = b.GetCustomAttributes(typeof(DecorationAttribute), false).OfType<DecorationAttribute>().FirstOrDefault();
@@ -271,18 +306,9 @@ namespace DecorationMaster
                     continue;
 
                 string poolname = attr.Name;
-                if(!ObjectLoader.InstantiableObjects.ContainsKey(poolname))
-                {
-                    GameObject empty = new GameObject();
-                    Object.DontDestroyOnLoad(empty);
-                    empty.SetActive(false);
-                    ObjectLoader.InstantiableObjects.Add(poolname, empty);
-                    Logger.LogWarn($"Cant find an object in InstantiableObjects, create an empty GO instead");
-                }
-                
-                GameObject prefab = ObjectLoader.InstantiableObjects[poolname];
-                CustomDecoration d = prefab.AddComponent(b) as CustomDecoration;
-                foreach(Type i in items)
+
+                Type DataStruct = null;
+                foreach (Type i in items)
                 {
                     DecorationAttribute[] i_attr = i.GetCustomAttributes(typeof(DecorationAttribute), false).OfType<DecorationAttribute>().ToArray();
                     if (i_attr == null || i_attr.Length == 0)
@@ -290,22 +316,21 @@ namespace DecorationMaster
                         
                     if(i_attr.Contains(attr))
                     {
-                        var item = Activator.CreateInstance(i) as Item;
-                        item.pname = poolname;
-                        d.item = item;
-                        Logger.LogDebug($"Match Item-Decoration:{item}-{d}");
+                        DataStruct = i;
                         break;
                     }
                 }
-                if(d.item == null)
+                //if(d.item == null)
+                if(DataStruct == null)
                 {
                     Logger.LogWarn($"Could Not Found an Item that match {b.FullName},Attr:{attr.Name},will use default item instance");
-                    d.item = new ItemDef.DefaultItem { pname = poolname };
+                    DataStruct = typeof(ItemDef.DefaultItem);
                 }
-                
+
+                Register(poolname, b, DataStruct);
             }
         }
-        public static void RegisterSharedBehaviour<T>()
+        public static void RegisterSharedBehaviour<T>() where T : CustomDecoration
         {
             var shareAttr = typeof(T).GetCustomAttributes(typeof(DecorationAttribute), false).OfType<DecorationAttribute>();
             foreach(var attr in shareAttr)
@@ -314,21 +339,9 @@ namespace DecorationMaster
                     continue;
                 string poolname = attr.Name;
 
-                if (!ObjectLoader.InstantiableObjects.ContainsKey(poolname))
-                {
-                    GameObject empty = new GameObject();
-                    Object.DontDestroyOnLoad(empty);
-                    empty.SetActive(false);
-                    ObjectLoader.InstantiableObjects.Add(poolname, empty);
-                    Logger.LogWarn($"Cant find an object in InstantiableObjects, create an empty GO instead");
-                }
-
-                GameObject prefab = ObjectLoader.InstantiableObjects[poolname];
-                var d = prefab.AddComponent(typeof(T)) as CustomDecoration;
                 var ti = typeof(T).GetNestedTypes(BindingFlags.Public).Where(x => x.IsSubclassOf(typeof(Item))).FirstOrDefault();
-                d.item = Activator.CreateInstance(ti) as Item;
-                d.item.pname = poolname;
-                Logger.LogDebug($"Match {ti}-Decoration:{d}");
+
+                Register<T>(poolname, ti);
             }
         }
     }

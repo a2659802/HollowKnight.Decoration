@@ -57,11 +57,13 @@ namespace DecorationMaster.UI
             return image;
         }
 
-        public void AddText(string name, string text, Vector2 pos, Vector2 sz, Font font, int fontSize = 13, FontStyle style = FontStyle.Normal, TextAnchor alignment = TextAnchor.UpperLeft)
+        public CanvasText AddText(string name, string text, Vector2 pos, Vector2 sz, Font font, int fontSize = 13, FontStyle style = FontStyle.Normal, TextAnchor alignment = TextAnchor.UpperLeft)
         {
             CanvasText t = new CanvasText(canvas, position + pos, sz, font, text, fontSize, style, alignment);
 
             texts.Add(name, t);
+
+            return t;
         }
 
         public CanvasButton GetButton(string buttonName, string panelName = null)

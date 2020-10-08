@@ -13,6 +13,7 @@ namespace DecorationMaster.MyBehaviour
 {
     public class OtherBehaviour
     {
+        [Description("电锯，是这个MOD最初的装饰品，也是MOD名字——装修大师 的由来")]
         [Decoration("HK_saw")]
         public class Saw : SawMovement
         {
@@ -45,6 +46,7 @@ namespace DecorationMaster.MyBehaviour
             }
         }
 
+        [Description("放置时可能会有些bug:到处飘，这个只需要重新进入场景就不会出现了")]
         [Decoration("HK_fly")]
         public class Fly : Resizeable
         {
@@ -58,9 +60,17 @@ namespace DecorationMaster.MyBehaviour
             }
 
         }
+
+        [Description("由于放置时它把自己炸死会出BUG，所以我把血量设为了9999")]
         [Decoration("HK_turret")]
         public class Turret : Resizeable
         {
+            private void Awake()
+            {
+                var hm = gameObject.GetComponent<HealthManager>();
+                if (hm)
+                    hm.hp = 9999;
+            }
             public void OnTriggerEnter2D(Collider2D col)
             {
                 if (col.gameObject.layer == (int)GlobalEnums.PhysLayers.HERO_ATTACK)
@@ -71,6 +81,7 @@ namespace DecorationMaster.MyBehaviour
             }
 
         }
+        [Description("开关，注意和门对应编号。\n当然，你要多个开关对应一个门我也不拦着你")]
         [Decoration("HK_lever")]
         public class Lever : Resizeable
         {
@@ -107,6 +118,8 @@ namespace DecorationMaster.MyBehaviour
                 }
             }
         }
+
+        [Description("由拉杆开关触发的门，注意编号对应。\n一个门可以有多个开关，但是一个开关只能开一个门")]
         [Decoration("HK_gate")]
         public class Gate : Resizeable
         {
@@ -139,6 +152,7 @@ namespace DecorationMaster.MyBehaviour
             }
         }
 
+        [Description("危险重生点，你可以理解为存档点")]
         [Decoration("IMG_RespawnPoint")]
         public class RespawnTrigger : Resizeable
         {
@@ -165,6 +179,8 @@ namespace DecorationMaster.MyBehaviour
 
         }
 
+        
+        [Description("看起来能破坏的墙壁")]
         [Decoration("HK_break_wall")]
         public class BreakWall : Resizeable
         {
@@ -176,7 +192,7 @@ namespace DecorationMaster.MyBehaviour
                 fsm.SetState("Pause");
             }
         }
-
+        [Description("看起来能破坏，但其实不可破坏的墙壁")]
         [Decoration("HK_unbreak_wall")]
         public class UnBreakWall : Resizeable
         {

@@ -14,6 +14,8 @@ namespace DecorationMaster
 {
     public class ItemManager
     {
+        public delegate void SelectChanged(CustomDecoration d);
+        public event SelectChanged OnChanged;
         private static ItemManager _instance;
         private  GameObject _setup_flag_backing;
         public GameObject currentSelect { get; private set; }
@@ -96,6 +98,7 @@ namespace DecorationMaster
                 SetupFlag.SetActive(true);
                 SetupFlag.transform.SetParent(HeroController.instance.transform);
                 SetupFlag.transform.localPosition = new Vector3(0, 1.5f);
+                GameManager.instance.inputHandler.StartUIInput();
             }
             else
             {
@@ -128,6 +131,7 @@ namespace DecorationMaster
             go?.SetActive(true);
 
             Test.TestGo(go);
+            OnChanged?.Invoke(cd);
             return cd;
         }
         public CustomDecoration Select(GameObject prefab)
@@ -139,7 +143,9 @@ namespace DecorationMaster
             var clone = prefab.GetComponent<CustomDecoration>().Setup(Operation.COPY, null) as GameObject;
             currentSelect = clone;
             currentSelect.SetActive(true);
-            return clone.GetComponent<CustomDecoration>();
+            var cd = clone.GetComponent<CustomDecoration>();
+            OnChanged?.Invoke(cd);
+            return cd;
         }
         internal void orig_Operate(Operation op,object val)
         {

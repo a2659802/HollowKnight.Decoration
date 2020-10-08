@@ -31,9 +31,10 @@ namespace DecorationMaster
             ObjectLoader.Load(preloadedObjects);
             BehaviourProcessor.RegisterBehaviour<OtherBehaviour>();
             BehaviourProcessor.RegisterBehaviour<AreaBehaviour>();
+            BehaviourProcessor.RegisterBehaviour<MovablePlatform>();
             BehaviourProcessor.RegisterBehaviour<Mana>();
+            
             BehaviourProcessor.RegisterSharedBehaviour<DefaultBehaviour>();
-            BehaviourProcessor.RegisterSharedBehaviour<MovablePlatform>();
             ModHooks.Instance.HeroUpdateHook += OperateItem;
             UnityEngine.SceneManagement.SceneManager.sceneLoaded += SpawnFromSettings;
 
@@ -53,6 +54,8 @@ namespace DecorationMaster
         private void SpawnFromSettings(Scene arg0, LoadSceneMode arg1)
         {
             Logger.LogDebug($"Item Count:{Settings.items.Count}");
+            if (arg0.name.Contains("Menu_Title"))
+                return;
             if (Settings.items.Count > 0)
             {
                 GameManager.instance.StartCoroutine(WaitSceneLoad(arg0));
@@ -78,6 +81,7 @@ namespace DecorationMaster
                         count++;
                     }
                 }
+                
                 Modding.Logger.LogDebug($"All Fine,Spawn {count}");
             }
         }

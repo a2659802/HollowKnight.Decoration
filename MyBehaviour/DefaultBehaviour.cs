@@ -8,6 +8,7 @@ using UnityEngine;
 using ModCommon;
 namespace DecorationMaster.MyBehaviour
 {
+    [Description("这是游戏内原本的物品，基本没有任何改动，看图标识别物品")]
     [Decoration("HK_trap_spike")]
     [Decoration("HK_flip_platform")]
     [Decoration("HK_spike")]

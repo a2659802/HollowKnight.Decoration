@@ -10,24 +10,25 @@ namespace DecorationMaster.MyBehaviour
 {
     public class AreaBehaviour
     {
+        [Description("禁用能力-冲刺。\n非编辑模式下可用攻击暂时移除\n如果你不想被移除，那就放到打不到的地方")]
         [Decoration("IMG_MothwingCloak")]
         public class BindDash: BreakableBoolBinding
         {
             public override string BindBoolValue => nameof(PlayerData.canDash);
         }
-
+        [Description("禁用能力-二段跳\n非编辑模式下可用攻击暂时移除\n如果你不想被移除，那就放到打不到的地方")]
         [Decoration("IMG_MonarchWings")]
         public class BindDoubleJump: BreakableBoolBinding
         {
             public override string BindBoolValue => nameof(PlayerData.hasDoubleJump);
         }
-
+        [Description("禁用能力-爬墙\n非编辑模式下可用攻击暂时移除\n如果你不想被移除，那就放到打不到的地方")]
         [Decoration("IMG_MantisClaw")]
         public class BindClaw: BreakableBoolBinding
         {
             public override string BindBoolValue => nameof(PlayerData.hasWalljump);
         }
-
+        [Description("设置黑暗：每个灯笼1级黑暗，最多2级\n非编辑模式下可用攻击暂时移除\n如果你不想被移除，那就放到打不到的地方")]
         [Decoration("IMG_Lantern")]
         public class BindLantern: Resizeable
         {

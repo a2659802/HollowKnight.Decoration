@@ -9,6 +9,7 @@ namespace DecorationMaster.MyBehaviour
 {
     public class MovablePlatform
     {
+        [Description("可移动的翻转平台")]
         [Decoration("move_flip_platform")]
         public class MoveFilp : SawMovement
         {
@@ -18,7 +19,9 @@ namespace DecorationMaster.MyBehaviour
                 {
                     var fgo = Instantiate(flip);
                     fgo.transform.SetParent(gameObject.transform);
+                    fgo.transform.localPosition = Vector3.zero;
                     fgo.SetActive(true);
+                    //fgo.GetComponent<DamageHero>
                 }
             }
             public override Vector3 Move(Vector3 current)

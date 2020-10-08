@@ -59,6 +59,7 @@ namespace DecorationMaster.UI
             selected.SetPosition(pos);
             current_focus = i;
             selected.SetActive(true);
+
         }
         public static void UnFocus()
         {
@@ -129,6 +130,7 @@ namespace DecorationMaster.UI
 
         private static void PrefabClicked(string btnName)
         {
+            UnFocus();
             if (Prefabs[0] == null)
                 return;
             HeroController.instance.StartCoroutine(WaitFrame());
@@ -152,7 +154,8 @@ namespace DecorationMaster.UI
         public static void SetActive(bool b)
         {
             panel.SetActive(b, true);
-            selected.SetActive(false);
+            UnFocus();
+            DescriptionPanel.SetActive(b);
         }
         public static void Update()
         {

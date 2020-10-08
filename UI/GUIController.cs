@@ -64,8 +64,9 @@ namespace DecorationMaster.UI
 
             DontDestroyOnLoad(canvas);
 
+            DescriptionPanel.BuildMenu(canvas);
             PickPanel.BuildMenu(canvas);
-
+            
             ItemManager.Instance.SwitchGroup(0);
         }
 

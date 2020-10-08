@@ -27,7 +27,7 @@ namespace DecorationMaster.UI
                 {
                     return _canvas;
                 }
-                string bundleN = "canvas";
+                string bundleN = "canvas2";
                 AssetBundle ab = null;  // You probably want this to be defined somewhere more global.
                 Assembly asm = Assembly.GetExecutingAssembly();
                 foreach (string res in asm.GetManifestResourceNames())
@@ -44,7 +44,7 @@ namespace DecorationMaster.UI
                         ab = AssetBundle.LoadFromMemory(buffer); // Store this somewhere you can access again.
                     }
                 }
-                _canvas = ab.LoadAsset<GameObject>("canvas");
+                _canvas = ab.LoadAsset<GameObject>("canvas2");
                 return _canvas;
             }
         }
@@ -54,14 +54,17 @@ namespace DecorationMaster.UI
 
         public InspectPanel()
         {
+
             CurrentCanvas = UnityEngine.Object.Instantiate(Canvas);
             var panel = CurrentCanvas.transform.Find("Panel");
             var propPanel = panel.Find("PropPanel");
             Panel = panel.gameObject;
             var PropPanel = propPanel.gameObject;
             PropPanels.Add(PropPanel);
-
-            AddListener(0, UpdateTextDelegate(0));
+            PropPanel.transform.Find("Name").GetComponent<Text>().fontSize = 22;
+            PropPanel.transform.Find("Name").GetComponent<Text>().verticalOverflow = VerticalWrapMode.Overflow;
+            PropPanel.transform.Find("Value").GetComponent<InputField>().textComponent.fontSize = 20;
+            UpdateTextDelegate(0);//AddListener(0, UpdateTextDelegate(0));
 
             UnityEngine.Object.DontDestroyOnLoad(CurrentCanvas);
         }
@@ -85,17 +88,19 @@ namespace DecorationMaster.UI
 
             AddListener(idx, listener);
             UpdateName(idx, name);
-            UpdateSliderConstrain(idx, min, max);
+            UpdateSliderConstrain(name,idx, min, max);
             Logger.LogDebug($"Add another,{propp.transform.position},{prefab.transform.position}");
             //Canvas.PrintSceneHierarchyTree();
         }
-        public void UpdateSliderConstrain(int idx, float min, float max,bool wholeNum = false)
+        public void UpdateSliderConstrain(string name,int idx, float min, float max,bool wholeNum = false)
         {
             var PropPanel = PropPanels[idx];
             var slider = PropPanel.transform.Find("Slider").GetComponent<Slider>();
             slider.minValue = min;
             slider.maxValue = max;
             slider.wholeNumbers = wholeNum;
+
+            UpdateName(idx, $"{name}[{min},{max}]");
         }
 
         public void UpdateValue(int idx, float value)
@@ -103,7 +108,7 @@ namespace DecorationMaster.UI
             var PropPanel = PropPanels[idx];
             var slider = PropPanel.transform.Find("Slider").GetComponent<Slider>();
             slider.value = value;
-            PropPanel.transform.Find("Value").GetComponent<Text>().text = value.ToString();
+            PropPanel.transform.Find("Value").GetComponent<InputField>().text = value.ToString();
         }
         public void AddListener(int idx, UnityAction<float> func)
         {
@@ -115,10 +120,22 @@ namespace DecorationMaster.UI
         {
             var PropPanel = PropPanels[idx];
             var slider = PropPanel.transform.Find("Slider").GetComponent<Slider>();
-            var text = PropPanel.transform.Find("Value").GetComponent<Text>();
-            return ((v) => {
+            var text = PropPanel.transform.Find("Value").GetComponent<InputField>();
+            AddListener(idx, ((v) => {
                 text.text = v.ToString();
+            }));
+            text.onValueChanged.AddListener((va) =>
+            {
+                if (float.Parse(va) >= slider.minValue && float.Parse(va) <= slider.maxValue)
+                {
+                    slider.value = int.Parse(va);
+                }
+                else
+                {
+                    text.text = slider.minValue.ToString();
+                }
             });
+            return null;
         }
         public static void DefaultValueChange(float val)
         {
@@ -215,12 +232,12 @@ namespace DecorationMaster.UI
                             if(con is IntConstraint)
                             {
                                 Logger.LogDebug($"Check1 {con.Min}-{con.Max}");
-                                insp.UpdateSliderConstrain(idx, (float)Convert.ChangeType(con.Min, typeof(float)), Convert.ToInt32(con.Max), true);
+                                insp.UpdateSliderConstrain(name,idx, (float)Convert.ChangeType(con.Min, typeof(float)), Convert.ToInt32(con.Max), true);
                             }
                             else if(con is FloatConstraint)
                             {
                                 Logger.LogDebug($"Check2 {con.Min}-{con.Max}");
-                                insp.UpdateSliderConstrain(idx, (float)(con.Min), (float)(con.Max), false);
+                                insp.UpdateSliderConstrain(name,idx, (float)(con.Min), (float)(con.Max), false);
                             }
                             else
                             {
@@ -234,18 +251,18 @@ namespace DecorationMaster.UI
                             insp.AppendPropPanel(name);
                             if (con is IntConstraint)
                             {
-                                insp.UpdateSliderConstrain(idx, (int)con.Min, (int)con.Max, true);
+                                insp.UpdateSliderConstrain(name,idx, (int)con.Min, (int)con.Max, true);
                             }
                             else if (con is FloatConstraint)
                             {
-                                insp.UpdateSliderConstrain(idx, (float)con.Min, (float)con.Max, false);
+                                insp.UpdateSliderConstrain(name,idx, (float)con.Min, (float)con.Max, false);
                             }
                             else
                             {
                                 throw new ArgumentException();
                             }
                             insp.UpdateValue(idx, (float)value);
-                            insp.AddListener(idx, insp.UpdateTextDelegate(idx));
+                            insp.UpdateTextDelegate(idx);//insp.AddListener(idx, insp.UpdateTextDelegate(idx));
 
                         }
                         //insp.AddListener(idx, (v) => { kv.Value.SetValue(item, Convert.ChangeType(v, kv.Value.PropertyType), null); });

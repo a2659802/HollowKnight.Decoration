@@ -14,6 +14,7 @@ namespace DecorationMaster.MyBehaviour
     }
     public class Mana
     {
+        [Description("魔力源，魔力源的颜色有5种，分别是蓝白绿红黑。\n接触到可以收集它")]
         [Decoration("Mana_Source")]
         public class ManaSource : CustomDecoration
         {
@@ -174,7 +175,8 @@ namespace DecorationMaster.MyBehaviour
 
             }
         }
-        
+
+        [Description("魔力吸收装置，收集所需魔力可以触发魔法门。\n注意：无色法术力可以用任意有色法术力代替")]
         [Decoration("Mana_Requirement")]
         public class ManaRequireShower : CustomDecoration
         {
@@ -310,7 +312,8 @@ namespace DecorationMaster.MyBehaviour
             }*/
 
         }
-    
+
+        [Description("魔法门，需要用魔法才能打开")]
         [Decoration("Mana_Wall")]
         public class ManaWall : Resizeable
         {

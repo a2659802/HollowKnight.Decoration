@@ -95,6 +95,7 @@
   <ItemGroup>
     <Compile Include="Attr\DecorationAttribute.cs" />
     <Compile Include="Attr\ConstraintAttribute.cs" />
+    <Compile Include="Attr\DescriptionAttribute.cs" />
     <Compile Include="Attr\HandleAttribute.cs" />
     <Compile Include="Attr\InspectIgnoreAttribute.cs" />
     <Compile Include="Attr\ItemAttribute.cs" />
@@ -103,6 +104,8 @@
     <Compile Include="MyBehaviour\Mana.cs" />
     <Compile Include="MyBehaviour\MovablePlatform.cs" />
     <Compile Include="MyBehaviour\TriggerSwitch.cs" />
+    <Compile Include="UI\DescriptionPanel.cs" />
+    <Compile Include="UI\ItemDescriptor.cs" />
     <Compile Include="Util\Extensions.cs" />
     <Compile Include="MyBehaviour\DefaultBehaviour.cs" />
     <Compile Include="Test.cs" />
@@ -206,6 +209,12 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="images\seal_wall.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="canvas2" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="images\UIelements\hidebtnbg.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
