@@ -111,6 +111,10 @@ namespace DecorationMaster.MyBehaviour
                 {
                     numDisp.GetComponent<TextMeshPro>().text = num.ToString();
                 }
+                int gateNum = ((ItemDef.LeverGateItem)item).Number;
+                var gateName = $"{ItemDef.LeverGateItem.GateNamePrefix}{gateNum}";
+                playMakerFSM = gameObject.LocateMyFSM("toll switch");
+                playMakerFSM.GetAction<FindGameObject>("Initiate", 2).objectName = gateName;
             }
         }
 
@@ -144,6 +148,9 @@ namespace DecorationMaster.MyBehaviour
                 {
                     numDisp.GetComponent<TextMeshPro>().text = num.ToString();
                 }
+                int gateNum = ((ItemDef.LeverGateItem)item).Number;
+                var gateName = $"{ItemDef.LeverGateItem.GateNamePrefix}{gateNum}";
+                gameObject.name = gateName;
             }
         }
 
@@ -195,12 +202,18 @@ namespace DecorationMaster.MyBehaviour
             {
                 var bw = Instantiate(ObjectLoader.InstantiableObjects["HK_break_wall"]);
                 var fsm = bw.GetComponent<PlayMakerFSM>();
-                fsm.RemoveTransition("Initiate", "ACTIVATE");
-                fsm.RemoveAction("Initiate", 11);
-                fsm.SetState("Pause");
+                if(fsm)
+                {
+                    fsm.RemoveTransition("Initiate", "ACTIVATE");
+                    fsm.RemoveAction("Initiate", 11);
+                    fsm.SetState("Pause");
+                    fsm.enabled = false;
+                    Destroy(fsm);
+                }
+                Destroy(bw.GetComponent<CustomDecoration>());
                 bw.transform.SetParent(gameObject.transform);
                 bw.transform.localPosition = Vector3.zero;
-                Destroy(bw.GetComponent<PlayMakerFSM>());
+                UnVisableBehaviour.AttackReact.Create(gameObject);
                 bw.SetActive(true);
                 //Logger.LogDebug(bw.transform.position);
                 //bw.AddComponent<ShowColliders>();

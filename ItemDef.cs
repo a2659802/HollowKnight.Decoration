@@ -111,7 +111,7 @@ namespace DecorationMaster
         public class SawItem : ResizableItem
         {
             [Handle(Operation.SetSpan)]
-            [IntConstraint(0,8)]
+            [IntConstraint(0,10)]
             public int span { get; set; } = 3;
 
             [Handle(Operation.SetSpeed)]
@@ -119,7 +119,7 @@ namespace DecorationMaster
             public int speed { get; set; }
 
             //[Handle(Operation.SetTinkVoice)]
-            [FloatConstraint(0.1f,1)]
+            //[FloatConstraint(0.1f,1)]
             public float pitch { get; set; } = 1;
 
             [Handle(Operation.SetPos)]
@@ -153,11 +153,14 @@ namespace DecorationMaster
         [Decoration("Mana_Requirement")]
         public class KeyGateItem : Item
         {
-
+            [Handle(Operation.SetGate)]
+            [IntConstraint(1,10)]
             public int Number { get; set; }
         }
 
+
         [Serializable]
+        [Decoration("Mana_Wall")]
         public class ResizeKeyGateItem : ResizableItem
         {
             [Handle(Operation.SetGate)]

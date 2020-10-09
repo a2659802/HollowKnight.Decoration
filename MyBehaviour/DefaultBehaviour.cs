@@ -39,7 +39,7 @@ namespace DecorationMaster.MyBehaviour
             private void Awake()
             {
                 gameObject.AddComponent<NonBouncer>();
-                gameObject.AddComponent<BoxCollider2D>().size = Vector2.one;
+                gameObject.AddComponent<BoxCollider2D>().size = Vector2.one * 2;
                 if(ItemManager.Instance.setupMode)
                     gameObject.AddComponent<ShowColliders>();
             }

@@ -7,6 +7,7 @@ using DecorationMaster.Attr;
 using DecorationMaster.UI;
 using DecorationMaster.Util;
 using System.Collections;
+using Random = UnityEngine.Random;
 
 namespace DecorationMaster.MyBehaviour
 {
@@ -94,6 +95,13 @@ namespace DecorationMaster.MyBehaviour
         
         public class ManaActive : MonoBehaviour
         {
+            private float dt = 0;
+            private int angle = 0;
+            public CircleCollider2D col;
+            private Vector3 target = Vector3.zero;
+            public Vector3 rot = new Vector3(0, 0, 15);
+            public ManaType MType { get; set; }
+            
             private static Dictionary<ManaType, Sprite> _sprites;
             private static Dictionary<ManaType, Sprite> _sprites_highlight;
             public static Dictionary<ManaType, Sprite> Sprites
@@ -150,6 +158,7 @@ namespace DecorationMaster.MyBehaviour
                     if (render == null)
                     {
                         render = gameObject.AddComponent<SpriteRenderer>();
+                        render.sortingOrder += 50;
                     }
                     return render;
                 }
@@ -165,17 +174,50 @@ namespace DecorationMaster.MyBehaviour
                 {
                     Logger.LogError($"Sprites Contains {t} Key? {Sprites.ContainsKey(t)}");
                 }
+                MType = t;
             }
-            public static GameObject Create(ManaType t,bool highlight = false)
+            public static ManaActive Create(Transform parent,ManaType t,bool highlight = false)
             {
                 var go = new GameObject("mana_active");
-                go.layer = (int)GlobalEnums.PhysLayers.HERO_ATTACK;
-                go.AddComponent<CircleCollider2D>().radius = 0.1f;
                 go.AddComponent<ManaActive>().HandleMana(t, highlight);
-
-                return go;
-
+                go.transform.SetParent(parent);
+                go.transform.localPosition = Vector3.zero;
+                go.transform.localScale = Vector2.one;
+                return go.GetComponent<ManaActive>();
             }
+            private void Awake()
+            {
+                var go = gameObject;
+                go.layer = (int)GlobalEnums.PhysLayers.HERO_ATTACK;
+                col = go.AddComponent<CircleCollider2D>();
+                col.radius = 0.05f;
+                col.enabled = false;
+            }
+            private void Update()
+            { 
+
+                dt += Time.deltaTime;
+                gameObject.transform.Rotate(Time.deltaTime * rot * 10);
+                    
+                if (dt > 1f)
+                {
+                    angle = Random.Range(0, 360);
+                    dt = 0;
+                    float randR = Random.Range(0, 10);
+                    float x = randR * Mathf.Cos(angle * Mathf.PI / 180f);
+                    float y = randR * Mathf.Sin(angle * Mathf.PI / 180f);
+                    target.x = x;
+                    target.y = y;
+                }
+                gameObject.transform.localPosition = Vector2.MoveTowards(gameObject.transform.localPosition, target, Time.deltaTime * 0.5f);
+            }
+        
+            public void CostSelf()
+            {
+                Logger.LogDebug($"[ManaActive]Cost Self {MType}");
+                Destroy(gameObject);
+            }
+            
         }
 
         [Description("魔力吸收装置，收集所需魔力可以触发魔法门。\n红色的圈表示你身上携带的法术力不满足要求\n注意：无色法术力可以用任意有色法术力代替\n此物品尚未完成")]
@@ -213,7 +255,12 @@ namespace DecorationMaster.MyBehaviour
                         StartCoroutine(Unlock());
                         IEnumerator Unlock()
                         {
-                            yield return new WaitForSeconds(1f);
+                            yield return new WaitForSeconds(0.5f);
+                            for(int i=50;i>0;i--)
+                            {
+                                sr.color = new Color(1, 1, 1, i / 50f);
+                                yield return new WaitForSeconds(0.02f);
+                            }
                             Destroy(gameObject); // Destroy ManaRequireShower after open the gate
                         }
                         
@@ -282,49 +329,14 @@ namespace DecorationMaster.MyBehaviour
                 
                 inspect.GetComponent<PlayMakerFSM>().FsmVariables.GetFsmString("Game Text Convo").Value = key;
             }
-            /*private static Dictionary<ManaType, Sprite> _sprites;
-            public static Dictionary<ManaType, Sprite> Sprites
-            {
-                get
-                {
-                    if (_sprites == null)
-                    {
-                        _sprites = new Dictionary<ManaType, Sprite>();
-
-                        foreach (var m in Enum.GetValues(typeof(ManaType)))
-                        {
-                            string img_name = $"mana_require_{m.ToString().ToLower()}";
-                            if (!GUIController.Instance.images.ContainsKey(img_name))
-                                continue;
-                            var tex = GUIController.Instance.images[img_name];
-                            Sprite ss = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0.5f, 0.5f));
-                            _sprites.Add((ManaType)m, ss);
-                            DontDestroyOnLoad(ss);
-                            Logger.LogDebug($"ManaSourceSpriteAdd:{img_name}");
-                        }
-                    }
-                    return _sprites;
-                }
-            }
-            private SpriteRenderer sr
-            {
-                get
-                {
-                    var render = gameObject.GetComponent<SpriteRenderer>();
-                    if (render == null)
-                    {
-                        render = gameObject.AddComponent<SpriteRenderer>();
-                    }
-                    return render;
-                }
-            }*/
-
+            
         }
 
         [Description("魔法门，需要用魔力吸收装置才能打开")]
         [Decoration("Mana_Wall")]
         public class ManaWall : Resizeable
         {
+          
             private ManaGate gate;
             private SpriteRenderer sr;
             private float t = 0;
@@ -335,7 +347,8 @@ namespace DecorationMaster.MyBehaviour
                 sr.sprite = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0.5f, 0.5f));
                 gameObject.AddComponent<BoxCollider2D>().size = new Vector2(1, 4.5f);
                 gameObject.layer = 0; // 8
-                gate = gameObject.AddComponent<ManaGate>();
+                if (gate == null) 
+                    gate = gameObject.AddComponent<ManaGate>();
                 gate.Open = () => Destroy(gameObject);
 
                 UnVisableBehaviour.AttackReact.Create(gameObject);
@@ -350,6 +363,8 @@ namespace DecorationMaster.MyBehaviour
             [Handle(Operation.SetGate)]
             public void HandleGate(int num)
             {
+                if (gate == null)
+                    gate = gameObject.AddComponent<ManaGate>();
                 gate.GateNum = num;
             }
         }
@@ -363,6 +378,7 @@ namespace DecorationMaster.MyBehaviour
     internal class ManaCollector : MonoBehaviour
     {
         private Dictionary<ManaType, int> mana_pool;
+        private List<Mana.ManaActive> manas = new List<Mana.ManaActive>();
         private int mana_sum = 0;
 
         private static ManaCollector _instance;
@@ -394,6 +410,7 @@ namespace DecorationMaster.MyBehaviour
             {
                 gameObject.transform.SetParent(HeroController.instance.transform);
                 gameObject.transform.localPosition = Vector3.zero;
+                gameObject.AddComponent<KeepWorldScalePositive>();
             }
         }
         public void Add(ManaType mType,int amount = 1)
@@ -411,10 +428,30 @@ namespace DecorationMaster.MyBehaviour
                 mana_pool.Add(mType, amount);
             }
             mana_sum += amount;
-
+            for (int i = 0; i < amount; i++)
+                manas.Add(Mana.ManaActive.Create(gameObject.transform, mType));
             Logger.LogDebug($"Mana Pool Add - {mType} amount:{amount}");
         }
-        public bool Cost(ManaType mType, int amount = 1)
+        private void _remove_mana_go(ManaType t,int amount = 1)
+        {
+            List<Mana.ManaActive> toRemove = null;
+            if(t != ManaType.C)
+            {
+                toRemove = manas.Where(x => (x != null && x.MType == t)).ToList();
+            }
+            else
+            {
+                toRemove = manas.Where(x => (x != null && x.MType != t)).ToList();
+            }
+            for(int i=0;i<amount;i++)
+            {
+                //GameObject target = toRemove[0].gameObject;
+                manas.Remove(toRemove[i]);
+                toRemove[i].CostSelf();
+                //toRemove.Remove(toRemove[0]);
+            }
+        }
+        private bool Cost(ManaType mType, int amount = 1)
         {
             if (amount < 0)
             {
@@ -431,6 +468,7 @@ namespace DecorationMaster.MyBehaviour
                     {
                         mana_pool[mType] = n - amount;
                         mana_sum -= amount;
+                        _remove_mana_go(mType, amount);
                         return true;
                     }
                 }
@@ -449,11 +487,13 @@ namespace DecorationMaster.MyBehaviour
                         if(mana_pool[k] < remains)
                         {
                             remains -= mana_pool[k];
+                            _remove_mana_go(k, mana_pool[k]);
                             mana_pool[k] = 0;
                         }
                         else
                         {
                             mana_pool[k] -= remains;
+                            _remove_mana_go(k, remains);
                             remains = 0;
                             break;
                         }
@@ -496,6 +536,7 @@ namespace DecorationMaster.MyBehaviour
                 foreach (var cost in allCost)
                 {
                     flag &= Cost(cost.Key, cost.Value);
+                   
                     Logger.LogDebug($"ManaCost: {cost.Key},{cost.Value},result:{flag}");
                 }
             }
