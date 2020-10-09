@@ -16,6 +16,9 @@ namespace DecorationMaster
     {
         public bool showDesc = true;
         public bool showLicense = true;
+        public KeyCode ToggleEditKey = KeyCode.CapsLock;
+        public KeyCode SwitchGroupKey = KeyCode.Tab;
+        public KeyCode SetPrefabKey = KeyCode.Space;
     }
 
     [Serializable]

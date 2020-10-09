@@ -243,8 +243,8 @@ namespace DecorationMaster
 
             return $"{ver}-{hash.Substring(0, 6)}";
         }
-        public const KeyCode ToggleEdit = KeyCode.Keypad7;
-        public const KeyCode SwitchGroup = KeyCode.Tab;
+        public KeyCode ToggleEdit => Settings.ToggleEditKey;
+        public KeyCode SwitchGroup => Settings.SwitchGroupKey;
     }
     public static class Logger
     {

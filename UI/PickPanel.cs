@@ -186,7 +186,7 @@ namespace DecorationMaster.UI
                 {
                     UnFocus();
                 }
-                if(Input.GetKeyDown(KeyCode.Space))
+                if(Input.GetKeyDown(DecorationMaster.instance.Settings.SetPrefabKey))
                 {
                     SetCurrentToPrefab();
                 }
