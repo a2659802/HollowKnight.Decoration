@@ -13,6 +13,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using DecorationMaster.UI;
 using DecorationMaster.Util;
+
 namespace DecorationMaster
 {
     public delegate int SelectItem();
@@ -105,9 +106,7 @@ namespace DecorationMaster
                         continue;
 
                     var poolname = r.pname;
-                    //var prefab = ObjectLoader.InstantiableObjects[poolname];
                     var decorationGo = ObjectLoader.CloneDecoration(poolname);
-                    //decorationGo.GetComponent<CustomDecoration>().HandleInit(r);
                     if(decorationGo != null)
                     {
                         decorationGo.GetComponent<CustomDecoration>().Setup(Operation.Serialize, r);
@@ -115,7 +114,7 @@ namespace DecorationMaster
                     }
                 }
                 
-                Modding.Logger.LogDebug($"All Fine,Spawn {count}");
+                Modding.Logger.LogDebug($"All Fine,Spawn {count} in {sceneName}");
             }
         }
 

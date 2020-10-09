@@ -272,12 +272,45 @@ namespace DecorationMaster.MyBehaviour
                     }
                     return false;
                 };
-
             }
             private void Start()
             {
-                require = new Dictionary<ManaType, int> { { ManaType.U, 2 }, { ManaType.G, 2 }, { ManaType.R, 2 }, { ManaType.C, 2 }, };
-                //require = new Dictionary<ManaType, int> { { ManaType.U, 2 } };
+                string reqStr = ((ItemDef.ManaRequirement)item).Requires;
+                if (!string.IsNullOrEmpty(reqStr))
+                {
+                    Dictionary<ManaType, int> r = new Dictionary<ManaType, int>();
+                    try
+                    {
+                        for (int i = 0; i < reqStr.Length; i++)
+                        {
+                            char c = reqStr[i];
+                            ManaType t = (ManaType)Enum.Parse(typeof(ManaType), c.ToString());
+                            if (r.ContainsKey(t))
+                            {
+                                r[t]++;
+                            }
+                            else
+                            {
+                                r.Add(t, 1);
+                            }
+                        }
+                        require = r;
+                    }
+                    catch (Exception e)
+                    {
+                        Logger.LogError("ManaRequire Parse Error");
+                        Logger.LogError(e);
+                    }
+                }
+                else
+                {
+                    Logger.LogDebug("Not Set Requirement");
+                }
+                if (require == null)
+                {
+                    require = new Dictionary<ManaType, int> { { ManaType.U, 2 }, { ManaType.G, 3 }, { ManaType.R, 1 }, { ManaType.C, 3 }, };
+                    ((ItemDef.ManaRequirement)item).Requires = "UUGGGRCCC";
+                }
                 UpdateRequire();
             }
             public void UpdateRequire()

@@ -2,6 +2,7 @@
 using System.Text;
 using System.IO;
 using System;
+using System.Reflection;
 
 /// <summary>
 /// WAV utility for recording and audio playback functions in Unity.
@@ -416,4 +417,29 @@ namespace DecorationMaster.Util
 		}
 
 	}
+
+	public class WavHelper
+    {
+		// get embeded wav
+		public static AudioClip GetAudioClip(string name)
+		{
+			string[] wavNames = Assembly.GetExecutingAssembly().GetManifestResourceNames();
+
+			foreach(var wav in wavNames)
+            {
+				Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(wav);
+				var split = wav.Split('.');
+				string intername = split[split.Length - 2];
+				if(intername == name)
+                {
+					byte[] buf = new byte[stream.Length];
+					stream.Read(buf, 0, buf.Length);
+					return WavUtility.ToAudioClip(buf, 0, intername);
+				}
+            }
+			return null;
+		}
+
+		
+    }
 }

@@ -225,6 +225,21 @@
   <ItemGroup>
     <EmbeddedResource Include="images\objects\DownSlash.png" />
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="images\magic_circle_y.png" />
+    <EmbeddedResource Include="images\magic_circle_b.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="audio\zote_hit.wav" />
+    <EmbeddedResource Include="audio\zote_open.wav" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="images\ZoteWall.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="images\icons\zote_detection.png" />
+    <EmbeddedResource Include="images\icons\zote_wall.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>echo copying

@@ -63,7 +63,10 @@ namespace DecorationMaster.UI
             PropPanels.Add(PropPanel);
             PropPanel.transform.Find("Name").GetComponent<Text>().fontSize = 22;
             PropPanel.transform.Find("Name").GetComponent<Text>().verticalOverflow = VerticalWrapMode.Overflow;
-            PropPanel.transform.Find("Value").GetComponent<InputField>().textComponent.fontSize = 20;
+            PropPanel.transform.Find("Name").GetComponent<Text>().horizontalOverflow = HorizontalWrapMode.Overflow;
+            PropPanel.transform.Find("Value").GetComponent<InputField>().textComponent.fontSize = 18;
+            PropPanel.transform.Find("Value").GetComponent<InputField>().textComponent.verticalOverflow = VerticalWrapMode.Overflow;
+            PropPanel.transform.Find("Value").GetComponent<InputField>().textComponent.horizontalOverflow = HorizontalWrapMode.Overflow;
             UpdateTextDelegate(0);//AddListener(0, UpdateTextDelegate(0));
 
             UnityEngine.Object.DontDestroyOnLoad(CurrentCanvas);

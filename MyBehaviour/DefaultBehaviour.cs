@@ -17,6 +17,7 @@ namespace DecorationMaster.MyBehaviour
     [Decoration("HK_bounce_shroom")]
     [Decoration("HK_stomper")]
     [Decoration("HK_lazer_bug")]
+    [Decoration("HK_zote_head")]
     //[Decoration("HK_conveyor")]
     public class DefaultBehaviour : Resizeable
     {

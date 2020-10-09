@@ -3,6 +3,9 @@ using HutongGames.PlayMaker.Actions;
 using UnityEngine;
 using DecorationMaster.Util;
 using TMPro;
+using DecorationMaster.UI;
+using System;
+using System.Collections;
 
 namespace DecorationMaster.MyBehaviour
 {
@@ -226,6 +229,175 @@ namespace DecorationMaster.MyBehaviour
             {
                 gameObject.GetComponent<PlayMakerFSM>().FsmVariables.GetFsmString("Game Text Convo").Value = "Decoration_Test";
             }
+        }
+
+        [Description("一个不明的法阵，往里面放入某些东西可以激活它")]
+        [Decoration("zote_detection")]
+        public class ZoteDetection : CustomDecoration
+        {
+            public Action OpenGate;
+            private float dt = 0;
+            private const float maxt = 2f;
+            private int zotein = 0;
+            //magic_circle_b
+            private static Sprite unactive;
+            private static Sprite active;
+            private GameObject go = new GameObject();
+            private SpriteRenderer sr
+            {
+                get
+                {
+                    var render = go.GetComponent<SpriteRenderer>();
+                    if (render == null)
+                    {
+                        render = go.AddComponent<SpriteRenderer>();
+                        go.transform.SetParent(gameObject.transform);
+                        go.transform.eulerAngles = new Vector3(-70, 5f, 0);
+                        go.transform.localScale = Vector3.one;
+                        go.AddComponent<RoteZ>();
+                    }
+                    return render;
+                }
+            }
+            private class RoteZ : MonoBehaviour
+            {
+                private void Update()
+                {
+                    transform.Rotate(new Vector3(0, 0, 1) * 10 * Time.deltaTime);
+                }
+            }
+            private void Awake()
+            {
+                if (unactive == null || active == null)
+                {
+                    Texture2D tex;
+                    tex = GUIController.Instance.images["magic_circle_b"];
+                    unactive = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0.5f, 0.5f));
+                    tex = GUIController.Instance.images["magic_circle_y"];
+                    active = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0.5f, 0.5f));
+                }
+                sr.sprite = unactive;
+                var col = gameObject.AddComponent<BoxCollider2D>();
+                col.size = new Vector2(4f, 0.1f);
+                var rb = gameObject.AddComponent<Rigidbody2D>();
+                rb.bodyType = RigidbodyType2D.Static;
+                gameObject.layer = (int)GlobalEnums.PhysLayers.TERRAIN;
+                var mat = new PhysicsMaterial2D();
+                mat.friction = 0.2f;
+                mat.bounciness = 0;
+                col.sharedMaterial = mat;
+
+                OpenGate = () =>
+                {
+                    Logger.LogDebug("Zote Open");
+                    FindObjectOfType<ZoteWall>()?.Open();
+                };
+            }
+            private void OnCollisionEnter2D(Collision2D collision)
+            {
+
+                if (collision.gameObject.name.Contains("ZoteKey"))
+                {
+                    zotein++;
+                    sr.sprite = active;
+                }
+            }
+            private void OnCollisionStay2D(Collision2D collision)
+            {
+
+                if(zotein>0 || collision.gameObject.name.Contains("ZoteKey"))
+                {
+                    sr.color = Color.Lerp(new Color(1, 1, 1, 1), new Color(1, 1, 1, 0), dt/maxt);
+                    dt += Time.deltaTime;
+                    if(dt >=maxt)
+                    {
+                        OpenGate?.Invoke();
+                        Destroy(gameObject);
+                    }
+                }
+                
+            }
+            private void OnCollisionExit2D(Collision2D collision)
+            {
+                if (collision.gameObject.name.Contains("ZoteKey"))
+                {
+                    zotein--;
+                    sr.color = new Color(1, 1, 1, 1);
+                    sr.sprite = unactive;
+                    dt = 0;
+                }
+
+            }
+        }
+    
+        [Decoration("zote_wall")]
+        [Description("佐特之墙，往法阵里放入佐特头骨可以打开（随机打开一个）")]
+        public class ZoteWall : Resizeable
+        {
+            private static AudioClip _hit;
+            private static AudioClip _open;
+            public static AudioClip zote_hit { get {
+                    if (_hit)
+                        return _hit;
+                    _hit = WavHelper.GetAudioClip("zote_hit");
+                    return _hit;
+                } }
+            public static AudioClip zote_open {
+                get
+                {
+                    if (_open)
+                        return _open;
+                    _open = WavHelper.GetAudioClip("zote_open");
+                    return _open;
+                }
+            }
+            public GameObject head;
+            private void Awake()
+            {
+                var tex = GUIController.Instance.images["ZoteWall"];
+                gameObject.AddComponent<SpriteRenderer>().sprite = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0.5f, 0.5f));
+                head = new GameObject();
+                head.transform.SetParent(transform);
+                head.transform.localPosition = new Vector3(0, 1, 0);
+                head.AddComponent<BoxCollider2D>().size = Vector2.one * 0.5f;
+                head.AddComponent<HitVoice>();
+                head.layer = (int)GlobalEnums.PhysLayers.ENEMIES;
+                gameObject.layer = (int)GlobalEnums.PhysLayers.TERRAIN;
+                var col = gameObject.AddComponent<BoxCollider2D>();
+                col.size = new Vector2(1.033173f, 2.238068f);
+                col.offset = new Vector2(0.04389954f, -0.2984619f);
+                if (SetupMode)
+                {
+                    //gameObject.AddComponent<ShowColliders>();
+                    head.AddComponent<ShowColliders>();
+                }  
+            }
+            public void Open()
+            {
+                Logger.LogDebug("Zote Wall Opened");
+                StartCoroutine(Die());
+                IEnumerator Die()
+                {
+                    head.GetComponent<AudioSource>().PlayOneShot(zote_open);
+                    yield return new WaitForSeconds(0.5f);
+                    Destroy(gameObject);
+                }
+            }
+            private class HitVoice : MonoBehaviour, IHitResponder
+            {
+                public AudioSource au;
+                private void Awake()
+                {
+                    au = gameObject.AddComponent<AudioSource>();
+                }
+                public void Hit(HitInstance damageInstance)
+                {
+                    Logger.LogDebug("zoteHit");
+                    au.PlayOneShot(zote_hit);
+                }
+            }
+        
+        
         }
     }
 }

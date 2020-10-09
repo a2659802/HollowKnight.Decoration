@@ -22,7 +22,7 @@ namespace DecorationMaster
         public static readonly Dictionary<(string, Func<GameObject, GameObject>), (string, string)> ObjectList = new Dictionary<(string, Func<GameObject, GameObject>), (string, string)>
         {
             {("inspect_region",null),("White_Palace_18","Inspect Region")},
-            
+            {("zote_head",(go)=>{go.name = "ZoteKey";return go; }),("Fungus1_20_v02","Zote Death/Head") },
             {
                 ("saw", null),
                 ("White_Palace_18","saw_collection/wp_saw")

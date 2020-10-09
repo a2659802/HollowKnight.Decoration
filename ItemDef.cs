@@ -100,6 +100,7 @@ namespace DecorationMaster
         [Decoration("IMG_Lantern")]
         [Decoration("IMG_DownSlash")]
         [Decoration("HK_turret")]
+        [Decoration("zote_wall")]
         public class DefatulResizeItem : ResizableItem { }
 
         [Serializable]
@@ -150,11 +151,10 @@ namespace DecorationMaster
         }
 
         [Serializable]
-        [Decoration("Mana_Requirement")]
         public class KeyGateItem : Item
         {
             [Handle(Operation.SetGate)]
-            [IntConstraint(1,10)]
+            [IntConstraint(1,20)]
             public int Number { get; set; }
         }
 
@@ -164,10 +164,16 @@ namespace DecorationMaster
         public class ResizeKeyGateItem : ResizableItem
         {
             [Handle(Operation.SetGate)]
-            [IntConstraint(1, 10)]
+            [IntConstraint(1, 20)]
             public int Number { get; set; }
         }
-
+        [Serializable]
+        [Decoration("Mana_Requirement")]
+        public class ManaRequirement : KeyGateItem
+        {
+            [InspectIgnore]
+            public string Requires { get; set; }
+        }
 
         [Serializable]
         [Decoration("twinkle_platform")]
