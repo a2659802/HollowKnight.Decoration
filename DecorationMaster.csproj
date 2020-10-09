@@ -96,6 +96,7 @@
     <Compile Include="DecorationMaster.cs" />
     <Compile Include="DLanguage.cs" />
     <Compile Include="MyBehaviour\Mana.cs" />
+    <Compile Include="MyBehaviour\ModifyGameItem.cs" />
     <Compile Include="MyBehaviour\MovablePlatform.cs" />
     <Compile Include="MyBehaviour\TriggerSwitch.cs" />
     <Compile Include="UI\DescriptionPanel.cs" />

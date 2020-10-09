@@ -55,6 +55,7 @@ namespace DecorationMaster.MyBehaviour
             public static void Create(GameObject parent)
             {
                 var child = new GameObject();
+                child.name = "UnvisableAttackHelper";
                 child.transform.SetParent(parent.transform);
                 child.layer = (int)GlobalEnums.PhysLayers.PROJECTILES;
                 child.AddComponent<AttackReact>().parent = parent.GetComponent<CustomDecoration>();

@@ -41,6 +41,7 @@ namespace DecorationMaster
             BehaviourProcessor.RegisterBehaviour<OtherBehaviour>();
             BehaviourProcessor.RegisterBehaviour<AreaBehaviour>();
             BehaviourProcessor.RegisterBehaviour<MovablePlatform>();
+            BehaviourProcessor.RegisterBehaviour<ModifyGameItem>();
             BehaviourProcessor.RegisterBehaviour<Mana>();
             
             BehaviourProcessor.RegisterSharedBehaviour<DefaultBehaviour>();

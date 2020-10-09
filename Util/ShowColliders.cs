@@ -196,7 +196,9 @@ namespace DecorationMaster.Util
         {
             foreach (var v in colliders)
             {
-                string name = "[" + v.gameObject.name + ",  " + v.GetType().Name + "]";
+                //string name = "[" + v.gameObject.name + ",  " + v.GetType().Name + "]";
+                string name = $"[{v.gameObject.name},{v.gameObject.layer}]";
+                Logger.LogDebug(name);
                 GameObject newLine = new GameObject(name);
                 newLine.transform.SetParent(lineRoot.transform);
                 newLine.transform.position = Vector3.zero;
