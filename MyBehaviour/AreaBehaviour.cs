@@ -92,6 +92,23 @@ namespace DecorationMaster.MyBehaviour
             }
         }
 
+        [Description("禁用能力-下劈反弹\n非编辑模式下可用攻击暂时移除\n如果你不想被移除，那就放到打不到的地方")]
+        [Decoration("IMG_DownSlash")]
+        public class BindBounce : BreakableBoolBinding
+        {
+            private void OnEnable()
+            {
+                On.HeroController.Bounce += NoBonce;
+            }
+
+            private void NoBonce(On.HeroController.orig_Bounce orig, HeroController self) { }
+
+            private void OnDisable()
+            {
+                On.HeroController.Bounce -= NoBonce;
+            }
+        } 
+
     }
 
 }

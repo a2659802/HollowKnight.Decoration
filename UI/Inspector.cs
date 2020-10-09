@@ -267,14 +267,24 @@ namespace DecorationMaster.UI
                         }
                         //insp.AddListener(idx, (v) => { kv.Value.SetValue(item, Convert.ChangeType(v, kv.Value.PropertyType), null); });
                         insp.AddListener(idx, (v) => {
+                            if (ItemManager.Instance.currentSelect == null)
+                                return;
                             object val;
-                            if (kv.Value.PropertyType.IsSubclassOf(typeof(Enum)))
+                            try
                             {
-                                val = Enum.Parse(kv.Value.PropertyType, v.ToString("0"));
+                                if (kv.Value.PropertyType.IsSubclassOf(typeof(Enum)))
+                                {
+                                    val = Enum.Parse(kv.Value.PropertyType, v.ToString("0"));
+                                }
+                                else
+                                    val = Convert.ChangeType(v, kv.Value.PropertyType);
+                                ItemManager.Instance.currentSelect.GetComponent<CustomDecoration>().Setup(handler[kv.Value], val);
                             }
-                            else
-                               val = Convert.ChangeType(v, kv.Value.PropertyType);
-                            ItemManager.Instance.currentSelect.GetComponent<CustomDecoration>().Setup(handler[kv.Value], val);
+                            catch
+                            {
+                                Logger.LogError("Error occour at Inspect OnValue Chnaged");
+                                Hide();
+                            }
                         });
                         idx++;
                     }

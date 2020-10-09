@@ -5,14 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using UnityEngine;
-using Vasi;
-using Modding;
-using UnityEngine.UI;
-using DecorationMaster.UI;
-using ModCommon.Util;
-using UnityEngine.Events;
-using ModCommon;
-using MonoMod.RuntimeDetour;
+
 using DecorationMaster.Util;
 
 namespace DecorationMaster
@@ -28,9 +21,9 @@ namespace DecorationMaster
 		}
 		public Test()
         {
-            Modding.Logger.LogDebug("Start Test");
+            /*Modding.Logger.LogDebug("Start Test");
             On.DialogueBox.SetConversation += DialogueBox_SetConversation;
-			Modding.Logger.LogDebug($"End Test"); 
+			Modding.Logger.LogDebug($"End Test"); */
         }
 
        

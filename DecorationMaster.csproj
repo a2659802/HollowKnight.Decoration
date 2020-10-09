@@ -35,9 +35,6 @@
     <Reference Include="Assembly-CSharp">
       <HintPath>..\dll\Assembly-CSharp.dll</HintPath>
     </Reference>
-    <Reference Include="ModCommon">
-      <HintPath>..\dll\ModCommon.dll</HintPath>
-    </Reference>
     <Reference Include="PlayMaker">
       <HintPath>..\dll\PlayMaker.dll</HintPath>
     </Reference>
@@ -88,9 +85,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\dll\UnityEngine.UIModule.dll</HintPath>
     </Reference>
-    <Reference Include="Vasi">
-      <HintPath>..\dll\Vasi.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Attr\DecorationAttribute.cs" />
@@ -124,7 +118,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="UI\PickPanel.cs" />
+    <Compile Include="Util\FsmUtil.cs" />
     <Compile Include="Util\NameDisp.cs" />
+    <Compile Include="Util\SerializeHelper.cs" />
     <Compile Include="Util\ShowColliders.cs" />
     <Compile Include="Util\WavUtility.cs" />
   </ItemGroup>
@@ -225,6 +221,9 @@
   <ItemGroup>
     <EmbeddedResource Include="images\icons\HK_break_wall.png" />
     <EmbeddedResource Include="images\icons\HK_unbreak_wall.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="images\objects\DownSlash.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

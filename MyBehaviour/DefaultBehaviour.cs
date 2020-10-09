@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using DecorationMaster.Util;
 using DecorationMaster.Attr;
 using UnityEngine;
-using ModCommon;
+
 namespace DecorationMaster.MyBehaviour
 {
     [Description("这是游戏内原本的物品，基本没有任何改动，看图标识别物品")]

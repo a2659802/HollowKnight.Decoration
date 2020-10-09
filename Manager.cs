@@ -5,8 +5,6 @@ using System.Text;
 using TMPro;
 using UnityEngine;
 using Object = UnityEngine.Object;
-using ModCommon;
-using DecorationMaster.Attr;
 using System.Reflection;
 using DecorationMaster.UI;
 using DecorationMaster.MyBehaviour;
@@ -130,7 +128,7 @@ namespace DecorationMaster
             Logger.LogDebug($"Item Null?{cd?.item == null},Prefab Item Null?{ObjectLoader.InstantiableObjects[poolname].GetComponent<CustomDecoration>()?.item == null}");
             go?.SetActive(true);
 
-            Test.TestGo(go);
+            //Test.TestGo(go);
             OnChanged?.Invoke(cd);
             return cd;
         }

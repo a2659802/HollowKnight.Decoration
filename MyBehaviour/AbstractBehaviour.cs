@@ -7,7 +7,6 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using UnityEngine;
-using ModCommon;
 using DecorationMaster.Util;
 namespace DecorationMaster.MyBehaviour
 {
@@ -85,7 +84,7 @@ namespace DecorationMaster.MyBehaviour
         {
             if (self == null)
                 self = item;
-            var settings = DecorationMaster.instance.Settings;
+            var settings = DecorationMaster.instance.ItemData;
             if (self == null)
                 throw new NullReferenceException("Item Null Exception");
             item.sceneName = GameManager.instance.sceneName;
@@ -133,7 +132,7 @@ namespace DecorationMaster.MyBehaviour
                 self = item;
 
             Logger.LogDebug($"{((Item)self).pname} - remove self");
-            var settings = DecorationMaster.instance.Settings;
+            var settings = DecorationMaster.instance.ItemData;
             if (self == null)
                 throw new NullReferenceException("Item Null Exception");
 

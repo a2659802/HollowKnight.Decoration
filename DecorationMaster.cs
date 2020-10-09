@@ -27,7 +27,14 @@ namespace DecorationMaster
         {
             instance = this;
 
-            new Test();
+            //new Test();
+            Logger.Log("Load Json");
+            ItemSettings global = SerializeHelper.LoadGlobalSettings<ItemSettings>();
+            if (global != null)
+            {
+                ItemData = global;
+                Logger.Log("Loaded Json");
+            }
             
             ObjectLoader.Load(preloadedObjects);
             BehaviourProcessor.RegisterBehaviour<OtherBehaviour>();
@@ -49,6 +56,13 @@ namespace DecorationMaster
             GUIController.Instance.BuildMenus();
 
             ModHooks.Instance.LanguageGetHook += DLanguage.MyLanguage;
+            ModHooks.Instance.ApplicationQuitHook += SaveJson;
+        }
+
+        private void SaveJson()
+        {
+            SerializeHelper.SaveGlobalSettings(ItemData);
+            Logger.Log("Save Json");
         }
 
         private void ShowRespawn(Scene arg0, LoadSceneMode arg1)
@@ -72,10 +86,10 @@ namespace DecorationMaster
 
         private void SpawnFromSettings(Scene arg0, LoadSceneMode arg1)
         {
-            Logger.LogDebug($"Item Count:{Settings.items.Count}");
+            Logger.LogDebug($"Item Count:{ItemData.items.Count}");
             if (arg0.name.Contains("Menu_Title"))
                 return;
-            if (Settings.items.Count > 0)
+            if (ItemData.items.Count > 0)
             {
                 GameManager.instance.StartCoroutine(WaitSceneLoad(arg0));
             }
@@ -85,7 +99,7 @@ namespace DecorationMaster
                 Logger.LogDebug("Try to spawn setting");
                 string sceneName = arg0.name;
                 yield return new WaitUntil(() => (arg0.isLoaded));
-                foreach (var r in Settings.items)
+                foreach (var r in ItemData.items)
                 {
                     if (r.sceneName != sceneName)
                         continue;
@@ -108,7 +122,7 @@ namespace DecorationMaster
         private Vector2 mousePos;
         private void OperateItem()
         {
-            Test.TestOnce();
+            //Test.TestOnce();
 
             if (Input.GetKeyDown(ToggleEdit))    // Toggle Edit Model
             {
@@ -152,6 +166,16 @@ namespace DecorationMaster
 
         private static int GetKeyPress()
         {
+            for(int i=1;i<= ItemManager.GroupMax; i++)
+            {
+                if( Input.GetKeyDown(KeyCode.Alpha0 + i) )
+                {
+                    return i;
+                }
+                    
+            }
+           
+            /*
             if (Input.GetKeyDown(KeyCode.Keypad0))
             {
                 return 1;
@@ -179,7 +203,8 @@ namespace DecorationMaster
             else if (Input.GetKeyDown(KeyCode.Keypad6))
             {
                 return 7;
-            }
+            }*/
+
             return -1;
         }
         public static Vector3 GetMousePos()
@@ -194,7 +219,9 @@ namespace DecorationMaster
         {
 
         }
+        
         public GlobalModSettings Settings = new GlobalModSettings();
+        public ItemSettings ItemData = new ItemSettings();
         public override ModSettings GlobalSettings
         {
             get => Settings;

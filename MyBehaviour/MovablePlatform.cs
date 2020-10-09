@@ -4,8 +4,7 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 using DecorationMaster.Attr;
-using ModCommon;
-using DecorationMaster;
+
 using DecorationMaster.UI;
 using DecorationMaster.MyBehaviour;
 namespace DecorationMaster.MyBehaviour

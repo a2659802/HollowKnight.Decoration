@@ -98,6 +98,7 @@ namespace DecorationMaster
         [Decoration("IMG_MonarchWings")]
         [Decoration("IMG_MantisClaw")]
         [Decoration("IMG_Lantern")]
+        [Decoration("IMG_DownSlash")]
         [Decoration("HK_turret")]
         public class DefatulResizeItem : ResizableItem { }
 

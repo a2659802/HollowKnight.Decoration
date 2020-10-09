@@ -15,6 +15,12 @@ namespace DecorationMaster
     public class GlobalModSettings : ModSettings
     {
         public bool showDesc = true;
+        public bool showLicense = true;
+    }
+
+    [Serializable]
+    public class ItemSettings
+    {
         public List<Item> items = new List<Item>();
     }
     public enum Operation

@@ -337,6 +337,8 @@ namespace DecorationMaster.MyBehaviour
                 gameObject.layer = 0; // 8
                 gate = gameObject.AddComponent<ManaGate>();
                 gate.Open = () => Destroy(gameObject);
+
+                UnVisableBehaviour.AttackReact.Create(gameObject);
             }
             private void Update()
             {
