@@ -26,7 +26,7 @@ namespace DecorationMaster.UI
                         if (s == null) continue;
                         byte[] buffer = new byte[s.Length];
                         s.Read(buffer, 0, buffer.Length);
-                        s.Dispose(); 
+                        s.Dispose();
                         string bundleName = Path.GetExtension(res).Substring(1);
                         if (bundleName != bundleN) continue;
                         Logger.Log("Loading bundle " + bundleName);
