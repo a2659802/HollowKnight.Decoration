@@ -283,7 +283,7 @@ namespace DecorationMaster.MyBehaviour
                 rb.bodyType = RigidbodyType2D.Static;
                 gameObject.layer = (int)GlobalEnums.PhysLayers.TERRAIN;
                 var mat = new PhysicsMaterial2D();
-                mat.friction = 0.2f;
+                mat.friction = 0.4f;
                 mat.bounciness = 0;
                 col.sharedMaterial = mat;
 
@@ -302,20 +302,18 @@ namespace DecorationMaster.MyBehaviour
                     sr.sprite = active;
                 }
             }
-            private void OnCollisionStay2D(Collision2D collision)
+            private void Update()
             {
-
-                if(zotein>0 || collision.gameObject.name.Contains("ZoteKey"))
+                if (zotein > 0)
                 {
-                    sr.color = Color.Lerp(new Color(1, 1, 1, 1), new Color(1, 1, 1, 0), dt/maxt);
+                    sr.color = Color.Lerp(new Color(1, 1, 1, 1), new Color(1, 1, 1, 0), dt / maxt);
                     dt += Time.deltaTime;
-                    if(dt >=maxt)
+                    if (dt >= maxt)
                     {
                         OpenGate?.Invoke();
                         Destroy(gameObject);
                     }
                 }
-                
             }
             private void OnCollisionExit2D(Collision2D collision)
             {
@@ -379,7 +377,7 @@ namespace DecorationMaster.MyBehaviour
                 IEnumerator Die()
                 {
                     head.GetComponent<AudioSource>().PlayOneShot(zote_open);
-                    yield return new WaitForSeconds(0.5f);
+                    yield return new WaitForSeconds(0.6f);
                     Destroy(gameObject);
                 }
             }

@@ -11,9 +11,9 @@ using Random = UnityEngine.Random;
 
 namespace DecorationMaster.MyBehaviour
 {
-    public enum ManaType
+    public enum ManaType //U,R,W,B,G,C-> WUBRGC
     {
-        U,R,W,B,G,C
+        W,U,B,R,G,C
     }
     public class Mana
     {
@@ -537,7 +537,7 @@ namespace DecorationMaster.MyBehaviour
             }
             
         }
-        public bool TryCost(ManaType mType,int amount = 1)
+        /*public bool TryCost(ManaType mType,int amount = 1)
         {
             if(mType != ManaType.C)
             {
@@ -553,17 +553,45 @@ namespace DecorationMaster.MyBehaviour
             }
             return false;
 
+        }*/
+
+        public bool TryCost(Dictionary<ManaType,int> allCost)
+        {
+            var colorful = allCost.Where(x => x.Key != ManaType.C);
+            //var colorless = allCost.Where(x => x.Key == ManaType.C);
+            int colorfulAmount = 0;
+            bool flag = true;
+            foreach(var kv in colorful)
+            {
+                flag &= (mana_pool.ContainsKey(kv.Key) && mana_pool[kv.Key] >= kv.Value);
+                if (!flag)
+                    break;
+                colorfulAmount += kv.Value;
+            }
+            if (!flag)
+                return false;
+            if (allCost.ContainsKey(ManaType.C))
+            {
+                int colorlessAmount = allCost[ManaType.C];
+                if (colorlessAmount <= (mana_sum - colorfulAmount))
+                    return true;
+            }
+            else
+                return true;
+            return false;
         }
         public bool Cost(Dictionary<ManaType,int> allCost)
         {
             bool flag = true;
             if (allCost == null)
                 return true;
-            foreach(var cost in allCost)
+            /*foreach(var cost in allCost)
             {
                 flag &= TryCost(cost.Key, cost.Value);
                 Logger.LogDebug($"Try ManaCost: {cost.Key},{cost.Value},result:{flag}");
-            }
+            }*/
+            flag &= TryCost(allCost);
+
             if(flag)
             {
                 foreach (var cost in allCost)
@@ -610,7 +638,7 @@ namespace DecorationMaster.MyBehaviour
         }
         private void Enter()
         {
-            Logger.LogDebug("Hero Enter");
+            //Logger.LogDebug("Hero Enter");
             if (Check != null)
             {
                 sr.enabled = true;

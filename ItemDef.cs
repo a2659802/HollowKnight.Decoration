@@ -195,5 +195,14 @@ namespace DecorationMaster
             [IntConstraint(0, 1)]
             public int Offset { get; set; } = 0;
         }
+
+        [Serializable]
+        [Decoration("note_platform")]
+        public class AuidoItem : Item
+        {
+            [IntConstraint(1, AudioBehaviours.NoteMax)]
+            [Handle(Operation.SetNote)]
+            public int Note { get; set; } = 1;
+        }
     }
 }

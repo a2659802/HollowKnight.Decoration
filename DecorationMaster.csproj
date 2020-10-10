@@ -95,12 +95,14 @@
     <Compile Include="Attr\ItemAttribute.cs" />
     <Compile Include="DecorationMaster.cs" />
     <Compile Include="DLanguage.cs" />
+    <Compile Include="MyBehaviour\AudioBehaviours.cs" />
     <Compile Include="MyBehaviour\Mana.cs" />
     <Compile Include="MyBehaviour\ModifyGameItem.cs" />
     <Compile Include="MyBehaviour\MovablePlatform.cs" />
     <Compile Include="MyBehaviour\TriggerSwitch.cs" />
     <Compile Include="UI\DescriptionPanel.cs" />
     <Compile Include="UI\ItemDescriptor.cs" />
+    <Compile Include="UI\UserLicense.cs" />
     <Compile Include="Util\Extensions.cs" />
     <Compile Include="MyBehaviour\DefaultBehaviour.cs" />
     <Compile Include="Test.cs" />
@@ -240,6 +242,33 @@
   <ItemGroup>
     <EmbeddedResource Include="images\icons\zote_detection.png" />
     <EmbeddedResource Include="images\icons\zote_wall.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="images\icons\disable_col.png" />
+    <EmbeddedResource Include="images\icons\disable_hazard_spawn.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="images\pianokey.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="audio\note_1.wav" />
+    <EmbeddedResource Include="audio\note_2.wav" />
+    <EmbeddedResource Include="audio\note_3.wav" />
+    <EmbeddedResource Include="audio\note_4.wav" />
+    <EmbeddedResource Include="audio\note_5.wav" />
+    <EmbeddedResource Include="audio\note_6.wav" />
+    <EmbeddedResource Include="audio\note_7.wav" />
+    <EmbeddedResource Include="audio\note_8.wav" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="audio\note_10.wav" />
+    <EmbeddedResource Include="audio\note_9.wav" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="images\icons\note_platform.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="userlicense" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

@@ -15,7 +15,7 @@ namespace DecorationMaster
     public class GlobalModSettings : ModSettings
     {
         public bool showDesc = true;
-        public bool showLicense = true;
+        public bool agreeLicense = false;
         public KeyCode ToggleEditKey = KeyCode.CapsLock;
         public KeyCode SwitchGroupKey = KeyCode.Tab;
         public KeyCode SetPrefabKey = KeyCode.Space;
@@ -49,6 +49,8 @@ namespace DecorationMaster
         SetMana,
 
         SetTime,
+
+        SetNote,
     }
     
     [Serializable]

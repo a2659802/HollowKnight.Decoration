@@ -70,6 +70,7 @@ namespace DecorationMaster.UI
             UpdateTextDelegate(0);//AddListener(0, UpdateTextDelegate(0));
 
             UnityEngine.Object.DontDestroyOnLoad(CurrentCanvas);
+
         }
         public void UpdateName(int idx, string name)
         {
@@ -164,9 +165,19 @@ namespace DecorationMaster.UI
                     return _d;
                 _d = new Detour(typeof(DecorationMaster).GetMethod("OperateItem", BindingFlags.NonPublic | BindingFlags.Instance), typeof(Inspector).GetMethod(nameof(NoOpOperateItem), BindingFlags.NonPublic | BindingFlags.Static));
                 _d.Undo();
+                ItemManager.Instance.OnChanged += Instance_OnChanged;
                 return _d;
             } 
         }
+        private static void Instance_OnChanged(CustomDecoration d)
+        {
+            if(IsToggle())
+            {
+                Hide();
+                Show();
+            }
+        }
+
         private static void _reflectProps(Type t, BindingFlags flags = BindingFlags.Public | BindingFlags.Instance)
         {
             if (cache_prop.ContainsKey(t))

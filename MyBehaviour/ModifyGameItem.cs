@@ -10,7 +10,7 @@ namespace DecorationMaster.MyBehaviour
     public class ModifyGameItem
     {
         [Decoration("disable_col")]
-        [Description("禁用游戏原本的某些物体(区域、平台)\n注意：请谨慎使用该物品，特别不要对任何墙体使用。建议用途为禁用某些小平台")]
+        [Description("禁用游戏原本的某些物体(区域、平台)\n注意：请谨慎使用该物品，特别不要对任何墙体使用。建议用途为禁用某些小平台\n注意：请不要用鼠标选中此物品")]
         public class DisableCollider : CustomDecoration
         {
             private BoxCollider2D col;
@@ -31,25 +31,17 @@ namespace DecorationMaster.MyBehaviour
             }
             private void OnCollisionEnter2D(Collision2D collision)
             {
-                if (collision.gameObject.name.Contains("Slash") || collision.gameObject.name.Contains("Knight"))
+                if (collision.gameObject.name.Contains("Slash") || collision.gameObject.name.Contains("Knight") || collision.gameObject.name.Contains("Hero"))
                     return;
                 if (collision.gameObject.GetComponent<CustomDecoration>() != null)
                     return;
 
                 collision.gameObject.SetActive(false);
                 Logger.LogDebug($"Disable {collision.gameObject.name}");
-            }
-            private void OnTriggerEnter2D(Collider2D collider)
-            {
-                if (collider.gameObject.name.Contains("Slash") || collider.gameObject.name.Contains("Knight"))
-                    return;
-                if (collider.gameObject.GetComponent<CustomDecoration>() != null)
-                    return;
-                collider.gameObject.SetActive(false);
-                Logger.LogDebug($"Disable {collider.gameObject.name}");
                 col.enabled = false;
                 Destroy(gameObject.GetComponent<Rigidbody2D>());
             }
+
         }
         [Decoration("disable_hazard_spawn")]
         [Description("禁用游戏原本的刷新存档点的地方")]

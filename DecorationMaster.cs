@@ -43,8 +43,9 @@ namespace DecorationMaster
             BehaviourProcessor.RegisterBehaviour<MovablePlatform>();
             BehaviourProcessor.RegisterBehaviour<ModifyGameItem>();
             BehaviourProcessor.RegisterBehaviour<Mana>();
-            
+            BehaviourProcessor.RegisterBehaviour<AudioBehaviours>();
             BehaviourProcessor.RegisterSharedBehaviour<DefaultBehaviour>();
+
             ModHooks.Instance.HeroUpdateHook += OperateItem;
             UnityEngine.SceneManagement.SceneManager.sceneLoaded += SpawnFromSettings;
             UnityEngine.SceneManagement.SceneManager.sceneLoaded += ShowRespawn;
@@ -59,6 +60,8 @@ namespace DecorationMaster
 
             ModHooks.Instance.LanguageGetHook += DLanguage.MyLanguage;
             ModHooks.Instance.ApplicationQuitHook += SaveJson;
+
+            UserLicense.ShowLicense();
         }
 
         private void SaveJson()
