@@ -8,7 +8,7 @@ using DecorationMaster.UI;
 using DecorationMaster.Util;
 using System.Collections;
 using Random = UnityEngine.Random;
-
+using Modding;
 namespace DecorationMaster.MyBehaviour
 {
     public enum ManaType //U,R,W,B,G,C-> WUBRGC
@@ -39,7 +39,7 @@ namespace DecorationMaster.MyBehaviour
                             Sprite ss = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0.5f, 0.5f));
                             _sprites.Add((ManaType)m, ss);
                             DontDestroyOnLoad(ss);
-                            Logger.LogDebug($"ManaSourceSpriteAdd:{img_name}");
+                            //Logger.LogDebug($"ManaSourceSpriteAdd:{img_name}");
                         }
                     }
                     return _sprites;
@@ -69,7 +69,7 @@ namespace DecorationMaster.MyBehaviour
             {
                 ManaType selfType = ((ManaItem)item).mType;
                 ManaCollector.Instance.Add(selfType);
-                Logger.LogDebug("Eat a mana source");
+                //Logger.LogDebug("Eat a mana source");
                 Destroy(gameObject);
             }
             private void HeroAtk()
@@ -121,7 +121,7 @@ namespace DecorationMaster.MyBehaviour
                             Sprite ss = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0.5f, 0.5f));
                             _sprites.Add((ManaType)m, ss);
                             DontDestroyOnLoad(ss);
-                            Logger.LogDebug($"ManaSourceSpriteAdd:{img_name}");
+                            //Logger.LogDebug($"ManaSourceSpriteAdd:{img_name}");
                         }
                     }
                     return _sprites;
@@ -144,7 +144,7 @@ namespace DecorationMaster.MyBehaviour
                             Sprite ss = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0.5f, 0.5f));
                             _sprites_highlight.Add((ManaType)m, ss);
                             DontDestroyOnLoad(ss);
-                            Logger.LogDebug($"ManaSourceSpriteAdd:{img_name}");
+                            //Logger.LogDebug($"ManaSourceSpriteAdd:{img_name}");
                         }
                     }
                     return _sprites_highlight;
@@ -256,12 +256,13 @@ namespace DecorationMaster.MyBehaviour
                         IEnumerator Unlock()
                         {
                             yield return new WaitForSeconds(0.5f);
-                            for(int i=50;i>0;i--)
+                            for(int i=50;i>20;i--)
                             {
                                 sr.color = new Color(1, 1, 1, i / 50f);
                                 yield return new WaitForSeconds(0.02f);
                             }
-                            Destroy(gameObject); // Destroy ManaRequireShower after open the gate
+                            trigger.Check = null;
+                            
                         }
                         
                         return true;
@@ -444,8 +445,21 @@ namespace DecorationMaster.MyBehaviour
                 gameObject.transform.SetParent(HeroController.instance.transform);
                 gameObject.transform.localPosition = Vector3.zero;
                 gameObject.AddComponent<KeepWorldScalePositive>();
+                ModHooks.Instance.AfterPlayerDeadHook += ClearManaPool;
             }
         }
+        private void OnDestroy()
+        {
+            ModHooks.Instance.AfterPlayerDeadHook -= ClearManaPool;
+        }
+        private void ClearManaPool()
+        {
+            foreach (var m in manas)
+                Destroy(m);
+            mana_sum = 0;
+            mana_pool = new Dictionary<ManaType, int>();
+        }
+
         public void Add(ManaType mType,int amount = 1)
         {
             if(amount < 0)

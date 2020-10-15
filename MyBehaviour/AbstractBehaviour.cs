@@ -93,7 +93,7 @@ namespace DecorationMaster.MyBehaviour
         [Handle(Operation.SetPos)]
         public virtual void HandlePos(Vector2 val)
         {
-            gameObject.transform.position = val;
+            gameObject.transform.position = new Vector3(val.x, val.y, gameObject.transform.position.z);
         }
         [Handle(Operation.Serialize)]
         public void HandleInit(Item i)
@@ -196,6 +196,37 @@ namespace DecorationMaster.MyBehaviour
     }
     
     public abstract class BreakableBoolBinding : BoolBinding
+    {
+        private void Awake()
+        {
+            gameObject.AddComponent<NonBouncer>();
+        }
+        public override void Hit(HitInstance hit)
+        {
+            base.Hit(hit);
+            Destroy(gameObject);
+        }
+    }
+
+    public abstract class IntBinding : Resizeable
+    {
+        public virtual string BindIntValue { get; private set; }
+        private void OnEnable()
+        {
+            if (BindIntValue != null)
+                ModHooks.Instance.GetPlayerIntHook += Bind;
+        }
+        private void OnDisable()
+        {
+            if (BindIntValue != null)
+                ModHooks.Instance.GetPlayerIntHook -= Bind;
+        }
+        public int Bind(string name)
+        {
+            return name == BindIntValue ? 0 : PlayerData.instance.GetIntInternal(name);
+        }
+    }
+    public abstract class BreakableIntBinding : IntBinding
     {
         private void Awake()
         {

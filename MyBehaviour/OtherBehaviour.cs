@@ -397,5 +397,63 @@ namespace DecorationMaster.MyBehaviour
         
         
         }
+        [Decoration("lazer_bug")]
+        [Description("激光虫，放置的时候只能放在平台的左边沿，因为起始状态是向下爬，\n放其他地方会卡墙卡空气。\n(BUG好难修不管了）")]
+        public class LazerBug : CustomDecoration
+        {
+            public static GameObject prefab = ObjectLoader.InstantiableObjects["HK_lazer_bug"];
+            private GameObject _l;
+            private GameObject lazer {
+                get
+                {
+                    if (_l)
+                        return _l;
+                    _l = Instantiate(prefab);
+                    return _l;
+                }
+            }
+            private void Awake()
+            {
+                UnVisableBehaviour.AttackReact.Create(gameObject);
+                transform.localScale *= 0.5f;
+                //lazer = Instantiate(prefab);//,transform);
+                lazer.GetComponentInChildren<HealthManager>().hp = 9999;
+                //Logger.LogDebug("lazerBUg Spawn" + lazer.name);
+                //lazer.GetComponent<HealthManager>().hp = 9999;
+                //
+            }
+            private void Start()
+            {
+                lazer.transform.position = transform.position;
+                
+                lazer.SetActive(true);
+            }
+            
+            private void OnDestroy()
+            {
+                Logger.LogDebug("LazerBugDie");
+                Destroy(lazer);
+            }
+        }
+    
+        [Decoration("edge")]
+        [Description("区域线，可当地板等使用")]
+        public class LineEdge : Resizeable
+        {
+            private void Awake()
+            {
+                var tex = GUIController.Instance.images["lineEdge"];
+                var sr = gameObject.AddComponent<SpriteRenderer>();
+                sr.sprite = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0.5f, 0.5f));
+                var col = gameObject.AddComponent<EdgeCollider2D>();
+                gameObject.layer = (int)GlobalEnums.PhysLayers.TERRAIN;
+                col.points = new Vector2[] { new Vector2(-0.5f, 0), new Vector2(0.5f, 0) };
+            }
+
+            public override void HandleSize(float size)
+            {
+                gameObject.transform.localScale = new Vector3(size*10, 2, 1);
+            }
+        }
     }
 }

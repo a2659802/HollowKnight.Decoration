@@ -5,8 +5,13 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using UnityEngine;
-
+using TMPro;
 using DecorationMaster.Util;
+using ModCommon;
+using DecorationMaster.UI;
+using System.Collections;
+using USceneManager = UnityEngine.SceneManagement.SceneManager;
+using UnityEngine.SceneManagement;
 
 namespace DecorationMaster
 {
@@ -21,10 +26,11 @@ namespace DecorationMaster
 		}
 		public Test()
         {
-            /*Modding.Logger.LogDebug("Start Test");
-            On.DialogueBox.SetConversation += DialogueBox_SetConversation;
-			Modding.Logger.LogDebug($"End Test"); */
-        }
+            Modding.Logger.LogDebug("Start Test");
+			
+			Modding.Logger.LogDebug("End Test");
+			//Assetfile
+		}
 
        
         private void DialogueBox_SetConversation(On.DialogueBox.orig_SetConversation orig, DialogueBox self, string convName, string sheetName)
@@ -35,26 +41,85 @@ namespace DecorationMaster
 
         public static void TestGo(GameObject go)
         {
-			/*
-            AudioLoader.Load();
-            var saw = go;
-            var saw_au = saw.GetComponent<AudioSource>();
-            var tinkeff = saw.GetComponent<TinkEffect>();
-            var tink_au = tinkeff.blockEffect.GetComponent<AudioSource>();
-            AudioSource.PlayClipAtPoint(tink_au.clip, HeroController.instance.transform.position);
-            Logger.LogDebug($"{tinkeff.blockEffect.name}==={tink_au.clip.name}");
-            Logger.LogDebug($"{ObjectLoader.InstantiableObjects["HK_saw"].GetComponent<TinkEffect>().blockEffect.name}");*/
+			
         }
 		public static void TestOnce()
         {
 			if(Input.GetKeyDown(KeyCode.T))
             {
-				
+				var gos = GameObject.FindObjectsOfType<GameObject>();
+				foreach(var g in gos)
+                {
+					Logger.Log($"{g.name}--->{g.layer}");
+                }
+
 			}
         }
+		public IEnumerator Dump(string sceneName = null)
+		{
 
+			List<string> scenes = new List<string>();
+			for (int j = 0; j < USceneManager.sceneCountInBuildSettings; j++)
+			{
+				string scenePath = SceneUtility.GetScenePathByBuildIndex(j);
+				string name = Path.GetFileNameWithoutExtension(scenePath);
+				scenes.Add(name);
+				var load = USceneManager.LoadSceneAsync(j, LoadSceneMode.Single);
+				while (!load.isDone)
+				{
+					yield return new WaitForEndOfFrame();
+				}
+				yield return new WaitForSeconds(0.2f);
+				Scene s = USceneManager.GetActiveScene();
+				StringBuilder sb = new StringBuilder();
+				foreach (var g in s.GetRootGameObjects())
+                {
+					Visit(g.transform, 0, null,sb);
+                }
+				try
+				{
+					var fs = File.Create($"Z:\\1\\{s.name}.txt");
+					StreamWriter sw = new StreamWriter(fs);
+					sw.Write(sb.ToString());
+					sw.Close();
+					fs.Close();
+				}
+				catch { }
+				
+				//
+			}
+			var load_ = USceneManager.LoadSceneAsync(2, LoadSceneMode.Single);
+			while (!load_.isDone)
+			{
+				yield return new WaitForEndOfFrame();
+			}
+			yield return USceneManager.LoadSceneAsync("Quit_To_Menu");
+			while (USceneManager.GetActiveScene().name != Constants.MENU_SCENE)
+			{
+				yield return new WaitForEndOfFrame();
+			}
 
-    }
+			
+			
+		}
+		public static void Visit(Transform t,int depth,Transform father,StringBuilder sb)
+        {
+			if (t == null)
+				return;
+			string prefix = "";
+			for(int i=0;i<depth;i++)
+            {
+				prefix += "   ";
+            }
+			string name = father?.name +"/" +t.name;
+			string log = $"{prefix}{name}--->layer:{t.gameObject.layer}({((GlobalEnums.PhysLayers)t.gameObject.layer)})";
+			sb.AppendLine(log);
+			foreach(Transform child in t)
+            {
+				Visit(child, depth + 1,t,sb);
+            }
+        }
+	}
 	
     public static class AudioLoader
     {

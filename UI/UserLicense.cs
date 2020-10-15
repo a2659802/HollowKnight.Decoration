@@ -35,7 +35,7 @@ namespace DecorationMaster.UI
                 }
                 var _canvas = ab.LoadAsset<GameObject>("userlicense");
                 UnityEngine.Object.Instantiate(_canvas);
-                Logger.LogDebug("Show User License");
+                Logger.Log("Show User License");
             }
         }
 

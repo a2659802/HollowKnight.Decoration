@@ -177,7 +177,7 @@ namespace DecorationMaster.UI
             {
                 SetActive(!panel.active);
                 
-                Logger.LogDebug("Toggle PickPanel");
+               // Logger.LogDebug("Toggle PickPanel");
             }
 
             if (panel.active)

@@ -14,6 +14,7 @@ namespace DecorationMaster
     [Serializable]
     public class GlobalModSettings : ModSettings
     {
+        public bool CreateMode = false;
         public bool showDesc = true;
         public bool agreeLicense = false;
         public KeyCode ToggleEditKey = KeyCode.CapsLock;
@@ -24,6 +25,7 @@ namespace DecorationMaster
     [Serializable]
     public class ItemSettings
     {
+        public float mod_version = DecorationMaster.Version;
         public List<Item> items = new List<Item>();
     }
     public enum Operation

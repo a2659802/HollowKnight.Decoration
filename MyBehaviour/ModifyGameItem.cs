@@ -2,9 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using DecorationMaster.UI;
 using UnityEngine;
 using DecorationMaster.Attr;
 using DecorationMaster.Util;
+using USceneManager = UnityEngine.SceneManagement.SceneManager;
+using UnityEngine.SceneManagement;
+using System.Collections;
+
 namespace DecorationMaster.MyBehaviour
 {
     public class ModifyGameItem
@@ -55,7 +60,7 @@ namespace DecorationMaster.MyBehaviour
                 if (SetupMode)
                     gameObject.AddComponent<ShowColliders>();
                 gameObject.name = "Disable Hazard Respawn Trigger";
-                gameObject.layer = (int)GlobalEnums.PhysLayers.UI;
+                gameObject.layer = (int)GlobalEnums.PhysLayers.PLAYER;
                 UnVisableBehaviour.AttackReact.Create(gameObject);
                 col.isTrigger = true;
                 var rb = gameObject.AddComponent<Rigidbody2D>();
@@ -71,6 +76,39 @@ namespace DecorationMaster.MyBehaviour
                 collider.gameObject.SetActive(false);
                 Logger.LogDebug($"Disable respawn Trigger {collider.gameObject.name}");
                 col.enabled = false;
+            }
+        }
+    
+        //[Decoration("gg_destroy")]
+        public class DisableGGPrefab:CustomDecoration
+        {
+
+        }
+
+        [Decoration("remove_scene")]
+        [Description("移除场景内所有物体（除了进出的门）\n未测试物品，谨慎使用")]
+        public class DisableRootObjs:CustomDecoration
+        {
+            private void Awake()
+            {
+                UnVisableBehaviour.AttackReact.Create(gameObject);
+            }
+            private IEnumerator Start()
+            {
+                yield return new WaitForSceneLoadFinish();
+                Scene s = USceneManager.GetActiveScene();
+                foreach (var g in s.GetRootGameObjects())
+                {
+                    if (g.name.Contains("_Transition"))
+                    {
+                        if(SetupMode)
+                            g.gameObject.AddComponent<ShowColliders>();
+                        continue;
+                    }
+                    if (g.GetComponent<CustomDecoration>() != null)
+                        continue;
+                    Destroy(g.gameObject);
+                }
             }
         }
     }

@@ -16,8 +16,9 @@ namespace DecorationMaster.MyBehaviour
     [Decoration("HK_crystal")]
     [Decoration("HK_bounce_shroom")]
     [Decoration("HK_stomper")]
-    [Decoration("HK_lazer_bug")]
     [Decoration("HK_zote_head")]
+    [Decoration("HK_infinte_soul")]
+    //[Decoration("HK_lazer_bug")]
     //[Decoration("HK_conveyor")]
     public class DefaultBehaviour : Resizeable
     {
@@ -66,18 +67,7 @@ namespace DecorationMaster.MyBehaviour
         public ShowColliders colDisp;
         public void Awake()
         {
-
             AttackReact.Create(gameObject);
-           /* var child = new GameObject();
-            child.transform.SetParent(gameObject.transform);
-            child.layer = (int)GlobalEnums.PhysLayers.PROJECTILES;
-            child.AddComponent<AttackReact>().parent = this;
-            
-            gameObject.AddComponent<NonBouncer>();
-            if(SetupMode)
-                colDisp = gameObject.AddComponent<ShowColliders>();
-            Logger.LogDebug("Awake Unvisable");*/
-            
         }
         
     }

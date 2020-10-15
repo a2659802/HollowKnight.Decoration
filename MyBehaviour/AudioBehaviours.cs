@@ -43,11 +43,11 @@ namespace DecorationMaster.MyBehaviour
             }
             private void Start()
             {
-                transform.position += new Vector3(0, 0, 1);
+                //transform.position += new Vector3(0, 0, 1);
             }
             private void OnCollisionEnter2D(Collision2D col)
             {
-                Logger.LogDebug(col.gameObject.name);
+                //Logger.LogDebug(col.gameObject.name);
                 if (col.gameObject.layer == 9)
                 {
                     var n = ((ItemDef.AuidoItem)item).Note;

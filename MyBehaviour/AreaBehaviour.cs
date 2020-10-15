@@ -1,6 +1,7 @@
 ﻿using DecorationMaster.Attr;
 using Modding;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -43,6 +44,7 @@ namespace DecorationMaster.MyBehaviour
                         _dark = 0;
                     else
                         _dark = value;
+                    DecorationMaster.GM.sm.darknessLevel = _dark;
                 } 
             }
             private bool noLantern;
@@ -55,7 +57,14 @@ namespace DecorationMaster.MyBehaviour
             {
                 noLantern = true;
                 darknessLevel++;
-                UpdateDark();
+                StartCoroutine(SetDark());
+                IEnumerator SetDark()
+                {
+                    yield return new WaitForSeconds(0.5f);
+                    UpdateDark();
+                }
+                
+                
             }
             private void OnDisable()
             {
@@ -107,8 +116,33 @@ namespace DecorationMaster.MyBehaviour
             {
                 On.HeroController.Bounce -= NoBonce;
             }
-        } 
+        }
 
+        [Description("禁用能力-波\n非编辑模式下可用攻击暂时移除\n如果你不想被移除，那就放到打不到的地方")]
+        [Decoration("IMG_fireball")]
+        public class BindFireball :BreakableIntBinding
+        {
+            public override string BindIntValue => nameof(PlayerData.fireballLevel);
+        }
+        [Description("禁用能力-大冲\n非编辑模式下可用攻击暂时移除\n如果你不想被移除，那就放到打不到的地方")]
+        [Decoration("IMG_supserdash")]
+        public class BindSuperDash : BreakableBoolBinding
+        {
+            public override string BindBoolValue => nameof(PlayerData.hasSuperDash);
+        }
+        [Description("禁用能力-下砸\n非编辑模式下可用攻击暂时移除\n如果你不想被移除，那就放到打不到的地方")]
+        [Decoration("IMG_quake")]
+        public class BindQuake : BreakableIntBinding
+        {
+            public override string BindIntValue => nameof(PlayerData.quakeLevel);
+        }
+        [Description("禁用能力-尖啸\n非编辑模式下可用攻击暂时移除\n如果你不想被移除，那就放到打不到的地方")]
+        [Decoration("IMG_scream")]
+        public class BindScream : BreakableIntBinding
+        {
+            public override string BindIntValue => nameof(PlayerData.screamLevel);
+        }
+        
     }
 
 }

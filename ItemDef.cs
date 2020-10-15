@@ -101,6 +101,7 @@ namespace DecorationMaster
         [Decoration("IMG_DownSlash")]
         [Decoration("HK_turret")]
         [Decoration("zote_wall")]
+        [Decoration("edge")]
         public class DefatulResizeItem : ResizableItem { }
 
         [Serializable]
@@ -146,7 +147,7 @@ namespace DecorationMaster
         public class ManaSourceItem : ManaItem
         {
             [Handle(Operation.SetMana)]
-            [IntConstraint((int)ManaType.U,(int)ManaType.C-1)]
+            [IntConstraint((int)ManaType.W,(int)ManaType.C-1)]
             public override ManaType mType { get => base.mType; set => base.mType = value; }
         }
 

@@ -61,7 +61,7 @@ namespace DecorationMaster
                 group.Add(group_idx, a);
             }
 
-            Logger.LogDebug("Group Info");
+            /*Logger.LogDebug("Group Info");
             foreach(var kv in group)
             {
                 Logger.LogDebug($"{kv.Key}:");
@@ -69,7 +69,7 @@ namespace DecorationMaster
                 {
                     Logger.LogDebug(s);
                 }
-            }
+            }*/
         }
         public int SwitchGroup(int span = 1)
         {
@@ -117,15 +117,15 @@ namespace DecorationMaster
                 return null;
              
             string poolname = group[CurrentGroup][idx - 1];
-            Logger.LogDebug($"Selected {idx},{poolname}");
+            //Logger.LogDebug($"Selected {idx},{poolname}");
             GameObject go = ObjectLoader.CloneDecoration(poolname);
 
             currentSelect = go;
-            Logger.LogDebug($"CURRENT Null?{go?.name}");
+            //Logger.LogDebug($"CURRENT Null?{go?.name}");
             
             CustomDecoration cd = go?.GetComponent<CustomDecoration>();
-            Logger.LogDebug($"Decoration Null?{cd == null}");
-            Logger.LogDebug($"Item Null?{cd?.item == null},Prefab Item Null?{ObjectLoader.InstantiableObjects[poolname].GetComponent<CustomDecoration>()?.item == null}");
+            //Logger.LogDebug($"Decoration Null?{cd == null}");
+            //Logger.LogDebug($"Item Null?{cd?.item == null},Prefab Item Null?{ObjectLoader.InstantiableObjects[poolname].GetComponent<CustomDecoration>()?.item == null}");
             go?.SetActive(true);
 
             //Test.TestGo(go);

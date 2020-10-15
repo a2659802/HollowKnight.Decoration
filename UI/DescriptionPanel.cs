@@ -58,7 +58,7 @@ namespace DecorationMaster.UI
             else
                 desc = cn.Text;
             UpdateDesc(desc);
-            Logger.LogDebug($"Desc:{desc}");
+            //Logger.LogDebug($"Desc:{desc}");
         }
     }
 }

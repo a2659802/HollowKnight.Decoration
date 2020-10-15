@@ -17,9 +17,10 @@ using DecorationMaster.Util;
 namespace DecorationMaster
 {
     public delegate int SelectItem();
-    public class DecorationMaster : Mod//,ITogglableMod
+    public class DecorationMaster : Mod,ITogglableMod
     {
         private static GameManager _gm;
+        private GameObject UIObj;
 
         public static DecorationMaster instance;
         public SelectItem SelectGetter;
@@ -29,14 +30,19 @@ namespace DecorationMaster
             instance = this;
 
             //new Test();
+            //return;
             Logger.Log("Load Json");
             ItemSettings global = SerializeHelper.LoadGlobalSettings<ItemSettings>();
             if (global != null)
             {
+                if (global.mod_version > Version)
+                    throw new FileLoadException("Try To Load an newer json data in an older mod,please update mod");
                 ItemData = global;
                 Logger.Log("Loaded Json");
+                
             }
-            
+
+            #region Init GameObject
             ObjectLoader.Load(preloadedObjects);
             BehaviourProcessor.RegisterBehaviour<OtherBehaviour>();
             BehaviourProcessor.RegisterBehaviour<AreaBehaviour>();
@@ -44,28 +50,34 @@ namespace DecorationMaster
             BehaviourProcessor.RegisterBehaviour<ModifyGameItem>();
             BehaviourProcessor.RegisterBehaviour<Mana>();
             BehaviourProcessor.RegisterBehaviour<AudioBehaviours>();
+            BehaviourProcessor.RegisterBehaviour<OneShotBehaviour>();
             BehaviourProcessor.RegisterSharedBehaviour<DefaultBehaviour>();
+            BehaviourProcessor.RegisterSharedBehaviour<UnVisableBehaviour>();
+            #endregion
 
-            ModHooks.Instance.HeroUpdateHook += OperateItem;
-            UnityEngine.SceneManagement.SceneManager.sceneLoaded += SpawnFromSettings;
-            UnityEngine.SceneManagement.SceneManager.sceneLoaded += ShowRespawn;
-
-            SelectGetter = GetKeyPress;
-            SelectGetter += PickPanel.SelectFocus;
-
-            GameObject UIObj = new GameObject();
+            UIObj = new GameObject();
             UIObj.AddComponent<GUIController>();
             UnityEngine.Object.DontDestroyOnLoad(UIObj);
             GUIController.Instance.BuildMenus();
 
+            #region SetupCallBack
+            SelectGetter = GetKeyPress;
+            SelectGetter += PickPanel.SelectFocus;
+            UnityEngine.SceneManagement.SceneManager.sceneLoaded += SpawnFromSettings;
+            UnityEngine.SceneManagement.SceneManager.sceneLoaded += ShowRespawn;
             ModHooks.Instance.LanguageGetHook += DLanguage.MyLanguage;
             ModHooks.Instance.ApplicationQuitHook += SaveJson;
+            if (Settings.CreateMode)
+                ModHooks.Instance.HeroUpdateHook += OperateItem;
+            #endregion
 
             UserLicense.ShowLicense();
+            
         }
 
         private void SaveJson()
         {
+            ItemData.mod_version = Version;
             SerializeHelper.SaveGlobalSettings(ItemData);
             Logger.Log("Save Json");
         }
@@ -110,11 +122,18 @@ namespace DecorationMaster
                         continue;
 
                     var poolname = r.pname;
-                    var decorationGo = ObjectLoader.CloneDecoration(poolname);
-                    if(decorationGo != null)
+                    try
                     {
-                        decorationGo.GetComponent<CustomDecoration>().Setup(Operation.Serialize, r);
-                        count++;
+                        var decorationGo = ObjectLoader.CloneDecoration(poolname);
+                        if (decorationGo != null)
+                        {
+                            decorationGo.GetComponent<CustomDecoration>().Setup(Operation.Serialize, r);
+                            count++;
+                        }
+                    }
+                    catch
+                    {
+                        Logger.LogError($"Spawn Failed When Try to Spawn {poolname}");
                     }
                 }
                 
@@ -125,7 +144,7 @@ namespace DecorationMaster
         private Vector2 mousePos;
         private void OperateItem()
         {
-            //Test.TestOnce();
+            Test.TestOnce();
 
             if (Input.GetKeyDown(ToggleEdit))    // Toggle Edit Model
             {
@@ -220,9 +239,19 @@ namespace DecorationMaster
         }
         public void Unload()
         {
+            SaveJson();
+            #region RemoveCallBack
+            SelectGetter = null;
+            UnityEngine.SceneManagement.SceneManager.sceneLoaded -= SpawnFromSettings;
+            UnityEngine.SceneManagement.SceneManager.sceneLoaded -= ShowRespawn;
+            ModHooks.Instance.LanguageGetHook -= DLanguage.MyLanguage;
+            ModHooks.Instance.ApplicationQuitHook -= SaveJson;
+            ModHooks.Instance.HeroUpdateHook -= OperateItem;
+            UnityEngine.Object.Destroy(UIObj);
+            #endregion
 
         }
-        
+
         public GlobalModSettings Settings = new GlobalModSettings();
         public ItemSettings ItemData = new ItemSettings();
         public override ModSettings GlobalSettings
@@ -235,7 +264,7 @@ namespace DecorationMaster
         {
             Assembly asm = Assembly.GetExecutingAssembly();
 
-            string ver = asm.GetName().Version.ToString();
+            string ver = Version.ToString("0.000");
 
             using SHA1 sha1 = SHA1.Create();
             using FileStream stream = File.OpenRead(asm.Location);
@@ -248,6 +277,8 @@ namespace DecorationMaster
         }
         public KeyCode ToggleEdit => Settings.ToggleEditKey;
         public KeyCode SwitchGroup => Settings.SwitchGroupKey;
+
+        public const float Version = 0.16f;
     }
     public static class Logger
     {

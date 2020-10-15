@@ -209,9 +209,9 @@ namespace DecorationMaster.UI
                     cache_prop.Add(t, d);
                 }
 
-                Logger.LogDebug($"Cache PropInfo:T:{t},name:{p.Name}");
+                //Logger.LogDebug($"Cache PropInfo:T:{t},name:{p.Name}");
             }
-            Logger.LogDebug($"_reflectProp_resutl:{propInfos.ToArray().Length}");
+            //Logger.LogDebug($"_reflectProp_resutl:{propInfos.ToArray().Length}");
         }
         public static void Show()
         {
@@ -245,19 +245,19 @@ namespace DecorationMaster.UI
                             insp.UpdateName(idx,name);
                             if(con is IntConstraint)
                             {
-                                Logger.LogDebug($"Check1 {con.Min}-{con.Max}");
+                                //Logger.LogDebug($"Check1 {con.Min}-{con.Max}");
                                 insp.UpdateSliderConstrain(name,idx, (float)Convert.ChangeType(con.Min, typeof(float)), Convert.ToInt32(con.Max), true);
                             }
                             else if(con is FloatConstraint)
                             {
-                                Logger.LogDebug($"Check2 {con.Min}-{con.Max}");
+                                //Logger.LogDebug($"Check2 {con.Min}-{con.Max}");
                                 insp.UpdateSliderConstrain(name,idx, (float)(con.Min), (float)(con.Max), false);
                             }
                             else
                             {
                                 throw new ArgumentException();
                             }
-                            Logger.LogDebug($"Check3 {value}-{value.GetType()}");
+                            //Logger.LogDebug($"Check3 {value}-{value.GetType()}");
                             insp.UpdateValue(idx, (float)value);
                         }
                         else

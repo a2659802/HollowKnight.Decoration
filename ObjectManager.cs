@@ -24,11 +24,26 @@ namespace DecorationMaster
             {("inspect_region",null),("White_Palace_18","Inspect Region")},
             {("zote_head",(go)=>{go.name = "ZoteKey";return go; }),("Fungus1_20_v02","Zote Death/Head") },
             {
-                ("saw", null),
+                ("saw", (go)=>{
+                    go.layer = (int)GlobalEnums.PhysLayers.ENEMIES;
+                    
+                    return go;
+                }),
                 ("White_Palace_18","saw_collection/wp_saw")
             },
+            {
+                ("infinte_soul",null),
+                ("White_Palace_18","Soul Totem white_Infinte")
+            },
             { 
-                ("trap_spike",null),("White_Palace_07","wp_trap_spikes")
+                ("trap_spike",(go)=>{
+                    //go.transform.Find("wp_anim_spikes_fast").layer = (int)GlobalEnums.PhysLayers.ENEMY_ATTACK;
+                     foreach(var dmg in go.GetComponentsInChildren<DamageHero>())
+                    {
+                        dmg.gameObject.layer =  (int)GlobalEnums.PhysLayers.ENEMIES;
+                    }
+                    return go;
+                }),("White_Palace_07","wp_trap_spikes")
             },
             {
                 ("flip_platform",null),("Mines_31","Mines Platform")
@@ -60,7 +75,6 @@ namespace DecorationMaster
                 ("soul_totem",null),
                 ("Crossroads_25","Soul Totem mini_two_horned")
             },
-            
             {
                 ("lazer_bug",null),
                 ("Mines_05","Crystallised Lazer Bug")
@@ -234,7 +248,7 @@ namespace DecorationMaster
                     new Vector2(0.5f, 0.5f));
                 go.SetActive(false);
                 go.AddComponent<SpriteRenderer>().sprite = sprite;
-                go.AddComponent<BoxCollider2D>().size = new Vector2(1.2f, 1.2f);
+                go.AddComponent<BoxCollider2D>().size = Vector2.one;
                 go.layer = (int)GlobalEnums.PhysLayers.HERO_ATTACK;
                 //To Add some component HERE
                 return go;
@@ -278,7 +292,7 @@ namespace DecorationMaster
                 Object.DontDestroyOnLoad(empty);
                 empty.SetActive(false);
                 ObjectLoader.InstantiableObjects.Add(poolname, empty);
-                Logger.LogWarn($"Cant find an object in InstantiableObjects, create an empty GO instead");
+                Logger.LogDebug($"Cant find an object in InstantiableObjects, create an empty GO instead");
             }
 
             GameObject prefab = ObjectLoader.InstantiableObjects[poolname];
