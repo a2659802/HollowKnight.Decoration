@@ -53,6 +53,11 @@ namespace DecorationMaster
         SetTime,
 
         SetNote,
+
+        SetColorR,
+        SetColorG,
+        SetColorB,
+        SetColorA
     }
     
     [Serializable]

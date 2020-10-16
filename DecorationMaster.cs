@@ -44,6 +44,7 @@ namespace DecorationMaster
 
             #region Init GameObject
             ObjectLoader.Load(preloadedObjects);
+            BehaviourProcessor.RegisterBehaviour<Draw>();
             BehaviourProcessor.RegisterBehaviour<OtherBehaviour>();
             BehaviourProcessor.RegisterBehaviour<AreaBehaviour>();
             BehaviourProcessor.RegisterBehaviour<MovablePlatform>();
@@ -124,10 +125,10 @@ namespace DecorationMaster
                     var poolname = r.pname;
                     try
                     {
-                        var decorationGo = ObjectLoader.CloneDecoration(poolname);
+                        var decorationGo = ObjectLoader.CloneDecoration(poolname,r);
                         if (decorationGo != null)
                         {
-                            decorationGo.GetComponent<CustomDecoration>().Setup(Operation.Serialize, r);
+                            //decorationGo.GetComponent<CustomDecoration>().Setup(Operation.Serialize, r);
                             count++;
                         }
                     }
@@ -278,7 +279,7 @@ namespace DecorationMaster
         public KeyCode ToggleEdit => Settings.ToggleEditKey;
         public KeyCode SwitchGroup => Settings.SwitchGroupKey;
 
-        public const float Version = 0.16f;
+        public const float Version = 0.17f;
     }
     public static class Logger
     {

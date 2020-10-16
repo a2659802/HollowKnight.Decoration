@@ -23,13 +23,14 @@ namespace DecorationMaster.MyBehaviour
             private static AudioClip _c;
             private AudioSource au;
             private bool used;
+            private HeroTrigger ht;
             private void Awake()
             {
                 
                 au = gameObject.AddComponent<AudioSource>();
                 //var sr = gameObject.AddComponent<SpriteRenderer>();
                 //var col = gameObject.AddComponent<BoxCollider2D>();
-                var ht = gameObject.AddComponent<HeroTrigger>();
+                ht = gameObject.AddComponent<HeroTrigger>();
                 ht.HeroEnter = RecoveOneshot;
                 transform.localScale *= 2;
             }
@@ -46,9 +47,13 @@ namespace DecorationMaster.MyBehaviour
                 IEnumerator Consume()
                 {
                     gameObject.GetComponent<SpriteRenderer>().enabled = false;
-                    yield return new WaitWhile(()=>au.isPlaying);
-                    //gameObject.SetActive(false);
-                    Destroy(gameObject);
+                    ht.enabled = false;
+                    yield return new WaitWhile(() => au.isPlaying);
+
+                    yield return new WaitForSeconds(3);
+                    gameObject.GetComponent<SpriteRenderer>().enabled = true;
+                    ht.enabled = true;
+                    used = false;
                 }
                 
                 
@@ -72,13 +77,14 @@ namespace DecorationMaster.MyBehaviour
         {
             public static AudioClip clip => RecoverDash.clip;
             private AudioSource au;
+            private HeroTrigger ht;
             private bool used;
             private void Awake()
             {
                 au = gameObject.AddComponent<AudioSource>();
                 //var sr = gameObject.AddComponent<SpriteRenderer>();
                // var col = gameObject.AddComponent<BoxCollider2D>();
-                var ht = gameObject.AddComponent<HeroTrigger>();
+                ht = gameObject.AddComponent<HeroTrigger>();
                 ht.HeroEnter = RecoveOneshot;
                 transform.localScale *= 2;
             }
@@ -95,9 +101,14 @@ namespace DecorationMaster.MyBehaviour
                 IEnumerator Consume()
                 {
                     gameObject.GetComponent<SpriteRenderer>().enabled = false;
+                    ht.enabled = false;
                     yield return new WaitWhile(() => au.isPlaying);
-                    //gameObject.SetActive(false);
-                    Destroy(gameObject);
+
+                    yield return new WaitForSeconds(3);
+                    gameObject.GetComponent<SpriteRenderer>().enabled = true;
+                    ht.enabled = true;
+                    used = false;
+
                 }
             }
 

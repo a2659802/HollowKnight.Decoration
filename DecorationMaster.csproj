@@ -99,6 +99,7 @@
     <Compile Include="DecorationMaster.cs" />
     <Compile Include="DLanguage.cs" />
     <Compile Include="MyBehaviour\AudioBehaviours.cs" />
+    <Compile Include="MyBehaviour\Draw.cs" />
     <Compile Include="MyBehaviour\Mana.cs" />
     <Compile Include="MyBehaviour\ModifyGameItem.cs" />
     <Compile Include="MyBehaviour\MovablePlatform.cs" />
@@ -297,6 +298,12 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="images\icons\remove_scene.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="images\objects\TerrainPoint.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="images\objects\PaintPoint.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

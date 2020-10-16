@@ -140,11 +140,12 @@ namespace DecorationMaster.MyBehaviour
             base.Remove();
         }
         [Handle(Operation.COPY)]
-        public GameObject CopySelf(object self = null)
+        public virtual GameObject CopySelf(object self = null)
         {
             var item_clone = item.Clone() as Item;
-            var clone = Instantiate(gameObject);
-            clone.GetComponent<CustomDecoration>().item = item_clone;
+            //var clone = Instantiate(gameObject);
+            //clone.GetComponent<CustomDecoration>().item = item_clone;
+            var clone = ObjectLoader.CloneDecoration(item.pname, item_clone);
             return clone;
         }
     }

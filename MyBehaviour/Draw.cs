@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 using DecorationMaster.Attr;
+using System.Collections;
+
 namespace DecorationMaster.MyBehaviour
 {
 
@@ -34,38 +36,57 @@ namespace DecorationMaster.MyBehaviour
                 return new PColor(c.r, c.g, c.b, c.a);
             }
         }
-    
-        [Decoration("terrain_point")]
-        [Description("用来描绘边界的点，会自动和上一个点连起来形成一个区域分界线")]
+
+        [Serializable]
+        public class PointItem : Item
+        {
+            public int seq = 0;
+
+            [FloatConstraint(0, 1)]
+            [Handle(Operation.SetColorR)]
+            public float R { get; set; } = 1f;
+
+            [FloatConstraint(0, 1)]
+            [Handle(Operation.SetColorG)]
+            public float G { get; set; } = 1f;
+
+            [FloatConstraint(0, 1)]
+            [Handle(Operation.SetColorB)]
+            public float B { get; set; } = 1f;
+
+            [FloatConstraint(0, 1)]
+            [Handle(Operation.SetColorA)]
+            public float A { get; set; } = 1f;
+        }
+
+        [Decoration("IMG_TerrainPoint")]
+        [Description("用来描绘边界的点,有碰撞，会自动和上一个点连起来形成一个区域分界线")]
         public class TerrianPoint:CustomDecoration
         {
-            [Serializable]
-            public class PointItem : Item
-            {
-                public int seq = 0;
-
-                [FloatConstraint(0, 1)]
-                public float R { get; set; } = 1f;
-                [FloatConstraint(0, 1)]
-                public float G { get; set; } = 1f;
-                [FloatConstraint(0, 1)]
-                public float B { get; set; } = 1f;
-            }
-
-            public const float linewidth = .5f;
+            public const float linewidth = .07f;
             private LineRenderer lr;
-            
+            private EdgeCollider2D col;
+
             private void Awake()
             {
-
-                var points = FindObjectsOfType<TerrianPoint>();//.Where(x => (((PointItem)(x.item)).seq == selfSeq - 1)).FirstOrDefault();
-                ((PointItem)item).seq = points.Length;
-                points = points.OrderByDescending(x => get_seq(x)).ToArray();
-                if (points.Length < 2)
-                    return;
-
-                TerrianPoint lastPoint = points[1];
-                if (get_seq(lastPoint) != (get_seq(this) - 1))
+                gameObject.AddComponent<NonBouncer>();
+                if (get_seq(this) == 0)
+                {
+                    var points = FindObjectsOfType<TerrianPoint>().Where(x => x != this).OrderByDescending(x => get_seq(x)).ToArray();
+                    if (points != null && points.Length > 0)
+                    {
+                        ((PointItem)item).seq = get_seq(points[0]) + 1;
+                    }
+                    else
+                    {
+                        ((PointItem)item).seq = 1;
+                    }
+                }
+            }
+            private void Start()
+            {
+                TerrianPoint lastPoint = FindObjectsOfType<TerrianPoint>().Where(x => (get_seq(this) - 1) == get_seq(x)).FirstOrDefault();
+                if (lastPoint == null)
                     return;
 
                 var line1 = gameObject.AddComponent<LineRenderer>();
@@ -73,14 +94,27 @@ namespace DecorationMaster.MyBehaviour
                 line1.positionCount = 2;
                 line1.startWidth = linewidth;
                 line1.endWidth = linewidth;
-                line1.startColor = Color.yellow;
-                line1.endColor = Color.yellow;
+                line1.startColor = get_color(lastPoint);
+                line1.endColor = get_color(this);
                 line1.SetPosition(0, lastPoint.transform.position);
                 lr = line1;
+
+                var child = new GameObject("collider");
+                child.layer = (int)GlobalEnums.PhysLayers.TERRAIN;
+                child.transform.SetParent(transform);
+                child.transform.localPosition = Vector3.zero;
+                col = child.AddComponent<EdgeCollider2D>();
+
+                HandlePos(transform.position);
             }
             private static int get_seq(TerrianPoint tp)
             {
                 return ((PointItem)tp.item).seq;
+            }
+            private static Color get_color(TerrianPoint tp)
+            {
+                var i = ((PointItem)tp.item);
+                return new Color(i.R, i.G, i.B, i.A);
             }
             public override void HandlePos(Vector2 val)
             {
@@ -88,7 +122,113 @@ namespace DecorationMaster.MyBehaviour
                 if (lr == null)
                     return;
                 lr.SetPosition(1, transform.position);
+                col.points = new Vector2[] { Vector2.zero, lr.GetPosition(0)-transform.position };
+            }
+            public override GameObject CopySelf(object self = null)
+            {
+                var item_clone = item.Clone() as Item;
+                ((PointItem)item_clone).seq = 0;
+                var clone = ObjectLoader.CloneDecoration(item.pname, item_clone);
+                return clone;
+            }
+            [Handle(Operation.SetColorR)]
+            [Handle(Operation.SetColorG)]
+            [Handle(Operation.SetColorB)]
+            [Handle(Operation.SetColorA)]
+            public void HandleColors(float val)
+            {
+                if (lr == null)
+                    return;
+                lr.endColor = get_color(this);
             }
         }
+
+
+        [Decoration("IMG_PaintPoint")]
+        [Description("纯粹用来绘制的点，没有任何碰撞效果\n建议用来给给关卡绘制简单的提示")]
+        public class PaintPoint : CustomDecoration
+        {
+            public const float linewidth = .05f;
+            private LineRenderer lr;
+
+            private void Awake()
+            {
+                gameObject.AddComponent<NonBouncer>();
+
+                if(get_seq(this)==0)
+                {
+                    var points = FindObjectsOfType<PaintPoint>().Where(x => x != this).OrderByDescending(x => get_seq(x)).ToArray();
+                    if (points != null && points.Length > 0)
+                    {
+                        ((PointItem)item).seq = get_seq(points[0]) + 1;
+                    }
+                    else
+                    {
+                        ((PointItem)item).seq = 1;
+                    }
+                }
+            }
+            private void Start()
+            {
+
+                PaintPoint lastPoint = FindObjectsOfType<PaintPoint>().Where(x => (get_seq(this)-1) == get_seq(x)).FirstOrDefault();
+                if (lastPoint == null)
+                    return;
+
+                var line1 = gameObject.AddComponent<LineRenderer>();
+                line1.material = new Material(Shader.Find("Particles/Additive"));
+                line1.positionCount = 2;
+                line1.startWidth = linewidth;
+                line1.endWidth = linewidth;
+                line1.startColor = get_color(lastPoint);
+                line1.endColor = get_color(this);
+                line1.SetPosition(0, lastPoint.transform.position);
+                lr = line1;
+
+                HandlePos(transform.position);
+
+            }
+            private static int get_seq(PaintPoint tp)
+            {
+                return ((PointItem)tp.item).seq;
+            }
+            private static Color get_color(PaintPoint tp)
+            {
+                var i = ((PointItem)tp.item);
+                return new Color(i.R, i.G, i.B, i.A);
+            }
+            public override void HandlePos(Vector2 val)
+            {
+                base.HandlePos(val);
+
+                if (lr == null)
+                    return;
+                lr.SetPosition(1, transform.position);
+
+            }
+
+            public override GameObject CopySelf(object self = null)
+            {
+                var item_clone = item.Clone() as Item;
+                ((PointItem)item_clone).seq = 0;
+                var clone = ObjectLoader.CloneDecoration(item.pname, item_clone);
+                return clone;
+            }
+
+            [Handle(Operation.SetColorR)]
+            [Handle(Operation.SetColorG)]
+            [Handle(Operation.SetColorB)]
+            [Handle(Operation.SetColorA)]
+            public void HandleColors(float val)
+            {
+                if (lr == null)
+                    return;
+                lr.endColor = get_color(this);
+            }
+
+
+        }
+
+
     }
 }

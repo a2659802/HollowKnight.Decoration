@@ -131,7 +131,7 @@ namespace DecorationMaster
             
         };
         public static Dictionary<string, GameObject> InstantiableObjects { get; } = new Dictionary<string, GameObject>();
-        public static GameObject CloneDecoration(string key)
+        public static GameObject CloneDecoration(string key,Item exists = null)
         {
             Modding.Logger.LogDebug($"On Clone {key}");
             GameObject go = null;
@@ -142,15 +142,16 @@ namespace DecorationMaster
                 Modding.Logger.LogDebug($"On Clone {prefab_item}");
                 if (prefab_item == null)
                     return null;
-                Item item = prefab_item.Clone() as Item;
+               // Item item = prefab_item.Clone() as Item;
                 go = Object.Instantiate(prefab);
                 go.name = go.name.Replace("(Clone)", "");
                 //go.GetComponent<CustomDecoration>().item = item;
-                go.GetComponent<CustomDecoration>().Setup(Operation.Serialize, item);
-                Modding.Logger.LogDebug($"Clone Item:{prefab_item==null},{item==null}");
+                go.GetComponent<CustomDecoration>().Setup(Operation.Serialize, exists == null?prefab_item.Clone():exists);
+               // Modding.Logger.LogDebug($"Clone Item:{prefab_item==null},{item==null}");
             }
             return go;
         }
+
         public static void Load(Dictionary<string, Dictionary<string, GameObject>> preloadedObjects)
         {
             static GameObject Spawnable(GameObject obj, Func<GameObject, GameObject> modify)
@@ -307,8 +308,8 @@ namespace DecorationMaster
         
         public static void RegisterBehaviour<T>()
         {
-            Type[] behaviours = typeof(T).GetNestedTypes(BindingFlags.Public);
-            Type[] items = typeof(ItemDef).GetNestedTypes(BindingFlags.Public | BindingFlags.Instance);
+            var behaviours = typeof(T).GetNestedTypes(BindingFlags.Public).Where(x => x.IsSubclassOf(typeof(CustomDecoration)));
+            var items = typeof(ItemDef).GetNestedTypes(BindingFlags.Public | BindingFlags.Instance).Where(x => x.IsSubclassOf(typeof(Item)));
 
             foreach (Type b in behaviours)
             {
@@ -319,7 +320,7 @@ namespace DecorationMaster
                 string poolname = attr.Name;
 
                 Type DataStruct = null;
-                foreach (Type i in items)
+                foreach (Type i in items) // Search Item Defination in ItemDef
                 {
                     DecorationAttribute[] i_attr = i.GetCustomAttributes(typeof(DecorationAttribute), false).OfType<DecorationAttribute>().ToArray();
                     if (i_attr == null || i_attr.Length == 0)
@@ -331,8 +332,15 @@ namespace DecorationMaster
                         break;
                     }
                 }
-                //if(d.item == null)
-                if(DataStruct == null)
+                if(DataStruct == null) // Search Item Defination in Behaviour
+                {
+                    DataStruct = b.GetNestedTypes(BindingFlags.Public).Where(x => x.IsSubclassOf(typeof(Item))).FirstOrDefault();
+                }
+                if (DataStruct == null) // Search Item Defination in T
+                {
+                    DataStruct = typeof(T).GetNestedTypes(BindingFlags.Public).Where(x => x.IsSubclassOf(typeof(Item))).FirstOrDefault();
+                }
+                if (DataStruct == null) // Fill with defatult Item
                 {
                     Logger.LogWarn($"Could Not Found an Item that match {b.FullName},Attr:{attr.Name},will use default item instance");
                     DataStruct = typeof(ItemDef.DefaultItem);
