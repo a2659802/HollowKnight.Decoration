@@ -52,11 +52,22 @@ namespace DecorationMaster.UI
         public static void ChangeDesc(CustomDecoration d)
         {
             string desc = null;
-            var cn = d.GetType().GetCustomAttributes(typeof(DescriptionAttribute), false).OfType<DescriptionAttribute>().Where(x => x.IsChinese()).FirstOrDefault();
-            if (cn == null)
-                desc = "该物品没有相关说明";
+            if(Language.Language.CurrentLanguage() == Language.LanguageCode.ZH)
+            {
+                var cn = d.GetType().GetCustomAttributes(typeof(DescriptionAttribute), false).OfType<DescriptionAttribute>().Where(x => x.IsChinese()).FirstOrDefault();
+                if (cn == null)
+                    desc = "该物品没有相关说明";
+                else
+                    desc = cn.Text;
+            }
             else
-                desc = cn.Text;
+            {
+                var en = d.GetType().GetCustomAttributes(typeof(DescriptionAttribute), false).OfType<DescriptionAttribute>().Where(x => !x.IsChinese()).FirstOrDefault();
+                if (en == null)
+                    desc = "there is no description for this item";
+                else
+                    desc = en.Text;
+            }
             UpdateDesc(desc);
             //Logger.LogDebug($"Desc:{desc}");
         }

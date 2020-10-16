@@ -13,6 +13,7 @@ namespace DecorationMaster.MyBehaviour
     {
         [Decoration("IMG_recoverDash")]
         [Description("给予一次冲刺能力")]
+        [Description("give player dash ability once \n yay just like Celeste", "en-us")]
         public class RecoverDash : CustomDecoration
         {
             public static AudioClip clip { get {
@@ -73,6 +74,7 @@ namespace DecorationMaster.MyBehaviour
         }
         [Decoration("IMG_recoverJump")]
         [Description("给予一次二段跳能力")]
+        [Description("give player double ability once", "en-us")]
         public class RecoverWingJump : CustomDecoration
         {
             public static AudioClip clip => RecoverDash.clip;

@@ -1,5 +1,6 @@
 # HollowKnight.Decoration
-A mod for making area harder by adding spike and saw or other things
+A mod can place items in-game.
+
 
 ##usage
 
@@ -23,5 +24,5 @@ Space key to set prefab
 [x] ADD UI / Inspector 
 [x] ADD More Object 
 [x] Finished Serialize 
-- ADD Music Box
+[x] ADD Music Box
 - ADD Some Special Item(e.g. an item can temporary change dash diretion)

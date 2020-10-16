@@ -25,6 +25,8 @@ namespace DecorationMaster.MyBehaviour
             } }
        
         [Decoration("note_platform")]
+        [Description("只是个普通的台子，踩上去会响，仅此而已。（另外这个贴图好违和，希望有人能提供一个合适的）")]
+        [Description("this is just a platform with voice","en-us")]
         public class AuidoPlatform : CustomDecoration
         {
             public AudioSource au;
@@ -43,7 +45,7 @@ namespace DecorationMaster.MyBehaviour
             }
             private void Start()
             {
-                //transform.position += new Vector3(0, 0, 1);
+                transform.position += new Vector3(0, 0, 1);
             }
             private void OnCollisionEnter2D(Collision2D col)
             {

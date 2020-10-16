@@ -6,6 +6,7 @@ using UnityEngine;
 namespace DecorationMaster.MyBehaviour
 {
     [Description("这是游戏内原本的物品，基本没有任何改动，看图标识别物品")]
+    [Description("This is the origin game object, never changed its function")]
     [Decoration("HK_trap_spike")]
     [Decoration("HK_flip_platform")]
     [Decoration("HK_spike")]

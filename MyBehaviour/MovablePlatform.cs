@@ -12,6 +12,7 @@ namespace DecorationMaster.MyBehaviour
     public class MovablePlatform
     {
         [Description("可移动的翻转平台,\n有显示上的BUG，暂时没有修复方案")]
+        [Description("movable platform, there an issue in it, do not use", "en-us")]
         [Decoration("move_flip_platform")]
         public class MoveFilp : SawMovement
         {
@@ -48,6 +49,7 @@ namespace DecorationMaster.MyBehaviour
         }
 
         [Description("闪烁平台，会不断消失-出现")]
+        [Description("twinkle platform \n will continue appear-disappear loop,you can set the frequence ", "en-us")]
         [Decoration("twinkle_platform")]
         public class TempPlatform : Resizeable
         {

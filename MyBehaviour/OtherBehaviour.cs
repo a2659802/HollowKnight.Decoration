@@ -12,6 +12,7 @@ namespace DecorationMaster.MyBehaviour
     public class OtherBehaviour
     {
         [Description("电锯，是这个MOD最初的装饰品，也是MOD名字——装修大师 的由来")]
+        [Description("saw, if you like it ,you can decorate it for the whole Hallownest", "en-us")]
         [Decoration("HK_saw")]
         public class Saw : SawMovement
         {
@@ -45,6 +46,7 @@ namespace DecorationMaster.MyBehaviour
         }
 
         [Description("放置时可能会有些bug:到处飘，这个只需要重新进入场景就不会出现了")]
+        [Description("maybe some issue while placing, but when you re-enter scene it will work", "en-us")]
         [Decoration("HK_fly")]
         public class Fly : Resizeable
         {
@@ -60,6 +62,7 @@ namespace DecorationMaster.MyBehaviour
         }
 
         [Description("由于放置时它把自己炸死会出BUG，所以我把血量设为了9999")]
+        [Description("it has 9999 HP lol", "en-us")]
         [Decoration("HK_turret")]
         public class Turret : Resizeable
         {
@@ -80,6 +83,7 @@ namespace DecorationMaster.MyBehaviour
 
         }
         [Description("开关，注意和门对应编号。\n当然，你要多个开关对应一个门我也不拦着你")]
+        [Description("switch just like you see. \n be care that you mush match switch number to gate number \n of course, you can match not just one switch for a gate", "en-us")]
         [Decoration("HK_lever")]
         public class Lever : Resizeable
         {
@@ -122,6 +126,7 @@ namespace DecorationMaster.MyBehaviour
         }
 
         [Description("由拉杆开关触发的门，注意编号对应。\n一个门可以有多个开关，但是一个开关只能开一个门")]
+        [Description("gate \n be care that you must match gate number to switch number. \n one switch can just open one gate.", "en-us")]
         [Decoration("HK_gate")]
         public class Gate : Resizeable
         {
@@ -158,6 +163,7 @@ namespace DecorationMaster.MyBehaviour
         }
 
         [Description("危险重生点，你可以理解为存档点")]
+        [Description("hazard respawn point, just for setting respawn point. non-edit mode player can't see it.", "en-us")]
         [Decoration("IMG_RespawnPoint")]
         public class RespawnTrigger : Resizeable
         {
@@ -187,6 +193,7 @@ namespace DecorationMaster.MyBehaviour
         
         [Description("看起来能破坏的墙壁")]
         [Decoration("HK_break_wall")]
+        [Description("breakable wall", "en-us")]
         public class BreakWall : Resizeable
         {
             private void Awake()
@@ -199,6 +206,7 @@ namespace DecorationMaster.MyBehaviour
         }
         [Description("看起来能破坏，但其实不可破坏的墙壁")]
         [Decoration("HK_unbreak_wall")]
+        [Description("unbreakbale wall \n it just look like break wall lol", "en-us")]
         public class UnBreakWall : Resizeable
         {
             private void Awake()
@@ -232,6 +240,7 @@ namespace DecorationMaster.MyBehaviour
         }
 
         [Description("一个不明的法阵，往里面放入某些东西可以激活它")]
+        [Description("zote head machine \nplace zote head above can let it work", "en-us")]
         [Decoration("zote_detection")]
         public class ZoteDetection : CustomDecoration
         {
@@ -330,6 +339,7 @@ namespace DecorationMaster.MyBehaviour
     
         [Decoration("zote_wall")]
         [Description("佐特之墙，往法阵里放入佐特头骨可以打开（随机打开一个）")]
+        [Description("zote wall, can be open by zote head machine", "en-us")]
         public class ZoteWall : Resizeable
         {
             private static AudioClip _hit;
@@ -399,6 +409,7 @@ namespace DecorationMaster.MyBehaviour
         }
         [Decoration("lazer_bug")]
         [Description("激光虫，放置的时候只能放在平台的左边沿，因为起始状态是向下爬，\n放其他地方会卡墙卡空气。\n(BUG好难修不管了）")]
+        [Description("lazer bug \n it has some issues: unvisuable while placing. \n you can only place it on the left of rect wall", "en-us")]
         public class LazerBug : CustomDecoration
         {
             public static GameObject prefab = ObjectLoader.InstantiableObjects["HK_lazer_bug"];
@@ -438,6 +449,7 @@ namespace DecorationMaster.MyBehaviour
     
         [Decoration("edge")]
         [Description("区域线，可当地板等使用")]
+        [Description("edge line. \n has collision \n can think it as floor lol", "en-us")]
         public class LineEdge : Resizeable
         {
             private void Awake()

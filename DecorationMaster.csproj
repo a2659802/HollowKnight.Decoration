@@ -90,6 +90,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Attr\AdvanceDecoration.cs" />
     <Compile Include="Attr\DecorationAttribute.cs" />
     <Compile Include="Attr\ConstraintAttribute.cs" />
     <Compile Include="Attr\DescriptionAttribute.cs" />
@@ -106,7 +107,6 @@
     <Compile Include="MyBehaviour\OneShotBehaviour.cs" />
     <Compile Include="MyBehaviour\TriggerSwitch.cs" />
     <Compile Include="UI\DescriptionPanel.cs" />
-    <Compile Include="UI\ItemDescriptor.cs" />
     <Compile Include="UI\UserLicense.cs" />
     <Compile Include="UI\UserSettingPanel.cs" />
     <Compile Include="Util\Extensions.cs" />
