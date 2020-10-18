@@ -20,7 +20,8 @@ namespace DecorationMaster.MyBehaviour
     [Decoration("HK_zote_head")]
     [Decoration("HK_infinte_soul")]
     //[Decoration("HK_lazer_bug")]
-    //[Decoration("HK_conveyor")]
+    
+    [Decoration("HK_laser_turret")]
     public class DefaultBehaviour : Resizeable
     {
         [Serializable]

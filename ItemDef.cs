@@ -102,6 +102,10 @@ namespace DecorationMaster
         [Decoration("HK_turret")]
         [Decoration("zote_wall")]
         [Decoration("edge")]
+        [Decoration("white_spike")]
+        [Decoration("white_thorn")]
+        [Decoration("HK_Lconveyor")]
+        [Decoration("HK_Rconveyor")]
         public class DefatulResizeItem : ResizableItem { }
 
         [Serializable]

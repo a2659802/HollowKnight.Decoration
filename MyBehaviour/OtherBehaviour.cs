@@ -467,5 +467,116 @@ namespace DecorationMaster.MyBehaviour
                 gameObject.transform.localScale = new Vector3(size*10, 2, 1);
             }
         }
+        [Decoration("HK_Lconveyor")]
+        public class LeftConveyor : Resizeable
+        {
+            private void Awake()
+            {
+                var go = Instantiate(ObjectLoader.InstantiableObjects["HK_Hconveyor"],transform);
+                go.transform.localPosition = new Vector3(0, 2f, -2.4f);
+                
+                var cgo = new GameObject();
+                cgo.transform.SetParent(go.transform);
+                cgo.layer = (int)GlobalEnums.PhysLayers.TERRAIN;
+                cgo.transform.localScale = Vector3.one;
+
+                var col = cgo.AddComponent<BoxCollider2D>();
+                var conv = cgo.AddComponent<ConveyorBelt>();
+                conv.speed = -8;
+                col.size = new Vector2(10.61741f, 2.202475f);
+                col.offset = new Vector2(-0.358706f, -2.418878f);
+                col.transform.localPosition = Vector3.zero;
+                
+
+                go.SetActive(true);
+            }
+            public override void HandleSize(float size)
+            {
+                gameObject.transform.localScale = new Vector3(size , 1, 1);
+            }
+            public override void HandleRot(float angle)
+            { 
+            }
+        }
+        [Decoration("HK_Rconveyor")]
+        public class RightConveyor : Resizeable
+        {
+            private void Awake()
+            {
+                var go = Instantiate(ObjectLoader.InstantiableObjects["HK_Hconveyor"], transform);
+                go.transform.localPosition = new Vector3(0, -2f, -2.4f);
+
+                var cgo = new GameObject();
+                cgo.transform.SetParent(go.transform);
+                cgo.layer = (int)GlobalEnums.PhysLayers.TERRAIN;
+                cgo.transform.localScale = Vector3.one;
+
+                var col = cgo.AddComponent<BoxCollider2D>();
+                var conv = cgo.AddComponent<ConveyorBelt>();
+                conv.speed = 8;
+                col.size = new Vector2(10.61741f, 2.202475f);
+                col.offset = new Vector2(-0.358706f, -2.418878f);
+                col.transform.localPosition = Vector3.zero;
+
+                go.transform.eulerAngles = new Vector3(180, 0, 0);
+
+                go.SetActive(true);
+            }
+            public override void HandleSize(float size)
+            {
+                gameObject.transform.localScale = new Vector3(size, 1, 1);
+            }
+            public override void HandleRot(float angle)
+            {
+            }
+        }
+
+
+        [Decoration("white_thorn")]
+        public class Thorn : Resizeable
+        {
+            private void Awake()
+            {
+                var sr = gameObject.AddComponent<SpriteRenderer>();
+                var col = gameObject.AddComponent<EdgeCollider2D>();
+                gameObject.layer = (int)GlobalEnums.PhysLayers.ENEMIES;
+                var dmg = gameObject.AddComponent<DamageHero>();
+                dmg.damageDealt = 1;
+                dmg.hazardType = (int)GlobalEnums.HazardType.ACID;
+                dmg.shadowDashHazard = false;
+                var tex = GUIController.Instance.images["w_thorn"];
+                sr.sprite = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), Vector2.one * 0.5f);
+
+                col.points = new Vector2[] { 
+                    new Vector2(-2.349958f,-0.8096175f),
+                    new Vector2(-1.926968f,0.04194808f),
+                    new Vector2(-0.9399956f,0.4974908f),
+                    new Vector2(0.3034189f,0.8203003f),
+                    new Vector2(1.505731f,0.5203433f),
+                    new Vector2(2.402526f,-0.4310951f),
+                };
+                gameObject.AddComponent<NonBouncer>();
+            }
+        }
+
+        [Decoration("white_spike")]
+        public class WhiteSpike : Resizeable
+        {
+            private void Awake()
+            {
+                var sr = gameObject.AddComponent<SpriteRenderer>();
+                var col = gameObject.AddComponent<BoxCollider2D>();
+                gameObject.layer = (int)GlobalEnums.PhysLayers.ENEMIES;
+                var dmg = gameObject.AddComponent<DamageHero>();
+                dmg.damageDealt = 1;
+                dmg.hazardType = (int)GlobalEnums.HazardType.ACID;
+                dmg.shadowDashHazard = false;
+                var tex = GUIController.Instance.images["w_spike"];
+                sr.sprite = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), Vector2.one * 0.5f);
+                col.size = Vector2.one;
+                gameObject.AddComponent<TinkEffect>().blockEffect = ObjectLoader.InstantiableObjects["HK_saw"].GetComponent<TinkEffect>().blockEffect;
+                    
+            }
+        }
     }
 }

@@ -61,15 +61,6 @@ namespace DecorationMaster
                 group.Add(group_idx, a);
             }
 
-            /*Logger.LogDebug("Group Info");
-            foreach(var kv in group)
-            {
-                Logger.LogDebug($"{kv.Key}:");
-                foreach(var s in kv.Value)
-                {
-                    Logger.LogDebug(s);
-                }
-            }*/
         }
         public int SwitchGroup(int span = 1)
         {

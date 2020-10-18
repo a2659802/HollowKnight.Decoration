@@ -8,7 +8,7 @@ using System.Linq;
 using System.Reflection;
 using UnityEngine;
 using Object = UnityEngine.Object;
-
+using HutongGames.PlayMaker.Actions;
 namespace DecorationMaster
 {
     // Create a objectpool name InstantiableObjects which can be access with name
@@ -19,6 +19,7 @@ namespace DecorationMaster
     // objectname with a prefix "HK_"
     public static partial class ObjectLoader
     {
+        
         public static readonly Dictionary<(string, Func<GameObject, GameObject>), (string, string)> ObjectList = new Dictionary<(string, Func<GameObject, GameObject>), (string, string)>
         {
             {("inspect_region",null),("White_Palace_18","Inspect Region")},
@@ -31,6 +32,29 @@ namespace DecorationMaster
                 }),
                 ("White_Palace_18","saw_collection/wp_saw")
             },
+            {
+                ("Hconveyor", (go) =>
+                {
+                    go.transform.localScale = Vector3.one;
+                    return go;
+                }
+                
+                ),("Mines_31","conveyor_belt_0mid (3)")
+            },
+            {("laser_turret", (go)=>{
+                var fsm = go.LocateMyFSM("Laser Bug");
+                fsm.AddAction
+                (
+                    "Init",
+                    new WaitRandom
+                    {
+                        timeMax = 1f,
+                        timeMin = 0
+                    }
+                );
+                fsm.Fsm.SaveActions();
+                return go;
+            }), ("Mines_31", "Laser Turret") },
             {
                 ("infinte_soul",null),
                 ("White_Palace_18","Soul Totem white_Infinte")
@@ -119,9 +143,7 @@ namespace DecorationMaster
                 ("cameralock",null),
                 ("Crossroads_25","CameraLockArea")
             },
-            {
-                ("conveyor",null),("Mines_31","conveyor_belt_01")
-            },
+            
             {
                 ("respawn_point",null),
                 ("Crossroads_25","Hazard Respawn Trigger v2")

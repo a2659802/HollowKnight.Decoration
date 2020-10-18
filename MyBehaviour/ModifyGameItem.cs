@@ -14,6 +14,7 @@ namespace DecorationMaster.MyBehaviour
 {
     public class ModifyGameItem
     {
+        [AdvanceDecoration]
         [Decoration("disable_col")]
         [Description("禁用游戏原本的某些物体(区域、平台)\n注意：请谨慎使用该物品，特别不要对任何墙体使用。建议用途为禁用某些小平台\n注意：请不要用鼠标选中此物品")]
         [Description("disable origin game platform. \n ATTANTION:please not use it unless you certainly need", "en-us")]
@@ -49,6 +50,7 @@ namespace DecorationMaster.MyBehaviour
             }
 
         }
+        
         [Decoration("disable_hazard_spawn")]
         [Description("禁用游戏原本的刷新存档点的地方")]
         public class DisableRespawnTrigger : CustomDecoration
@@ -79,13 +81,15 @@ namespace DecorationMaster.MyBehaviour
                 col.enabled = false;
             }
         }
-    
+
+        //[AdvanceDecoration]
         //[Decoration("gg_destroy")]
         public class DisableGGPrefab:CustomDecoration
         {
 
         }
-
+        
+        [AdvanceDecoration]
         [Decoration("remove_scene")]
         [Description("移除场景内所有物体（除了进出的门）\n未测试物品，谨慎使用")]
         [Description("disable the whole origin scene's gameobjects except custom item \n ATTANTION:please not use it unless you certainly need", "en-us")]
@@ -101,14 +105,16 @@ namespace DecorationMaster.MyBehaviour
                 Scene s = USceneManager.GetActiveScene();
                 foreach (var g in s.GetRootGameObjects())
                 {
-                    if (g.name.Contains("_Transition"))
+                    if (g.name.Contains("_Transition") || g.layer == (int)GlobalEnums.PhysLayers.TRANSITION_GATES || g.GetComponent<TransitionPoint>()!=null)
                     {
                         if(SetupMode)
                             g.gameObject.AddComponent<ShowColliders>();
+                        Logger.LogDebug($"Skip gate object:{g.name}");
                         continue;
                     }
                     if (g.GetComponent<CustomDecoration>() != null)
                         continue;
+                    
                     Destroy(g.gameObject);
                 }
             }

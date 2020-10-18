@@ -86,8 +86,8 @@ namespace DecorationMaster.UI
             var rect = propp.GetComponent<RectTransform>();
             var prefabRect = prefab.GetComponent<RectTransform>();
             rect.anchoredPosition = new Vector2(0, -1 * idx * (prefabRect.rect.height));
-            if (listener == null)
-                listener = DefaultValueChange;
+            //if (listener == null)
+            //    listener = DefaultValueChange;
             PropPanels.Add(propp);
 
             AddListener(idx, listener);
@@ -116,6 +116,8 @@ namespace DecorationMaster.UI
         }
         public void AddListener(int idx, UnityAction<float> func)
         {
+            if (func == null)
+                return;
             var PropPanel = PropPanels[idx];
             var slider = PropPanel.transform.Find("Slider").GetComponent<Slider>();
             slider.onValueChanged.AddListener(func);

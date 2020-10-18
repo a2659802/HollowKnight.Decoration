@@ -305,6 +305,16 @@
   <ItemGroup>
     <EmbeddedResource Include="images\objects\PaintPoint.png" />
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="images\w_spike.png" />
+    <EmbeddedResource Include="images\w_thorn.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="images\icons\white_spike.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="images\icons\white_thorn.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>echo copying

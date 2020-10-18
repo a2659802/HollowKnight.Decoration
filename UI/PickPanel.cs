@@ -192,8 +192,7 @@ namespace DecorationMaster.UI
                 }
             }
         }
-    
-        
+
         private static CanvasButton GetButton(int i = 1)
         {
             var btn = panel.GetPanel("Border").GetPanel($"ItemBorder{i}").GetButton($"Item_{i}");
