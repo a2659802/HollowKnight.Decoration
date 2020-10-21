@@ -273,6 +273,7 @@ namespace DecorationMaster
                 go.AddComponent<SpriteRenderer>().sprite = sprite;
                 go.AddComponent<BoxCollider2D>().size = Vector2.one;
                 go.layer = (int)GlobalEnums.PhysLayers.HERO_ATTACK;
+                go.AddComponent<NonBouncer>();
                 //To Add some component HERE
                 return go;
             }

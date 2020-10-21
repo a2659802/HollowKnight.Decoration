@@ -42,6 +42,8 @@ namespace DecorationMaster.MyBehaviour
                 gameObject.layer = 8;
                 var tex = GUIController.Instance.images["pianokey"];
                 sr.sprite = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0.5f, 0.5f));
+
+                sr.material = new Material(Shader.Find("Lit"));
             }
             private void Start()
             {

@@ -279,7 +279,7 @@ namespace DecorationMaster
         public KeyCode ToggleEdit => Settings.ToggleEditKey;
         public KeyCode SwitchGroup => Settings.SwitchGroupKey;
 
-        public const float Version = 0.19f;
+        public const float Version = 0.20f;
     }
     public static class Logger
     {

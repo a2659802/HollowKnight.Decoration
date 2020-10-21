@@ -20,6 +20,13 @@ namespace DecorationMaster.MyBehaviour
         [Description("disable origin game platform. \n ATTANTION:please not use it unless you certainly need", "en-us")]
         public class DisableCollider : CustomDecoration
         {
+            [Serializable]
+            public class PreventMisOPItem : Item
+            {
+                public bool placed;
+            }
+
+
             private BoxCollider2D col;
             private void Awake()
             {

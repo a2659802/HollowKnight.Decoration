@@ -486,9 +486,16 @@ namespace DecorationMaster.MyBehaviour
                 col.size = new Vector2(10.61741f, 2.202475f);
                 col.offset = new Vector2(-0.358706f, -2.418878f);
                 col.transform.localPosition = Vector3.zero;
-                
+
+                var mat = new PhysicsMaterial2D();
+                mat.friction = 0.2f;
+                mat.bounciness = 0;
+                col.sharedMaterial = mat;
 
                 go.SetActive(true);
+
+                if (SetupMode)
+                    go.AddComponent<ShowColliders>();
             }
             public override void HandleSize(float size)
             {
@@ -518,9 +525,16 @@ namespace DecorationMaster.MyBehaviour
                 col.offset = new Vector2(-0.358706f, -2.418878f);
                 col.transform.localPosition = Vector3.zero;
 
+                var mat = new PhysicsMaterial2D();
+                mat.friction = 0.2f;
+                mat.bounciness = 0;
+                col.sharedMaterial = mat;
+
                 go.transform.eulerAngles = new Vector3(180, 0, 0);
 
                 go.SetActive(true);
+                if(SetupMode)
+                    go.AddComponent<ShowColliders>();
             }
             public override void HandleSize(float size)
             {

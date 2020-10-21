@@ -284,9 +284,6 @@
     <EmbeddedResource Include="audio\eat_crystal.wav" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="images\fills.png" />
-  </ItemGroup>
-  <ItemGroup>
     <EmbeddedResource Include="images\objects\fireball.png" />
     <EmbeddedResource Include="images\lineEdge.png" />
     <EmbeddedResource Include="images\objects\quake.png" />

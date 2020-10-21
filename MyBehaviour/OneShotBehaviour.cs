@@ -6,7 +6,8 @@ using DecorationMaster.Util;
 using UnityEngine;
 using DecorationMaster.Attr;
 using System.Collections;
-
+using Modding;
+using ModCommon;
 namespace DecorationMaster.MyBehaviour
 {
     public class OneShotBehaviour
@@ -25,6 +26,7 @@ namespace DecorationMaster.MyBehaviour
             private AudioSource au;
             private bool used;
             private HeroTrigger ht;
+            private BoxCollider2D col;
             private void Awake()
             {
                 
@@ -34,6 +36,10 @@ namespace DecorationMaster.MyBehaviour
                 ht = gameObject.AddComponent<HeroTrigger>();
                 ht.HeroEnter = RecoveOneshot;
                 transform.localScale *= 2;
+            }
+            private void Start()
+            {
+                col = gameObject.GetComponent<BoxCollider2D>();
             }
             private void RecoveOneshot() 
             {
@@ -49,11 +55,13 @@ namespace DecorationMaster.MyBehaviour
                 {
                     gameObject.GetComponent<SpriteRenderer>().enabled = false;
                     ht.enabled = false;
+                    col.enabled = false;
                     yield return new WaitWhile(() => au.isPlaying);
 
                     yield return new WaitForSeconds(3);
                     gameObject.GetComponent<SpriteRenderer>().enabled = true;
                     ht.enabled = true;
+                    col.enabled = true;
                     used = false;
                 }
                 
@@ -80,6 +88,7 @@ namespace DecorationMaster.MyBehaviour
             public static AudioClip clip => RecoverDash.clip;
             private AudioSource au;
             private HeroTrigger ht;
+            private BoxCollider2D col;
             private bool used;
             private void Awake()
             {
@@ -89,6 +98,10 @@ namespace DecorationMaster.MyBehaviour
                 ht = gameObject.AddComponent<HeroTrigger>();
                 ht.HeroEnter = RecoveOneshot;
                 transform.localScale *= 2;
+            }
+            private void Start()
+            {
+                col = gameObject.GetComponent<BoxCollider2D>();
             }
             private void RecoveOneshot()
             {
@@ -104,11 +117,13 @@ namespace DecorationMaster.MyBehaviour
                 {
                     gameObject.GetComponent<SpriteRenderer>().enabled = false;
                     ht.enabled = false;
+                    col.enabled = false;
                     yield return new WaitWhile(() => au.isPlaying);
 
                     yield return new WaitForSeconds(3);
                     gameObject.GetComponent<SpriteRenderer>().enabled = true;
                     ht.enabled = true;
+                    col.enabled = true;
                     used = false;
 
                 }
@@ -124,6 +139,59 @@ namespace DecorationMaster.MyBehaviour
                 orig(self);
                 On.HeroController.CanDoubleJump -= True;
             }
+        }
+    
+        public class OneshotFireball : CustomDecoration
+        {
+            public static AudioClip clip => RecoverDash.clip;
+            private AudioSource au;
+            private HeroTrigger ht;
+            private BoxCollider2D col;
+            private bool used;
+            private void Awake()
+            {
+                au = gameObject.AddComponent<AudioSource>();
+                //var sr = gameObject.AddComponent<SpriteRenderer>();
+                // var col = gameObject.AddComponent<BoxCollider2D>();
+                ht = gameObject.AddComponent<HeroTrigger>();
+                ht.HeroEnter = RecoveOneshot;
+                
+                //transform.localScale *= 2;
+            }
+            private void Start()
+            {
+                col = gameObject.GetComponent<BoxCollider2D>();
+            }
+            private void RecoveOneshot()
+            {
+                if (used)
+                    return;
+                used = true;
+                ModHooks.Instance.GetPlayerIntHook += Fireball2;
+                au.PlayOneShot(clip);
+                StartCoroutine(Consume());
+
+                IEnumerator Consume()
+                {
+                    gameObject.GetComponent<SpriteRenderer>().enabled = false;
+                    ht.enabled = false;
+                    col.enabled = false;
+                    yield return new WaitWhile(() => au.isPlaying);
+
+                    yield return new WaitForSeconds(3);
+                    gameObject.GetComponent<SpriteRenderer>().enabled = true;
+                    ht.enabled = true;
+                    col.enabled = true;
+                    used = false;
+
+                }
+            }
+
+            private int Fireball2(string intName)
+            {
+                throw new NotImplementedException();
+            }
+
         }
     }
     
