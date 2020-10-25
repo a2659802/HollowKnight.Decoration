@@ -37,6 +37,7 @@ namespace DecorationMaster.MyBehaviour
         [Decoration("IMG_Lantern")]
         public class BindLantern: Resizeable
         {
+            private static float t;
             private static int _dark;
             private static int darknessLevel { 
                 get => _dark; 
@@ -51,15 +52,21 @@ namespace DecorationMaster.MyBehaviour
                     DecorationMaster.GM.sm.darknessLevel = _dark;
                 } 
             }
-            private bool noLantern;
             public override void Hit(HitInstance hit)
             {
                 base.Hit(hit);
                 Destroy(gameObject);
             }
+            public string BindBoolValue = nameof(PlayerData.hasLantern);
+            public bool Bind(string name)
+            {
+                return name == BindBoolValue ? false : PlayerData.instance.GetBoolInternal(name);
+            }
             private void OnEnable()
             {
-                noLantern = true;
+                if (BindBoolValue != null)
+                    ModHooks.Instance.GetPlayerBoolHook += Bind;
+                //noLantern = true;
                 darknessLevel++;
                 StartCoroutine(SetDark());
                 IEnumerator SetDark()
@@ -72,7 +79,9 @@ namespace DecorationMaster.MyBehaviour
             }
             private void OnDisable()
             {
-                noLantern = false;
+                if (BindBoolValue != null)
+                    ModHooks.Instance.GetPlayerBoolHook -= Bind;
+                //noLantern = false;
                 darknessLevel--;
                 UpdateDark();
             }
@@ -88,20 +97,22 @@ namespace DecorationMaster.MyBehaviour
                         {
                             FSMUtility.SetInt(playMakerFSM, "Darkness Level", darknessLevel);
                         }
-                        if (!this.noLantern)
+                        FSMUtility.LocateFSM(go, "Darkness Control").SendEvent("SCENE RESET NO LANTERN");
+                        if (HeroController.instance != null)
                         {
-                            FSMUtility.LocateFSM(go, "Darkness Control").SendEvent("RESET");
-                        }
-                        else
-                        {
-                            FSMUtility.LocateFSM(go, "Darkness Control").SendEvent("SCENE RESET NO LANTERN");
-                            if (HeroController.instance != null)
-                            {
-                                HeroController.instance.wieldingLantern = false;
-                            }
+                            HeroController.instance.wieldingLantern = false;
                         }
                     }
                 }
+            }
+        
+            private void LateUpdate() // due to some strange area will diable darken
+            {
+                t += Time.deltaTime;
+                if (t < 4) //actually 2s if two lantern
+                    return;
+                UpdateDark();
+                t = 0;
             }
         }
 

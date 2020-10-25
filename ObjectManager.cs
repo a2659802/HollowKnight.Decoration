@@ -61,11 +61,11 @@ namespace DecorationMaster
             },
             { 
                 ("trap_spike",(go)=>{
-                    //go.transform.Find("wp_anim_spikes_fast").layer = (int)GlobalEnums.PhysLayers.ENEMY_ATTACK;
-                     foreach(var dmg in go.GetComponentsInChildren<DamageHero>())
+                    go.transform.Find("wp_anim_spikes_fast").gameObject.layer = (int)GlobalEnums.PhysLayers.ENEMIES;
+                    /* foreach(var dmg in go.GetComponentsInChildren<DamageHero>())
                     {
                         dmg.gameObject.layer =  (int)GlobalEnums.PhysLayers.ENEMIES;
-                    }
+                    }*/
                     return go;
                 }),("White_Palace_07","wp_trap_spikes")
             },

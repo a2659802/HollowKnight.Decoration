@@ -59,7 +59,9 @@ namespace DecorationMaster
         SetColorR,
         SetColorG,
         SetColorB,
-        SetColorA
+        SetColorA,
+
+        SetOrder,
     }
     
     [Serializable]

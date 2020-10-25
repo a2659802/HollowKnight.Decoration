@@ -114,10 +114,10 @@ namespace DecorationMaster.MyBehaviour
                 {
                     Setup(attr.handleType, prop.GetValue(i, null));
                 }
-                catch
+                catch(Exception e)
                 {
                     Logger.LogError($"An Exception occur while Setup:Op:{attr.handleType},val:{prop.GetValue(i, null)}");
-                    throw new Exception("Initiate Exception");
+                    throw e;
                 }
             }
 
@@ -167,13 +167,16 @@ namespace DecorationMaster.MyBehaviour
         [Handle(Operation.SetSizeX)]
         public virtual void HandleSizeX(float size)
         {
-            gameObject.transform.localScale += (size * Vector3.right);
+            var ori = gameObject.transform.localScale;
+            gameObject.transform.localScale = new Vector3(size, ori.y, ori.z);
+
         }
 
         [Handle(Operation.SetSizeY)]
         public virtual void HandleSizeY(float size)
         {
-            gameObject.transform.localScale += (size * Vector3.up);
+            var ori = gameObject.transform.localScale;
+            gameObject.transform.localScale = new Vector3(ori.x, size, ori.z);
         }
         [Handle(Operation.SetRot)]
         public virtual void HandleRot(float angle)

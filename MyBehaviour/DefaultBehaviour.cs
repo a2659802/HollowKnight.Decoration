@@ -62,7 +62,7 @@ namespace DecorationMaster.MyBehaviour
                 child.transform.SetParent(parent.transform);
                 child.layer = (int)GlobalEnums.PhysLayers.PROJECTILES;
                 child.AddComponent<AttackReact>().parent = parent.GetComponent<CustomDecoration>();
-
+                child.transform.localPosition = Vector3.zero;
             }
               
         }

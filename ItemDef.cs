@@ -79,6 +79,7 @@ namespace DecorationMaster
 
     }
 
+    [Serializable]
     public abstract class ColorItem : Item
     {
         [FloatConstraint(0, 1)]
@@ -96,6 +97,11 @@ namespace DecorationMaster
         [FloatConstraint(0, 1)]
         [Handle(Operation.SetColorA)]
         public float A { get; set; } = 1f;
+
+        public Color GetColor()
+        {
+            return new Color(R, G, B, A);
+        }
     }
 
     [Serializable]

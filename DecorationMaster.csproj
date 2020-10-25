@@ -312,6 +312,9 @@
   <ItemGroup>
     <EmbeddedResource Include="images\icons\white_thorn.png" />
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="images\icons\colorfull_fill.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>echo copying

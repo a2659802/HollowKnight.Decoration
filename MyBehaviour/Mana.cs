@@ -461,6 +461,8 @@ namespace DecorationMaster.MyBehaviour
                 Destroy(m);
             mana_sum = 0;
             mana_pool = new Dictionary<ManaType, int>();
+            Destroy(gameObject);
+            Logger.LogDebug("Destroy Mana Collecotr on death");
         }
 
         public void Add(ManaType mType,int amount = 1)

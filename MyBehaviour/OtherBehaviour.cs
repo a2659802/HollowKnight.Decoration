@@ -263,6 +263,7 @@ namespace DecorationMaster.MyBehaviour
                         go.transform.SetParent(gameObject.transform);
                         go.transform.eulerAngles = new Vector3(-70, 5f, 0);
                         go.transform.localScale = Vector3.one;
+                        go.transform.localPosition = Vector3.zero;
                         go.AddComponent<RoteZ>();
                     }
                     return render;
@@ -302,12 +303,6 @@ namespace DecorationMaster.MyBehaviour
                     FindObjectOfType<ZoteWall>()?.Open();
                 };
             }
-            private void Start()
-            {
-                gameObject.AddComponent<ShowColliders>();
-                Logger.LogDebug($"sr null?{sr.sprite == null},{sr.enabled}");
-                Logger.LogDebug($"sprite:{active == null},{unactive == null}");
-            }
             private void OnCollisionEnter2D(Collision2D collision)
             {
 
@@ -321,7 +316,7 @@ namespace DecorationMaster.MyBehaviour
             {
                 if (zotein > 0)
                 {
-                    //sr.color = Color.Lerp(new Color(1, 1, 1, 1), new Color(1, 1, 1, 0), dt / maxt);
+                    sr.color = Color.Lerp(new Color(1, 1, 1, 1), new Color(1, 1, 1, 0), dt / maxt);
                     dt += Time.deltaTime;
                     if (dt >= maxt)
                     {
@@ -603,8 +598,32 @@ namespace DecorationMaster.MyBehaviour
         [Decoration("colorfull_fill")]
         public class ColorFill : PartResizable
         {
-            private SpriteRenderer sr;
-            public const int factor = 100;
+            [Serializable]
+            public class PartResizeColor : ColorItem
+            {
+                [Handle(Operation.SetSizeX)]
+                [FloatConstraint(0.2f, 2f)]
+                public float size_x { get; set; } = 1;
+
+                [Handle(Operation.SetSizeY)]
+                [FloatConstraint(0.2f, 2f)]
+                public float size_y { get; set; } = 1;
+
+                [Handle(Operation.SetRot)]
+                [IntConstraint(0, 360)]
+                public int angle { get; set; } = 0;
+
+                [Handle(Operation.SetOrder)]
+                [IntConstraint(-20,100)]
+                public int Order { get; set; } = 0;
+            }
+            private SpriteRenderer sr { get {
+                    var s = gameObject.GetComponent<SpriteRenderer>();
+                    if (s)
+                        return s;
+                    return gameObject.AddComponent<SpriteRenderer>();
+                } }
+            public const int factor = 400;
             public override void HandleSizeX(float size)
             {
                 base.HandleSizeX(size*factor);
@@ -616,8 +635,28 @@ namespace DecorationMaster.MyBehaviour
 
             private void Awake()
             {
-                sr = gameObject.AddComponent<SpriteRenderer>();
-                sr.sprite = Sprite.Create(new Texture2D(1, 1), new Rect(0, 0, 1, 1), Vector2.one * 0.5f);
+                UnVisableBehaviour.AttackReact.Create(gameObject);
+            }
+
+            [Handle(Operation.SetColorR)]
+            [Handle(Operation.SetColorG)]
+            [Handle(Operation.SetColorB)]
+            [Handle(Operation.SetColorA)]
+            public void HandleColors(float val)
+            {
+                if(sr.sprite == null)
+                {
+                    sr.sprite = Sprite.Create(new Texture2D(1, 1), new Rect(0, 0, 1, 1), Vector2.one * 0.5f);
+                }
+
+                var c = ((PartResizeColor)item).GetColor();
+                sr.sprite.texture.SetPixels(new Color[] { c });
+                sr.sprite.texture.Apply();
+            }
+            [Handle(Operation.SetOrder)]
+            public void HandleOrder(int val)
+            {
+                sr.sortingOrder = val;
             }
         }
 

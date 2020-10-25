@@ -19,6 +19,7 @@ namespace DecorationMaster
     public delegate int SelectItem();
     public class DecorationMaster : Mod,ITogglableMod
     {
+        private float autoSaveTimer = 0;
         private static GameManager _gm;
         private GameObject UIObj;
 
@@ -80,7 +81,7 @@ namespace DecorationMaster
         {
             ItemData.mod_version = Version;
             SerializeHelper.SaveGlobalSettings(ItemData);
-            Logger.Log("Save Json");
+            Logger.LogDebug("Save Json");
         }
 
         private void ShowRespawn(Scene arg0, LoadSceneMode arg1)
@@ -145,7 +146,17 @@ namespace DecorationMaster
         private Vector2 mousePos;
         private void OperateItem()
         {
-            Test.TestOnce();
+            if(ItemManager.Instance.setupMode)
+            {
+                autoSaveTimer += Time.deltaTime;
+                if(autoSaveTimer > 60*3)
+                {
+                    SaveJson();
+                    autoSaveTimer = 0;
+                    Logger.LogDebug("Auto Save");
+                }
+            }
+            //Test.TestOnce();
 
             if (Input.GetKeyDown(ToggleEdit))    // Toggle Edit Model
             {
@@ -279,7 +290,7 @@ namespace DecorationMaster
         public KeyCode ToggleEdit => Settings.ToggleEditKey;
         public KeyCode SwitchGroup => Settings.SwitchGroupKey;
 
-        public const float Version = 0.20f;
+        public const float Version = 0.21f;
     }
     public static class Logger
     {
