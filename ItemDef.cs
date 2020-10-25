@@ -79,6 +79,25 @@ namespace DecorationMaster
 
     }
 
+    public abstract class ColorItem : Item
+    {
+        [FloatConstraint(0, 1)]
+        [Handle(Operation.SetColorR)]
+        public float R { get; set; } = 1f;
+
+        [FloatConstraint(0, 1)]
+        [Handle(Operation.SetColorG)]
+        public float G { get; set; } = 1f;
+
+        [FloatConstraint(0, 1)]
+        [Handle(Operation.SetColorB)]
+        public float B { get; set; } = 1f;
+
+        [FloatConstraint(0, 1)]
+        [Handle(Operation.SetColorA)]
+        public float A { get; set; } = 1f;
+    }
+
     [Serializable]
     public abstract class ManaItem : Item
     {
@@ -109,6 +128,22 @@ namespace DecorationMaster
         public class DefatulResizeItem : ResizableItem { }
 
         [Serializable]
+        public class PartResizeItem : Item
+        {
+            [Handle(Operation.SetSizeX)]
+            [FloatConstraint(0.2f, 2f)]
+            public float size_x { get; set; } = 1;
+
+            [Handle(Operation.SetSizeY)]
+            [FloatConstraint(0.2f, 2f)]
+            public float size_y { get; set; } = 1;
+
+            [Handle(Operation.SetRot)]
+            [IntConstraint(0, 360)]
+            public int angle { get; set; } = 0;
+        }
+
+        [Serializable]
         public class BindingItem : ResizableItem { }
 
         [Serializable]
@@ -117,11 +152,11 @@ namespace DecorationMaster
         public class SawItem : ResizableItem
         {
             [Handle(Operation.SetSpan)]
-            [IntConstraint(0,10)]
+            [IntConstraint(0,15)]
             public int span { get; set; } = 3;
 
             [Handle(Operation.SetSpeed)]
-            [IntConstraint(-4,4)]
+            [IntConstraint(-20,20)]
             public int speed { get; set; }
 
             //[Handle(Operation.SetTinkVoice)]
@@ -133,7 +168,7 @@ namespace DecorationMaster
             public V2 Center { get; set; }
 
             [Handle(Operation.SetOffset)]
-            [IntConstraint(0,4)]
+            [IntConstraint(0,10)]
             public int offset { get; set; }
         }
     

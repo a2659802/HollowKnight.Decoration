@@ -302,6 +302,12 @@ namespace DecorationMaster.MyBehaviour
                     FindObjectOfType<ZoteWall>()?.Open();
                 };
             }
+            private void Start()
+            {
+                gameObject.AddComponent<ShowColliders>();
+                Logger.LogDebug($"sr null?{sr.sprite == null},{sr.enabled}");
+                Logger.LogDebug($"sprite:{active == null},{unactive == null}");
+            }
             private void OnCollisionEnter2D(Collision2D collision)
             {
 
@@ -315,7 +321,7 @@ namespace DecorationMaster.MyBehaviour
             {
                 if (zotein > 0)
                 {
-                    sr.color = Color.Lerp(new Color(1, 1, 1, 1), new Color(1, 1, 1, 0), dt / maxt);
+                    //sr.color = Color.Lerp(new Color(1, 1, 1, 1), new Color(1, 1, 1, 0), dt / maxt);
                     dt += Time.deltaTime;
                     if (dt >= maxt)
                     {
@@ -592,5 +598,28 @@ namespace DecorationMaster.MyBehaviour
                     
             }
         }
+
+
+        [Decoration("colorfull_fill")]
+        public class ColorFill : PartResizable
+        {
+            private SpriteRenderer sr;
+            public const int factor = 100;
+            public override void HandleSizeX(float size)
+            {
+                base.HandleSizeX(size*factor);
+            }
+            public override void HandleSizeY(float size)
+            {
+                base.HandleSizeY(size*factor);
+            }
+
+            private void Awake()
+            {
+                sr = gameObject.AddComponent<SpriteRenderer>();
+                sr.sprite = Sprite.Create(new Texture2D(1, 1), new Rect(0, 0, 1, 1), Vector2.one * 0.5f);
+            }
+        }
+
     }
 }

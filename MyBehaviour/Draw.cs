@@ -11,7 +11,7 @@ namespace DecorationMaster.MyBehaviour
 
     public class Draw
     {
-        [Serializable]
+        /*[Serializable]
         public struct PColor
         {
             public float r;
@@ -35,28 +35,12 @@ namespace DecorationMaster.MyBehaviour
             {
                 return new PColor(c.r, c.g, c.b, c.a);
             }
-        }
+        }*/
 
         [Serializable]
-        public class PointItem : Item
+        public class PointItem : ColorItem
         {
             public int seq = 0;
-
-            [FloatConstraint(0, 1)]
-            [Handle(Operation.SetColorR)]
-            public float R { get; set; } = 1f;
-
-            [FloatConstraint(0, 1)]
-            [Handle(Operation.SetColorG)]
-            public float G { get; set; } = 1f;
-
-            [FloatConstraint(0, 1)]
-            [Handle(Operation.SetColorB)]
-            public float B { get; set; } = 1f;
-
-            [FloatConstraint(0, 1)]
-            [Handle(Operation.SetColorA)]
-            public float A { get; set; } = 1f;
         }
 
         [Decoration("IMG_TerrainPoint")]

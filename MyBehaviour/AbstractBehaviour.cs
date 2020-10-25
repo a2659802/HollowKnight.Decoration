@@ -162,6 +162,25 @@ namespace DecorationMaster.MyBehaviour
             gameObject.transform.eulerAngles = new Vector3(0, 0, angle);
         }
     }
+    public abstract class PartResizable : CustomDecoration
+    {
+        [Handle(Operation.SetSizeX)]
+        public virtual void HandleSizeX(float size)
+        {
+            gameObject.transform.localScale += (size * Vector3.right);
+        }
+
+        [Handle(Operation.SetSizeY)]
+        public virtual void HandleSizeY(float size)
+        {
+            gameObject.transform.localScale += (size * Vector3.up);
+        }
+        [Handle(Operation.SetRot)]
+        public virtual void HandleRot(float angle)
+        {
+            gameObject.transform.eulerAngles = new Vector3(0, 0, angle);
+        }
+    }
     public abstract class SawMovement : Resizeable
     {
         private void Update()

@@ -45,7 +45,7 @@ namespace DecorationMaster
         }
 		public static void TestOnce()
         {
-			if(Input.GetKeyDown(KeyCode.T))
+			/*if(Input.GetKeyDown(KeyCode.T))
             {
 				var gos = GameObject.FindObjectsOfType<GameObject>();
 				foreach(var g in gos)
@@ -53,7 +53,7 @@ namespace DecorationMaster
 					Logger.Log($"{g.name}--->{g.layer}");
                 }
 
-			}
+			}*/
         }
 		public IEnumerator Dump(string sceneName = null)
 		{

@@ -40,6 +40,8 @@ namespace DecorationMaster
 
         SetRot, // Resizable
         SetSize,
+        SetSizeX,
+        SetSizeY,
 
         SetSpan, // Saw
         SetSpeed,

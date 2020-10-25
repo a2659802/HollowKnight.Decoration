@@ -104,7 +104,7 @@ namespace DecorationMaster.MyBehaviour
         {
             private void Awake()
             {
-                UnVisableBehaviour.AttackReact.Create(gameObject);
+                
             }
             private IEnumerator Start()
             {
@@ -121,9 +121,14 @@ namespace DecorationMaster.MyBehaviour
                     }
                     if (g.GetComponent<CustomDecoration>() != null)
                         continue;
-                    
                     Destroy(g.gameObject);
                 }
+                UnVisableBehaviour.AttackReact.Create(gameObject);
+            }
+
+            private void OnDestroy()
+            {
+                Logger.LogDebug("scene remover destroyed");
             }
         }
     }
