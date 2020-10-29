@@ -109,6 +109,7 @@
     <Compile Include="UI\DescriptionPanel.cs" />
     <Compile Include="UI\UserLicense.cs" />
     <Compile Include="UI\UserSettingPanel.cs" />
+    <Compile Include="Util\ReflectionCache.cs" />
     <Compile Include="Util\Extensions.cs" />
     <Compile Include="MyBehaviour\DefaultBehaviour.cs" />
     <Compile Include="Test.cs" />
@@ -313,7 +314,7 @@
     <EmbeddedResource Include="images\icons\white_thorn.png" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="images\icons\colorfull_fill.png" />
+    <EmbeddedResource Include="images\icons\back_colorfull_fill.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

@@ -15,6 +15,7 @@ namespace DecorationMaster.MyBehaviour
     {
         W,U,B,R,G,C
     }
+    //These items are just for meme, not take too serious
     public class Mana
     {
         [Description("魔力源，魔力源的颜色有5种，分别是蓝白绿红黑。\n接触到可以收集它")]
@@ -449,10 +450,14 @@ namespace DecorationMaster.MyBehaviour
                 gameObject.transform.localPosition = Vector3.zero;
                 gameObject.AddComponent<KeepWorldScalePositive>();
                 ModHooks.Instance.AfterPlayerDeadHook += ClearManaPool;
+                GameManager.instance.ResetSemiPersistentObjects += ClearManaPool;
             }
         }
+
+
         private void OnDestroy()
         {
+            GameManager.instance.ResetSemiPersistentObjects -= ClearManaPool;
             ModHooks.Instance.AfterPlayerDeadHook -= ClearManaPool;
         }
         private void ClearManaPool()

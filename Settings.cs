@@ -25,8 +25,39 @@ namespace DecorationMaster
     [Serializable]
     public class ItemSettings
     {
+        private int _modify;
+        private int modify_counter {
+            get => _modify;
+            set
+            {
+                _modify = value;
+                if(_modify>20)
+                {
+                    AutoSave();
+                    _modify = 0;
+                }
+            }
+        }
+        public string scene_name;
         public float mod_version = DecorationMaster.Version;
         public List<Item> items = new List<Item>();
+        public void AddItem(Item i)
+        {
+            items.Add(i);
+            modify_counter++;
+            
+        }
+        public void RemoveItem(Item i)
+        {
+            items.Remove(i);
+            modify_counter++;
+        }
+        private void AutoSave()
+        {
+            if (string.IsNullOrEmpty(scene_name))
+                return;
+
+        }
     }
     public enum Operation
     {
@@ -37,6 +68,7 @@ namespace DecorationMaster
 
         Serialize, // Default
         SetPos,
+        SetSpawnOrder,
 
         SetRot, // Resizable
         SetSize,

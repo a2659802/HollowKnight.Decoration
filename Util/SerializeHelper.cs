@@ -35,7 +35,7 @@ namespace DecorationMaster.Util
             if (settings is null)
                 return;
 
-            Log("Saving Global Settings");
+            //Log("Saving Global Settings");
 
             if (File.Exists(GLOBAL_FILE_DIR + ".bak"))
             {
@@ -47,30 +47,35 @@ namespace DecorationMaster.Util
                 File.Move(GLOBAL_FILE_DIR, GLOBAL_FILE_DIR + ".bak");
             }
 
-            using FileStream fileStream = File.Create(GLOBAL_FILE_DIR);
-
-            using var writer = new StreamWriter(fileStream);
-
-            try
+            using (FileStream fileStream = File.Create(GLOBAL_FILE_DIR))
             {
-                writer.Write
-                (
-                    JsonConvert.SerializeObject
-                    (
-                        settings,
-                        Formatting.Indented,
-                        new JsonSerializerSettings
-                        {
-                            TypeNameHandling = TypeNameHandling.Auto,
-                        }
-                    )
-                );
-                Log("Saved Global Decoration Data");
+                using (var writer = new StreamWriter(fileStream))
+                {
+                    try
+                    {
+                        writer.Write
+                        (
+                            JsonConvert.SerializeObject
+                            (
+                                settings,
+                                Formatting.Indented,
+                                new JsonSerializerSettings
+                                {
+                                    TypeNameHandling = TypeNameHandling.Auto,
+                                }
+                            )
+                        );
+                    }
+                    catch (Exception e)
+                    {
+                        LogError(e);
+                    }
+                }
             }
-            catch (Exception e)
-            {
-                LogError(e);
-            }
+
+            
+
+            
         }
         public static T LoadGlobalSettings<T>()
         {
@@ -80,45 +85,104 @@ namespace DecorationMaster.Util
 
             Log("Loading Global Settings");
 
-            using FileStream fileStream = File.OpenRead(_globalSettingsPath);
-
-            using var reader = new StreamReader(fileStream);
-
-            string json = reader.ReadToEnd();
-
-            try
+            using (FileStream fileStream = File.OpenRead(_globalSettingsPath))
             {
-                Type settingsType = typeof(T);
-
-                T settings = default ;
-
-                try
+                using (var reader = new StreamReader(fileStream))
                 {
-                    settings = (T)JsonConvert.DeserializeObject(
-                        json,
-                        settingsType,
-                        new JsonSerializerSettings
-                        {
-                            TypeNameHandling = TypeNameHandling.Auto,
-                        }
-                    );
-                }
-                catch (Exception e)
-                {
-                    LogError("Failed to load settings using Json.Net.");
-                    LogError(e);
-                }
+                    string json = reader.ReadToEnd();
+                    Type settingsType = typeof(T);
+                    T settings = default;
 
-                return settings;
-            }
-            catch (Exception e)
-            {
-                LogError(e);
-                return default;
-            }
+                    try
+                    {
+                        settings = (T)JsonConvert.DeserializeObject(
+                            json,
+                            settingsType,
+                            new JsonSerializerSettings
+                            {
+                                TypeNameHandling = TypeNameHandling.Auto,
+                            }
+                        );
+                    }
+                    catch (Exception e)
+                    {
+                        LogError("Failed to load settings using Json.Net.");
+                        LogError(e);
+                    }
 
+                    return settings;
+                }
+            }
         }
         static void Log(object o) => Logger.Log($"[SerializeHelper]{o}");
         static void LogError(object o) => Logger.LogError($"[SerializeHelper]{o}");
+    
+        public static void SaveSceneSettings(object data,string sceneName)
+        {
+            string dir = Path.Combine(DATA_DIR, sceneName);
+
+            using (FileStream fileStream = File.Create(dir))
+            {
+                using (var writer = new StreamWriter(fileStream))
+                {
+                    try
+                    {
+                        writer.Write
+                        (
+                            JsonConvert.SerializeObject
+                            (
+                                data,
+                                Formatting.Indented,
+                                new JsonSerializerSettings
+                                {
+                                    TypeNameHandling = TypeNameHandling.Auto,
+                                }
+                            )
+                        );
+                    }
+                    catch (Exception e)
+                    {
+                        LogError(e);
+                    }
+                }
+            }
+        }
+        public static T LoadSceneSettings<T>(string sceneName)
+        {
+            string dir = Path.Combine(DATA_DIR, sceneName);
+            if (!File.Exists(dir))
+                return default;
+
+            Log($"Loading {sceneName} Settings");
+
+            using (FileStream fileStream = File.OpenRead(dir))
+            {
+                using (var reader = new StreamReader(fileStream))
+                {
+                    string json = reader.ReadToEnd();
+                    Type settingsType = typeof(T);
+                    T settings = default;
+
+                    try
+                    {
+                        settings = (T)JsonConvert.DeserializeObject(
+                            json,
+                            settingsType,
+                            new JsonSerializerSettings
+                            {
+                                TypeNameHandling = TypeNameHandling.Auto,
+                            }
+                        );
+                    }
+                    catch (Exception e)
+                    {
+                        LogError("Failed to load settings using Json.Net.");
+                        LogError(e);
+                    }
+
+                    return settings;
+                }
+            }
+        }
     }
 }

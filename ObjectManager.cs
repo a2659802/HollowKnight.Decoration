@@ -62,10 +62,6 @@ namespace DecorationMaster
             { 
                 ("trap_spike",(go)=>{
                     go.transform.Find("wp_anim_spikes_fast").gameObject.layer = (int)GlobalEnums.PhysLayers.ENEMIES;
-                    /* foreach(var dmg in go.GetComponentsInChildren<DamageHero>())
-                    {
-                        dmg.gameObject.layer =  (int)GlobalEnums.PhysLayers.ENEMIES;
-                    }*/
                     return go;
                 }),("White_Palace_07","wp_trap_spikes")
             },
@@ -143,11 +139,6 @@ namespace DecorationMaster
                 ("cameralock",null),
                 ("Crossroads_25","CameraLockArea")
             },
-            
-            {
-                ("respawn_point",null),
-                ("Crossroads_25","Hazard Respawn Trigger v2")
-            },
             */
 
             
@@ -155,21 +146,15 @@ namespace DecorationMaster
         public static Dictionary<string, GameObject> InstantiableObjects { get; } = new Dictionary<string, GameObject>();
         public static GameObject CloneDecoration(string key,Item exists = null)
         {
-            Modding.Logger.LogDebug($"On Clone {key}");
             GameObject go = null;
             if(InstantiableObjects.TryGetValue(key,out GameObject prefab))
             {
-                Modding.Logger.LogDebug($"On Clone {prefab.name}");
                 Item prefab_item = prefab.GetComponent<CustomDecoration>()?.item;
-                Modding.Logger.LogDebug($"On Clone {prefab_item}");
                 if (prefab_item == null)
                     return null;
-               // Item item = prefab_item.Clone() as Item;
                 go = Object.Instantiate(prefab);
                 go.name = go.name.Replace("(Clone)", "");
-                //go.GetComponent<CustomDecoration>().item = item;
                 go.GetComponent<CustomDecoration>().Setup(Operation.Serialize, exists == null?prefab_item.Clone():exists);
-               // Modding.Logger.LogDebug($"Clone Item:{prefab_item==null},{item==null}");
             }
             return go;
         }
@@ -186,7 +171,6 @@ namespace DecorationMaster
                 return go;
             }
 
-            // ReSharper disable once SuggestVarOrType_DeconstructionDeclarations
             foreach (var ((name, modify), (room, go_name)) in ObjectList)
             {
                 if (!preloadedObjects[room].TryGetValue(go_name, out GameObject go))
@@ -326,6 +310,8 @@ namespace DecorationMaster
             d.item = item;
 
             Logger.Log($"Register [{poolname}] - Behaviour : {td} - DataStruct : {ti}");
+            ReflectionCache.GetItemProps(ti, Operation.None);
+            ReflectionCache.GetMethods(td, Operation.None);
             //ItemDescriptor.Register(td,poolname);
         }
         

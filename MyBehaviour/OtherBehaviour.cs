@@ -594,9 +594,9 @@ namespace DecorationMaster.MyBehaviour
             }
         }
 
-
-        [Decoration("colorfull_fill")]
-        public class ColorFill : PartResizable
+        [Description("填充背景用的色块，大概")]
+        [Decoration("back_colorfull_fill")]
+        public class BackColorFill : PartResizable
         {
             [Serializable]
             public class PartResizeColor : ColorItem
@@ -614,8 +614,12 @@ namespace DecorationMaster.MyBehaviour
                 public int angle { get; set; } = 0;
 
                 [Handle(Operation.SetOrder)]
-                [IntConstraint(-20,100)]
+                [IntConstraint(-10,100)]
                 public int Order { get; set; } = 0;
+
+                [InspectIgnore]
+                public override float A { get; set; }
+                
             }
             private SpriteRenderer sr { get {
                     var s = gameObject.GetComponent<SpriteRenderer>();
@@ -641,12 +645,13 @@ namespace DecorationMaster.MyBehaviour
             [Handle(Operation.SetColorR)]
             [Handle(Operation.SetColorG)]
             [Handle(Operation.SetColorB)]
-            [Handle(Operation.SetColorA)]
+            //[Handle(Operation.SetColorA)]
             public void HandleColors(float val)
             {
                 if(sr.sprite == null)
                 {
                     sr.sprite = Sprite.Create(new Texture2D(1, 1), new Rect(0, 0, 1, 1), Vector2.one * 0.5f);
+                    sr.material = new Material(Shader.Find("Unlit/Texture"));
                 }
 
                 var c = ((PartResizeColor)item).GetColor();

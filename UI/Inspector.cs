@@ -93,8 +93,7 @@ namespace DecorationMaster.UI
             AddListener(idx, listener);
             UpdateName(idx, name);
             UpdateSliderConstrain(name,idx, min, max);
-            Logger.LogDebug($"Add another,{propp.transform.position},{prefab.transform.position}");
-            //Canvas.PrintSceneHierarchyTree();
+
         }
         public void UpdateSliderConstrain(string name,int idx, float min, float max,bool wholeNum = false)
         {

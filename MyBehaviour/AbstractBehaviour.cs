@@ -53,9 +53,12 @@ namespace DecorationMaster.MyBehaviour
         {
             item?.Setup(op, val);
 
-            var handlers = this.GetType().GetMethods(BindingFlags.Public | BindingFlags.Instance)
+            /*var handlers = this.GetType().GetMethods(BindingFlags.Public | BindingFlags.Instance)
                 .Where(x => x.GetCustomAttributes(typeof(HandleAttribute), true).OfType<HandleAttribute>()
-                .Where(y => y.handleType == op).Any());
+                .Where(y => y.handleType == op).Any());*/
+            var handlers = ReflectionCache.GetMethods(GetType(), op);
+            if (handlers == null)
+                return null;
 
             object _return = null;
             foreach (var m in handlers)
@@ -76,20 +79,7 @@ namespace DecorationMaster.MyBehaviour
             }
             return _return;
         }
-        /// <summary>
-        /// Add Object's Setting To Global Settings
-        /// </summary>
-        [Handle(Operation.ADD)]
-        public override void Add(object self = null)
-        {
-            if (self == null)
-                self = item;
-            var settings = DecorationMaster.instance.ItemData;
-            if (self == null)
-                throw new NullReferenceException("Item Null Exception");
-            item.sceneName = GameManager.instance.sceneName;
-            settings.items.Add((Item)self);
-        }
+        
         [Handle(Operation.SetPos)]
         public virtual void HandlePos(Vector2 val)
         {
@@ -102,7 +92,7 @@ namespace DecorationMaster.MyBehaviour
                 item = i;
 
             //search all Handleable Property in item
-            var handlableProps = i.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance)
+           /* var handlableProps = i.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance)
                 .Where(x => x.GetCustomAttributes(typeof(HandleAttribute), true).OfType<HandleAttribute>().Any());
 
             foreach(var prop in handlableProps)
@@ -119,11 +109,59 @@ namespace DecorationMaster.MyBehaviour
                     Logger.LogError($"An Exception occur while Setup:Op:{attr.handleType},val:{prop.GetValue(i, null)}");
                     throw e;
                 }
+            }*/
+
+            if(ReflectionCache.ItemPropCache.ContainsKey(i.GetType()))
+            {
+                ReflectionCache.GetItemProps(i.GetType(), Operation.None);
+            }
+            var op_props = ReflectionCache.ItemPropCache[i.GetType()];
+            foreach(var kv in op_props)
+            {
+                Operation op = kv.Key;
+                object value = kv.Value.FirstOrDefault().GetValue(i, null);
+                try
+                {
+                    Setup(op, value);
+                }
+                catch (Exception e)
+                {
+                    Logger.LogError($"An Exception occur while Setup:Op:{op},val:{value}");
+                    throw e;
+                }
             }
 
             gameObject.SetActive(true);
 
-            Logger.LogDebug($"{i.pname} Serialize");
+            //Logger.LogDebug($"{i.pname} Serialize");
+        }
+
+        /// <summary>
+        /// Add Object's Setting To Global Settings
+        /// </summary>
+        [Handle(Operation.ADD)]
+        public override void Add(object self = null)
+        {
+            if (self == null)
+                self = item;
+
+            if (self == null)
+                throw new NullReferenceException("Item Null Exception");
+            string sceneName = GameManager.instance.sceneName;
+            item.sceneName = sceneName;
+            var dict = DecorationMaster.instance.SceneItemData;
+            if (dict.TryGetValue(sceneName, out var _scene_data))
+            {
+                _scene_data.AddItem((Item)self);
+            }
+            else
+            {
+                dict.Add(sceneName, new ItemSettings());
+                dict[sceneName].AddItem((Item)self);
+            }
+            //var settings = DecorationMaster.instance.ItemData;
+
+            //settings.items.Add((Item)self);
         }
         [Handle(Operation.REMOVE)]
         public override void Remove(object self = null)
@@ -135,8 +173,14 @@ namespace DecorationMaster.MyBehaviour
             var settings = DecorationMaster.instance.ItemData;
             if (self == null)
                 throw new NullReferenceException("Item Null Exception");
+            string sceneName = ((Item)self).sceneName;
+            var dict = DecorationMaster.instance.SceneItemData;
+            settings.RemoveItem((Item)self);
+            if (dict.TryGetValue(sceneName, out var _scene_data))
+            {
+                _scene_data.RemoveItem((Item)self);
+            }
 
-            settings.items.Remove((Item)self);
             base.Remove();
         }
         [Handle(Operation.COPY)]

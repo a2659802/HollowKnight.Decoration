@@ -65,6 +65,7 @@ namespace DecorationMaster.MyBehaviour
             private BoxCollider2D col;
             private void Awake()
             {
+                
                 col = gameObject.AddComponent<BoxCollider2D>();
                 col.size = Vector2.one;
                 if (SetupMode)
@@ -80,7 +81,7 @@ namespace DecorationMaster.MyBehaviour
             {
                 if(collider.gameObject.GetComponent<HazardRespawnTrigger>() == null)
                 {
-                    Logger.LogDebug("not respawn box");
+                    //Logger.LogDebug("not respawn box");
                     return;
                 }
                 collider.gameObject.SetActive(false);

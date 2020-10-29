@@ -118,28 +118,32 @@ namespace DecorationMaster
                 Logger.LogDebug("Try to spawn setting");
                 string sceneName = arg0.name;
                 yield return new WaitUntil(() => (arg0.isLoaded));
-                foreach (var r in ItemData.items)
+                var spawnlist = ItemData.items.Where(x => x.sceneName == sceneName).ToArray();
+                foreach (var r in spawnlist)
                 {
-                    if (r.sceneName != sceneName)
-                        continue;
-
-                    var poolname = r.pname;
                     try
                     {
-                        var decorationGo = ObjectLoader.CloneDecoration(poolname,r);
-                        if (decorationGo != null)
-                        {
-                            //decorationGo.GetComponent<CustomDecoration>().Setup(Operation.Serialize, r);
+                        if (ObjectLoader.CloneDecoration(r.pname, r) != null)
                             count++;
-                        }
                     }
                     catch
                     {
-                        Logger.LogError($"Spawn Failed When Try to Spawn {poolname}");
+                        Logger.LogError($"Spawn Failed When Try to Spawn {r?.pname}");
                     }
+                    /*if(spawnlist.Length>1000)
+                    {
+                        if (count % 100 == 0)
+                            yield return null;
+                    }
+                    else if(spawnlist.Length>500)
+                    {
+                        if (count % 50 == 0)
+                            yield return null;
+                    }*/
+
                 }
-                
                 Modding.Logger.LogDebug($"All Fine,Spawn {count} in {sceneName}");
+                yield break;
             }
         }
 
@@ -266,6 +270,7 @@ namespace DecorationMaster
 
         public GlobalModSettings Settings = new GlobalModSettings();
         public ItemSettings ItemData = new ItemSettings();
+        public readonly Dictionary<string, ItemSettings> SceneItemData = new Dictionary<string, ItemSettings>();
         public override ModSettings GlobalSettings
         {
             get => Settings;
@@ -290,7 +295,7 @@ namespace DecorationMaster
         public KeyCode ToggleEdit => Settings.ToggleEditKey;
         public KeyCode SwitchGroup => Settings.SwitchGroupKey;
 
-        public const float Version = 0.21f;
+        public const float Version = 0.30f;
     }
     public static class Logger
     {

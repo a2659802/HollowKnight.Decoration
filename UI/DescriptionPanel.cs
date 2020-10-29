@@ -5,6 +5,8 @@ using System.Text;
 using UnityEngine;
 using DecorationMaster.MyBehaviour;
 using DecorationMaster.Attr;
+using System.Reflection;
+
 namespace DecorationMaster.UI
 {
     public static class DescriptionPanel
@@ -59,6 +61,19 @@ namespace DecorationMaster.UI
                     desc = "该物品没有相关说明";
                 else
                     desc = cn.Text;
+
+                desc = $"{desc}\n\n属性说明：\n";
+
+                var desc_prop = d.item.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance)
+               .Where(x => x.GetCustomAttributes(typeof(DescriptionAttribute), true).OfType<DescriptionAttribute>()
+               .Where(y => y.IsChinese()).Any());
+                foreach(var p in desc_prop)
+                {
+                    var prop_text = p.GetCustomAttributes(typeof(DescriptionAttribute), true).OfType<DescriptionAttribute>().FirstOrDefault().Text;
+                    var prop_name = p.Name;
+                    desc += $"{prop_name}:{prop_text}\n";
+                }
+                
             }
             else
             {

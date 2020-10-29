@@ -5,7 +5,7 @@ using System.Text;
 
 namespace DecorationMaster.Attr
 {
-    [AttributeUsage(AttributeTargets.Class,AllowMultiple =true,Inherited =false)]
+    [AttributeUsage(AttributeTargets.Class|AttributeTargets.Property,AllowMultiple =true,Inherited =true)]
     public class DescriptionAttribute : Attribute
     {
         public string Language;
@@ -20,4 +20,5 @@ namespace DecorationMaster.Attr
             return Language == "zh-cn";
         }
     }
+
 }

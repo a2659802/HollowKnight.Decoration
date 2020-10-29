@@ -48,6 +48,7 @@ namespace DecorationMaster.MyBehaviour
                 used = true;
                 On.HeroController.CanDash += True;
                 On.HeroController.HeroDash += RemoveHook;
+                ModHooks.Instance.TakeDamageHook += remove;
                 au.PlayOneShot(clip);
                 StartCoroutine(Consume());
                 
@@ -65,8 +66,16 @@ namespace DecorationMaster.MyBehaviour
                     used = false;
                 }
                 
-                
-                //Logger.LogDebug("Eat Recover Dash");
+            }
+
+            private int remove(ref int hazardType, int damage)
+            {
+                if(hazardType>(int)GlobalEnums.HazardType.SPIKES)
+                {
+                    //Logger.LogDebug("hazard dmg");
+                    On.HeroController.CanDash -= True;
+                }
+                return damage;
             }
 
             private bool True(On.HeroController.orig_CanDash orig, HeroController self)
@@ -110,6 +119,7 @@ namespace DecorationMaster.MyBehaviour
                 used = true;
                 On.HeroController.CanDoubleJump += True;
                 On.HeroController.DoDoubleJump += RemoveHook;
+                ModHooks.Instance.TakeDamageHook += remove;
                 au.PlayOneShot(clip);
                 StartCoroutine(Consume());
 
@@ -128,7 +138,15 @@ namespace DecorationMaster.MyBehaviour
 
                 }
             }
-
+            private int remove(ref int hazardType, int damage)
+            {
+                if (hazardType > (int)GlobalEnums.HazardType.SPIKES)
+                {
+                    //Logger.LogDebug("hazard dmg");
+                    On.HeroController.CanDoubleJump -= True;
+                }
+                return damage;
+            }
             private bool True(On.HeroController.orig_CanDoubleJump orig, HeroController self)
             {
                 return true;
