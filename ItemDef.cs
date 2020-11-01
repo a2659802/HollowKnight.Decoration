@@ -171,6 +171,7 @@ namespace DecorationMaster
         [Serializable]
         [Decoration("HK_saw")]
         [Decoration("move_flip_platform")]
+        [Decoration("mary_move_platform")]
         public class SawItem : ResizableItem
         {
             [Handle(Operation.SetSpan)]

@@ -15,6 +15,8 @@ namespace DecorationMaster
     public class GlobalModSettings : ModSettings
     {
         public bool CreateMode = false;
+        public bool ProfessorMode = false;
+        public bool MemeItem = false;
         public bool showDesc = true;
         public bool agreeLicense = false;
         public KeyCode ToggleEditKey = KeyCode.CapsLock;

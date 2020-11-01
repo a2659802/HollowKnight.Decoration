@@ -32,12 +32,6 @@ namespace DecorationMaster
 			//Assetfile
 		}
 
-       
-        private void DialogueBox_SetConversation(On.DialogueBox.orig_SetConversation orig, DialogueBox self, string convName, string sheetName)
-        {
-			Logger.Log(Language.Language.Get(convName, sheetName));
-			orig(self,convName,sheetName);
-        }
 
         public static void TestGo(GameObject go)
         {
@@ -45,15 +39,6 @@ namespace DecorationMaster
         }
 		public static void TestOnce()
         {
-			/*if(Input.GetKeyDown(KeyCode.T))
-            {
-				var gos = GameObject.FindObjectsOfType<GameObject>();
-				foreach(var g in gos)
-                {
-					Logger.Log($"{g.name}--->{g.layer}");
-                }
-
-			}*/
         }
 		public IEnumerator Dump(string sceneName = null)
 		{
@@ -121,40 +106,7 @@ namespace DecorationMaster
         }
 	}
 	
-    public static class AudioLoader
-    {
-        public static readonly Dictionary<string, AudioClip> audioclips = new Dictionary<string, AudioClip>();
-        public static bool loaded { get; private set; }
-        public static void Load()
-        {
-            if (loaded)
-                return;
-
-            string[] resourceNames = Assembly.GetExecutingAssembly().GetManifestResourceNames();
-            foreach (string res in resourceNames)
-            {
-                if (res.EndsWith(".wav"))
-                {
-                    try
-                    {
-                        Stream imageStream = Assembly.GetExecutingAssembly().GetManifestResourceStream(res);
-                        byte[] buffer = new byte[imageStream.Length];
-                        imageStream.Read(buffer, 0, buffer.Length);
-                        string[] split = res.Split('.');
-                        string internalName = split[split.Length - 2];
-                        var clip = WavUtility.ToAudioClip(buffer, 0, internalName);
-                        audioclips.Add(internalName, clip);
-                    }
-                    catch
-                    {
-                        loaded = false;
-                    }
-                }
-            }
-            loaded = true;
-        }
-        
-    }
+    
 	/*
 	public class MyTinkEffect : MonoBehaviour
 	{

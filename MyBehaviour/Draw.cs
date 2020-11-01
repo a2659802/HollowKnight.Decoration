@@ -42,7 +42,7 @@ namespace DecorationMaster.MyBehaviour
         {
             public int seq = 0;
         }
-
+        [AdvanceDecoration]
         [Decoration("IMG_TerrainPoint")]
         [Description("用来描绘边界的点,有碰撞，会自动和上一个点连起来形成一个区域分界线")]
         [Description("in-game drawing point, you can use them to draw edge collider", "en-us")]
@@ -128,7 +128,7 @@ namespace DecorationMaster.MyBehaviour
             }
         }
 
-
+        [AdvanceDecoration]
         [Decoration("IMG_PaintPoint")]
         [Description("纯粹用来绘制的点，没有任何碰撞效果\n建议用来给给关卡绘制简单的提示")]
         [Description("in-game drawing point, but without collision", "en-us")]

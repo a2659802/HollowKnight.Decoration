@@ -12,6 +12,7 @@ namespace DecorationMaster.MyBehaviour
 {
     public class OneShotBehaviour
     {
+
         [Decoration("IMG_recoverDash")]
         [Description("给予一次冲刺能力")]
         [Description("give player dash ability once \n yay just like Celeste", "en-us")]

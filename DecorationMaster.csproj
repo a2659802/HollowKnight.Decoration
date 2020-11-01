@@ -97,6 +97,7 @@
     <Compile Include="Attr\HandleAttribute.cs" />
     <Compile Include="Attr\InspectIgnoreAttribute.cs" />
     <Compile Include="Attr\ItemAttribute.cs" />
+    <Compile Include="Attr\MemeDecoration.cs" />
     <Compile Include="DecorationMaster.cs" />
     <Compile Include="DLanguage.cs" />
     <Compile Include="MyBehaviour\AudioBehaviours.cs" />
@@ -316,6 +317,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="images\icons\back_colorfull_fill.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="images\plat_supermary.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

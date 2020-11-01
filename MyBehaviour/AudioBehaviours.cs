@@ -23,7 +23,7 @@ namespace DecorationMaster.MyBehaviour
                 }
                 return _n;
             } }
-       
+        [MemeDecoration]
         [Decoration("note_platform")]
         [Description("只是个普通的台子，踩上去会响，仅此而已。（另外这个贴图好违和，希望有人能提供一个合适的）")]
         [Description("this is just a platform with voice","en-us")]
@@ -43,7 +43,7 @@ namespace DecorationMaster.MyBehaviour
                 var tex = GUIController.Instance.images["pianokey"];
                 sr.sprite = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0.5f, 0.5f));
 
-                sr.material = new Material(Shader.Find("Lit"));
+                //sr.material = new Material(Shader.Find("Lit"));
             }
             private void Start()
             {

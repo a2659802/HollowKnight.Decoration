@@ -8,6 +8,7 @@ using Object = UnityEngine.Object;
 using System.Reflection;
 using DecorationMaster.UI;
 using DecorationMaster.MyBehaviour;
+using DecorationMaster.Attr;
 namespace DecorationMaster
 {
     public class ItemManager
@@ -48,8 +49,35 @@ namespace DecorationMaster
         {
             if (SetupFlag == null)
                 SetupFlagInit();
+            IEnumerable<KeyValuePair<string, GameObject>> deGo;
+            if (DecorationMaster.instance.Settings.ProfessorMode)
+            {
+                deGo = ObjectLoader.InstantiableObjects.Where(x => x.Value.GetComponent<CustomDecoration>() != null);
+            }
+            else if(DecorationMaster.instance.Settings.MemeItem)
+            {
+                deGo = ObjectLoader.InstantiableObjects.Where(x =>
+                {
+                    var cd = x.Value.GetComponent<CustomDecoration>();
+                    return (
+                    (cd != null)
+                    && (cd.GetType().GetCustomAttributes(typeof(AdvanceDecoration), false).Length == 0)
+                    );
+                });
+            }
+            else
+            {
+                deGo = ObjectLoader.InstantiableObjects.Where(x =>
+                {
+                    var cd = x.Value.GetComponent<CustomDecoration>();
+                    return (
+                    (cd != null) 
+                    && (cd.GetType().GetCustomAttributes(typeof(AdvanceDecoration), false).Length == 0)
+                    && (cd.GetType().GetCustomAttributes(typeof(MemeDecoration), false).Length == 0)
+                    );
+                });
+            }
 
-            var deGo = ObjectLoader.InstantiableObjects.Where(x => x.Value.GetComponent<CustomDecoration>() != null);
             var Names = deGo.Select(x => x.Key);
             int group_idx = 0;
             
@@ -108,18 +136,11 @@ namespace DecorationMaster
                 return null;
              
             string poolname = group[CurrentGroup][idx - 1];
-            //Logger.LogDebug($"Selected {idx},{poolname}");
             GameObject go = ObjectLoader.CloneDecoration(poolname);
-
             currentSelect = go;
-            //Logger.LogDebug($"CURRENT Null?{go?.name}");
-            
             CustomDecoration cd = go?.GetComponent<CustomDecoration>();
-            //Logger.LogDebug($"Decoration Null?{cd == null}");
-            //Logger.LogDebug($"Item Null?{cd?.item == null},Prefab Item Null?{ObjectLoader.InstantiableObjects[poolname].GetComponent<CustomDecoration>()?.item == null}");
             go?.SetActive(true);
 
-            //Test.TestGo(go);
             OnChanged?.Invoke(cd);
             return cd;
         }

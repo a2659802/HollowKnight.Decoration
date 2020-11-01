@@ -239,6 +239,7 @@ namespace DecorationMaster.MyBehaviour
             }
         }
 
+        [MemeDecoration]
         [Description("一个不明的法阵，往里面放入某些东西可以激活它")]
         [Description("zote head machine \nplace zote head above can let it work", "en-us")]
         [Decoration("zote_detection")]
@@ -337,7 +338,8 @@ namespace DecorationMaster.MyBehaviour
 
             }
         }
-    
+
+        [MemeDecoration]
         [Decoration("zote_wall")]
         [Description("佐特之墙，往法阵里放入佐特头骨可以打开（随机打开一个）")]
         [Description("zote wall, can be open by zote head machine", "en-us")]
