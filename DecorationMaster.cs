@@ -37,7 +37,11 @@ namespace DecorationMaster
             if (global != null)
             {
                 if (global.mod_version > Version)
+                {
+                    new ErrorPanel($"Require Version:{global.mod_version},BUT you Version:{Version}\n(你的MOD版本该更新了)");
                     throw new FileLoadException("Try To Load an newer json data in an older mod,please update mod");
+                }
+                    
                 ItemData = global;
                 Logger.Log("Loaded Json");
                 
@@ -67,6 +71,7 @@ namespace DecorationMaster
             SelectGetter += PickPanel.SelectFocus;
             UnityEngine.SceneManagement.SceneManager.sceneLoaded += SpawnFromSettings;
             UnityEngine.SceneManagement.SceneManager.sceneLoaded += ShowRespawn;
+            UnityEngine.SceneManagement.SceneManager.sceneLoaded += AutoSaveModification;
             ModHooks.Instance.LanguageGetHook += DLanguage.MyLanguage;
             ModHooks.Instance.ApplicationQuitHook += SaveJson;
             if (Settings.CreateMode)
@@ -77,10 +82,23 @@ namespace DecorationMaster
             
         }
 
+        private void AutoSaveModification(Scene arg0, LoadSceneMode arg1)
+        {
+            if(SceneItemData.TryGetValue(arg0.name,out var setting))
+            {
+                setting.AutoSave();
+            }
+        }
+
         private void SaveJson()
         {
             ItemData.mod_version = Version;
             SerializeHelper.SaveGlobalSettings(ItemData);
+            if(GM!=null)
+            {
+                if (SceneItemData.TryGetValue(GM.sceneName, out var currentSetting))
+                    currentSetting.AutoSave();
+            }
             Logger.LogDebug("Save Json");
         }
 
@@ -105,14 +123,11 @@ namespace DecorationMaster
 
         private void SpawnFromSettings(Scene arg0, LoadSceneMode arg1)
         {
-            Logger.LogDebug($"Item Count:{ItemData.items.Count}");
+            //Logger.LogDebug($"Item Count:{ItemData.items.Count}");
             if (arg0.name.Contains("Menu_Title"))
                 return;
-            if (ItemData.items.Count > 0)
-            {
-                GameManager.instance.StartCoroutine(WaitSceneLoad(arg0));
-            }
-            IEnumerator WaitSceneLoad(Scene arg0)
+            
+            IEnumerator SpawnGlobal(Scene arg0)
             {
                 int count = 0;
                 Logger.LogDebug("Try to spawn setting");
@@ -130,21 +145,52 @@ namespace DecorationMaster
                     {
                         Logger.LogError($"Spawn Failed When Try to Spawn {r?.pname}");
                     }
-                    /*if(spawnlist.Length>1000)
-                    {
-                        if (count % 100 == 0)
-                            yield return null;
-                    }
-                    else if(spawnlist.Length>500)
-                    {
-                        if (count % 50 == 0)
-                            yield return null;
-                    }*/
-
                 }
                 Modding.Logger.LogDebug($"All Fine,Spawn {count} in {sceneName}");
                 yield break;
             }
+            IEnumerator SpawnLocal(Scene arg0,ItemSettings setting)
+            {
+                int count = 0;
+                Logger.LogDebug("Try to spawn setting");
+                string sceneName = arg0.name;
+                yield return new WaitUntil(() => (arg0.isLoaded));
+                var spawnlist = setting.items;
+                foreach (var r in spawnlist)
+                {
+                    try
+                    {
+                        if (ObjectLoader.CloneDecoration(r.pname, r) != null)
+                            count++;
+                    }
+                    catch
+                    {
+                        Logger.LogError($"Spawn Failed When Try to Spawn {r?.pname}");
+                    }
+                }
+                Modding.Logger.LogDebug($"All Fine,Spawn {count} in {sceneName}");
+                yield break;
+            }
+
+            if (ItemData.items.Count > 0)
+            {
+                GameManager.instance.StartCoroutine(SpawnGlobal(arg0));
+            }
+            if (SceneItemData.TryGetValue(arg0.name,out var sceneSetting))
+            {
+                GameManager.instance.StartCoroutine(SpawnLocal(arg0, sceneSetting));
+            }
+            else
+            {
+                var _scene_setting = SerializeHelper.LoadSceneSettings<ItemSettings>(arg0.name);
+                if(_scene_setting != null)
+                {
+                    SceneItemData.Add(arg0.name, _scene_setting);
+                    GameManager.instance.StartCoroutine(SpawnLocal(arg0, _scene_setting));
+                }
+            }
+
+
         }
 
         private Vector2 mousePos;
@@ -260,6 +306,7 @@ namespace DecorationMaster
             SelectGetter = null;
             UnityEngine.SceneManagement.SceneManager.sceneLoaded -= SpawnFromSettings;
             UnityEngine.SceneManagement.SceneManager.sceneLoaded -= ShowRespawn;
+            UnityEngine.SceneManagement.SceneManager.sceneLoaded -= AutoSaveModification;
             ModHooks.Instance.LanguageGetHook -= DLanguage.MyLanguage;
             ModHooks.Instance.ApplicationQuitHook -= SaveJson;
             ModHooks.Instance.HeroUpdateHook -= OperateItem;

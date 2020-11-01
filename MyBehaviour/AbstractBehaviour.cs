@@ -156,7 +156,9 @@ namespace DecorationMaster.MyBehaviour
             }
             else
             {
-                dict.Add(sceneName, new ItemSettings());
+                var _setting = new ItemSettings();
+                _setting.scene_name = sceneName;
+                dict.Add(sceneName,_setting );
                 dict[sceneName].AddItem((Item)self);
             }
             //var settings = DecorationMaster.instance.ItemData;

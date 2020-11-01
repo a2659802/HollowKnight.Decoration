@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Modding;
 using UnityEngine;
-
+using DecorationMaster.Util;
 namespace DecorationMaster
 {
     [Serializable]
@@ -34,7 +34,6 @@ namespace DecorationMaster
                 if(_modify>20)
                 {
                     AutoSave();
-                    _modify = 0;
                 }
             }
         }
@@ -52,11 +51,14 @@ namespace DecorationMaster
             items.Remove(i);
             modify_counter++;
         }
-        private void AutoSave()
+        internal void AutoSave()
         {
             if (string.IsNullOrEmpty(scene_name))
                 return;
-
+            if (modify_counter < 1)
+                return;
+            SerializeHelper.SaveSceneSettings(this, scene_name);
+            modify_counter = 0;
         }
     }
     public enum Operation

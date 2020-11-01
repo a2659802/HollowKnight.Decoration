@@ -155,7 +155,7 @@ namespace DecorationMaster
         }
         
     }
-	
+	/*
 	public class MyTinkEffect : MonoBehaviour
 	{
 		// Token: 0x06001F5C RID: 8028 RVA: 0x000B93E6 File Offset: 0x000B77E6
@@ -327,4 +327,5 @@ namespace DecorationMaster
 		// Token: 0x040020F6 RID: 8438
 		private float nextTinkTime;
 	}
+	*/
 }

@@ -70,7 +70,7 @@ namespace DecorationMaster.UI
             ItemManager.Instance.SwitchGroup(0);
         }
 
-        private void LoadResources()
+        internal void LoadResources()
         {
             foreach (Font f in Resources.FindObjectsOfTypeAll<Font>())
             {

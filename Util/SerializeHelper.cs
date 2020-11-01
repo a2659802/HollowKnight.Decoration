@@ -119,7 +119,7 @@ namespace DecorationMaster.Util
     
         public static void SaveSceneSettings(object data,string sceneName)
         {
-            string dir = Path.Combine(DATA_DIR, sceneName);
+            string dir = Path.Combine(DATA_DIR, sceneName+".json");
 
             using (FileStream fileStream = File.Create(dir))
             {
@@ -149,7 +149,7 @@ namespace DecorationMaster.Util
         }
         public static T LoadSceneSettings<T>(string sceneName)
         {
-            string dir = Path.Combine(DATA_DIR, sceneName);
+            string dir = Path.Combine(DATA_DIR, sceneName + ".json");
             if (!File.Exists(dir))
                 return default;
 
@@ -184,5 +184,7 @@ namespace DecorationMaster.Util
                 }
             }
         }
+    
+        
     }
 }

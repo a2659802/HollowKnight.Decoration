@@ -107,6 +107,7 @@
     <Compile Include="MyBehaviour\OneShotBehaviour.cs" />
     <Compile Include="MyBehaviour\TriggerSwitch.cs" />
     <Compile Include="UI\DescriptionPanel.cs" />
+    <Compile Include="UI\ErrorPanel.cs" />
     <Compile Include="UI\UserLicense.cs" />
     <Compile Include="UI\UserSettingPanel.cs" />
     <Compile Include="Util\ReflectionCache.cs" />
