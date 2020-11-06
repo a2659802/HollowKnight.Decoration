@@ -6,7 +6,7 @@ A mod can place items in-game.
 
 **Press CapsLock to enable item place**
 
-**To Share your Decoration to friends, you can copy your ***Mods\DecorationMasterData\global*** which is auto save in your mod dir**
+**To Share your Decoration to friends, you can copy your ***Mods\DecorationMasterData\*.json** which are auto save in your mod dir**
 
 **If you want to discard some item, you can us ***Attack*** this item(make sure you is in editing status)**
 
@@ -20,9 +20,15 @@ left mouse key place item
 right mouse key discard current selected item
 Space key to set prefab
 
+**Attention2!!**
+now(version0.31) move some advance items to professor mode, these items require some knowledge,so do not use 
+unless you understand what it is!
+this is the following:
+- Hazard Respawn Remover : to remove original game's respawn trigger
+- Scene Remove : to remove the WHOLE things in the room except custom items
 ###TODO:
-[x] ADD UI / Inspector 
-[x] ADD More Object 
-[x] Finished Serialize 
-[x] ADD Music Box
+~ ADD UI / Inspector 
+~ ADD More Object 
+~ Finished Serialize 
+~ ADD Music Box
 - ADD Some Special Item(e.g. an item can temporary change dash diretion)
