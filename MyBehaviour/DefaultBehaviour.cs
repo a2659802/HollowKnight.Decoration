@@ -22,6 +22,7 @@ namespace DecorationMaster.MyBehaviour
     //[Decoration("HK_lazer_bug")]
     
     [Decoration("HK_laser_turret")]
+    [Decoration("HK_quake_floor")]
     public class DefaultBehaviour : Resizeable
     {
         [Serializable]

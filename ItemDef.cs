@@ -34,9 +34,6 @@ namespace DecorationMaster
 
         public void Setup(Operation op, object val)
         {
-            /*var handle_prop = this.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance)
-                .Where(x => x.GetCustomAttributes(typeof(HandleAttribute), true).OfType<HandleAttribute>()
-                .Where(y => y.handleType == op).Any());*/
             var handle_prop = ReflectionCache.GetItemProps(GetType(), op);
             if (handle_prop == null)
                 return;
@@ -60,9 +57,6 @@ namespace DecorationMaster
                     throw e;
                 }
                 
-                /*
-                var setter = prop.GetSetMethod();
-                setter.Invoke(this, new object[] { val, });*/
             }
         }
         
@@ -147,6 +141,7 @@ namespace DecorationMaster
         [Decoration("white_thorn")]
         [Decoration("HK_Lconveyor")]
         [Decoration("HK_Rconveyor")]
+        [Decoration("HK_shadow_gate")]
         public class DefatulResizeItem : ResizableItem { }
 
         [Serializable]
@@ -187,6 +182,11 @@ namespace DecorationMaster
             //[FloatConstraint(0.1f,1)]
             [InspectIgnore]
             public float pitch { get; set; } = 1;
+
+            [Description("设置音量")]
+            [Handle(Operation.SetVolume)]
+            [FloatConstraint(0, 1)]
+            public float volume { get; set; }
 
             [Handle(Operation.SetPos)]
             [InspectIgnore]

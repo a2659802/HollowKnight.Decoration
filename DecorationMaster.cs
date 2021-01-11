@@ -22,6 +22,7 @@ namespace DecorationMaster
         private float autoSaveTimer = 0;
         private static GameManager _gm;
         private GameObject UIObj;
+        private Vector2 mousePos;
 
         public static DecorationMaster instance;
         public SelectItem SelectGetter;
@@ -32,7 +33,9 @@ namespace DecorationMaster
 
             //new Test();
             //return;
-            Logger.Log("Load Json");
+
+            #region VerifyVersion
+            Logger.Log("Load Global Json");
             ItemSettings global = SerializeHelper.LoadGlobalSettings<ItemSettings>();
             if (global != null)
             {
@@ -46,6 +49,7 @@ namespace DecorationMaster
                 Logger.Log("Loaded Json");
                 
             }
+            #endregion
 
             #region Init GameObject
             ObjectLoader.Load(preloadedObjects);
@@ -57,14 +61,19 @@ namespace DecorationMaster
             BehaviourProcessor.RegisterBehaviour<Mana>();
             BehaviourProcessor.RegisterBehaviour<AudioBehaviours>();
             BehaviourProcessor.RegisterBehaviour<OneShotBehaviour>();
+            BehaviourProcessor.RegisterBehaviour<Scope>();
+            BehaviourProcessor.RegisterBehaviour<Bench>();
             BehaviourProcessor.RegisterSharedBehaviour<DefaultBehaviour>();
             BehaviourProcessor.RegisterSharedBehaviour<UnVisableBehaviour>();
+
             #endregion
 
+            #region InitGUI
             UIObj = new GameObject();
             UIObj.AddComponent<GUIController>();
             UnityEngine.Object.DontDestroyOnLoad(UIObj);
             GUIController.Instance.BuildMenus();
+            #endregion
 
             #region SetupCallBack
             SelectGetter = GetKeyPress;
@@ -72,6 +81,7 @@ namespace DecorationMaster
             UnityEngine.SceneManagement.SceneManager.sceneLoaded += SpawnFromSettings;
             UnityEngine.SceneManagement.SceneManager.sceneLoaded += ShowRespawn;
             UnityEngine.SceneManagement.SceneManager.sceneLoaded += AutoSaveModification;
+            On.GameManager.PositionHeroAtSceneEntrance += HeroOutBoundSave;
             ModHooks.Instance.LanguageGetHook += DLanguage.MyLanguage;
             ModHooks.Instance.ApplicationQuitHook += SaveJson;
             if (Settings.CreateMode)
@@ -82,6 +92,50 @@ namespace DecorationMaster
             
         }
 
+        private void HeroOutBoundSave(On.GameManager.orig_PositionHeroAtSceneEntrance orig, GameManager self)
+        {
+            orig(self);
+            if(HeroController.instance.transform.position.x<-19900)
+            {
+                GameManager.instance.StartCoroutine(_respawn());
+                LogDebug("Save Hero");
+            }
+            IEnumerator _respawn()
+            {
+
+                var trigger = UnityEngine.Object.FindObjectOfType<HazardRespawnTrigger>();
+
+                yield return new WaitForSeconds(1f);
+
+                if (HeroController.instance.transform.position.x < -19900)
+                {
+                    PlayerData.instance.SetHazardRespawn(trigger.respawnMarker);
+                    Respawn();
+                }
+               
+            }
+        }
+        public static void Respawn()
+        {
+            if (GameManager.instance.IsGameplayScene() && !HeroController.instance.cState.dead && PlayerData.instance.health > 0)
+            {
+                if (UIManager.instance.uiState.ToString() == "PAUSED")
+                {
+                    UIManager.instance.TogglePauseGame();
+                    GameManager.instance.HazardRespawn();
+                    
+                    return;
+                }
+                if (UIManager.instance.uiState.ToString() == "PLAYING")
+                {
+                    HeroController.instance.RelinquishControl();
+                    GameManager.instance.HazardRespawn();
+                    HeroController.instance.RegainControl();
+
+                    return;
+                }
+            }
+        }
         private void AutoSaveModification(Scene arg0, LoadSceneMode arg1)
         {
             if(SceneItemData.TryGetValue(arg0.name,out var setting))
@@ -121,6 +175,7 @@ namespace DecorationMaster
             }
         }
 
+        // Spawn Object from Json files 
         private void SpawnFromSettings(Scene arg0, LoadSceneMode arg1)
         {
             //Logger.LogDebug($"Item Count:{ItemData.items.Count}");
@@ -193,7 +248,7 @@ namespace DecorationMaster
 
         }
 
-        private Vector2 mousePos;
+        
         private void OperateItem()
         {
             if(ItemManager.Instance.setupMode)
@@ -342,7 +397,7 @@ namespace DecorationMaster
         public KeyCode ToggleEdit => Settings.ToggleEditKey;
         public KeyCode SwitchGroup => Settings.SwitchGroupKey;
 
-        public const float Version = 0.31f;
+        public const float Version = 0.33f;
     }
     public static class Logger
     {

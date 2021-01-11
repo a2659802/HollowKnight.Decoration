@@ -75,6 +75,8 @@ namespace DecorationMaster.MyBehaviour
                 {
                     //Logger.LogDebug("hazard dmg");
                     On.HeroController.CanDash -= True;
+                    On.HeroController.HeroDash -= RemoveHook;
+                    ModHooks.Instance.TakeDamageHook -= remove;
                 }
                 return damage;
             }
@@ -88,6 +90,8 @@ namespace DecorationMaster.MyBehaviour
             {
                 orig(self);
                 On.HeroController.CanDash -= True;
+                On.HeroController.HeroDash -= RemoveHook;
+                ModHooks.Instance.TakeDamageHook -= remove;
             }
         }
         [Decoration("IMG_recoverJump")]
@@ -145,6 +149,8 @@ namespace DecorationMaster.MyBehaviour
                 {
                     //Logger.LogDebug("hazard dmg");
                     On.HeroController.CanDoubleJump -= True;
+                    On.HeroController.DoDoubleJump -= RemoveHook;
+                    ModHooks.Instance.TakeDamageHook -= remove;
                 }
                 return damage;
             }
@@ -157,6 +163,8 @@ namespace DecorationMaster.MyBehaviour
             {
                 orig(self);
                 On.HeroController.CanDoubleJump -= True;
+                On.HeroController.DoDoubleJump -= RemoveHook;
+                ModHooks.Instance.TakeDamageHook -= remove;
             }
         }
     

@@ -22,6 +22,7 @@ namespace DecorationMaster
         public KeyCode ToggleEditKey = KeyCode.CapsLock;
         public KeyCode SwitchGroupKey = KeyCode.Tab;
         public KeyCode SetPrefabKey = KeyCode.Space;
+        public KeyCode ManuallySave = KeyCode.RightControl;
     }
 
     [Serializable]
@@ -81,7 +82,7 @@ namespace DecorationMaster
 
         SetSpan, // Saw
         SetSpeed,
-        SetTinkVoice,
+        SetVolume,
         SetOffset,
 
         SetGate,

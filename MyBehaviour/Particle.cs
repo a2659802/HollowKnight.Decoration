@@ -3,10 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace DecorationMaster.UI
+namespace DecorationMaster.MyBehaviour
 {
-    public static class UserSettingPanel
+    class Particle
     {
-
     }
 }

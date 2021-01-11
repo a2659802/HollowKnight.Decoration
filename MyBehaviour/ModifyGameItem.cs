@@ -17,7 +17,7 @@ namespace DecorationMaster.MyBehaviour
         [AdvanceDecoration]
         [Decoration("disable_col")]
         [Description("禁用游戏原本的某些物体(区域、平台)\n注意：请谨慎使用该物品，特别不要对任何墙体使用。建议用途为禁用某些小平台\n注意：请不要用鼠标选中此物品")]
-        [Description("disable origin game platform. \n ATTANTION:please not use it unless you certainly need", "en-us")]
+        [Description("disable vanilla platform(small). DON USE FOR CHUNK \n ATTANTION:please not use it unless you certainly need", "en-us")]
         public class DisableCollider : CustomDecoration
         {
             [Serializable]
@@ -59,6 +59,7 @@ namespace DecorationMaster.MyBehaviour
         }
         
         [Decoration("disable_hazard_spawn")]
+        [Description("disable vanilla hazard spawn area", "en-us")]
         [Description("禁用游戏原本的刷新存档点的地方")]
         public class DisableRespawnTrigger : CustomDecoration
         {
@@ -100,7 +101,7 @@ namespace DecorationMaster.MyBehaviour
         [AdvanceDecoration]
         [Decoration("remove_scene")]
         [Description("移除场景内所有物体（除了进出的门）\n未测试物品，谨慎使用")]
-        [Description("disable the whole origin scene's gameobjects except custom item \n ATTANTION:please not use it unless you certainly need", "en-us")]
+        [Description("remove the whole vinilla scene's gameobjects except doors\n ATTANTION:please not use it unless you certainly need", "en-us")]
         public class DisableRootObjs:CustomDecoration
         {
             private void Awake()

@@ -98,14 +98,18 @@
     <Compile Include="Attr\InspectIgnoreAttribute.cs" />
     <Compile Include="Attr\ItemAttribute.cs" />
     <Compile Include="Attr\MemeDecoration.cs" />
+    <Compile Include="Block.cs" />
     <Compile Include="DecorationMaster.cs" />
     <Compile Include="DLanguage.cs" />
     <Compile Include="MyBehaviour\AudioBehaviours.cs" />
+    <Compile Include="MyBehaviour\Bench.cs" />
     <Compile Include="MyBehaviour\Draw.cs" />
     <Compile Include="MyBehaviour\Mana.cs" />
     <Compile Include="MyBehaviour\ModifyGameItem.cs" />
     <Compile Include="MyBehaviour\MovablePlatform.cs" />
     <Compile Include="MyBehaviour\OneShotBehaviour.cs" />
+    <Compile Include="MyBehaviour\Particle.cs" />
+    <Compile Include="MyBehaviour\Scope.cs" />
     <Compile Include="MyBehaviour\TriggerSwitch.cs" />
     <Compile Include="UI\DescriptionPanel.cs" />
     <Compile Include="UI\ErrorPanel.cs" />
@@ -320,6 +324,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="images\plat_supermary.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="images\icons\binoculars.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

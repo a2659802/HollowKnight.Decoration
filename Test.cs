@@ -27,7 +27,7 @@ namespace DecorationMaster
 		public Test()
         {
             Modding.Logger.LogDebug("Start Test");
-
+			
 			Modding.Logger.LogDebug("End Test");
 			//Assetfile
 		}

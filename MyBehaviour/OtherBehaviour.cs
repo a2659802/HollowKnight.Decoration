@@ -34,10 +34,10 @@ namespace DecorationMaster.MyBehaviour
                     //float pitch = gameObject.GetComponent<MyTinkEffect>().pitch;
                 }
             }
-            //[Handle(Operation.SetTinkVoice)]
-            public void HandleVoice(object val)
+            [Handle(Operation.SetVolume)]
+            public void HandleVoice(float val)
             {
-
+                gameObject.GetComponent<AudioSource>().volume = val;
             }
             public override void HandlePos(Vector2 val)
             {
@@ -667,5 +667,13 @@ namespace DecorationMaster.MyBehaviour
             }
         }
 
+        [Decoration("HK_shadow_gate")]
+        public class ShadowGate : Resizeable
+        {
+            public override void HandleSize(float size)
+            {
+                gameObject.transform.localScale = new Vector3(1, size, 1);
+            }
+        }
     }
 }

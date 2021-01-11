@@ -22,7 +22,17 @@ namespace DecorationMaster
         
         public static readonly Dictionary<(string, Func<GameObject, GameObject>), (string, string)> ObjectList = new Dictionary<(string, Func<GameObject, GameObject>), (string, string)>
         {
+            {("bench",null),("Crossroads_47","RestBench") },
+            {("quake_floor",null),("Crossroads_52", "Quake Floor") },
             {("inspect_region",null),("White_Palace_18","Inspect Region")},
+            {("shadow_gate",(go)=>{
+                foreach(Transform t in go.transform)
+                {
+                    if(t.name.Contains("prongs"))
+                        Object.Destroy(t.gameObject);
+                }
+                return go;
+            }),("Fungus3_44", "shadow_gate") },
             {("zote_head",(go)=>{go.name = "ZoteKey";return go; }),("Fungus1_20_v02","Zote Death/Head") },
             {
                 ("saw", (go)=>{
