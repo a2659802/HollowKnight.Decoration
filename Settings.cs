@@ -99,6 +99,7 @@ namespace DecorationMaster
         SetColorA,
 
         SetOrder,
+        SetTimeOffset,
     }
     
     [Serializable]

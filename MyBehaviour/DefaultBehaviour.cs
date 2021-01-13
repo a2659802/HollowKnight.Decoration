@@ -2,12 +2,13 @@
 using DecorationMaster.Util;
 using DecorationMaster.Attr;
 using UnityEngine;
+using ModCommon;
+using System.Collections;
 
 namespace DecorationMaster.MyBehaviour
 {
     [Description("这是游戏内原本的物品，基本没有任何改动，看图标识别物品")]
     [Description("This is the origin game object, never changed its function")]
-    [Decoration("HK_trap_spike")]
     [Decoration("HK_flip_platform")]
     [Decoration("HK_spike")]
     [Decoration("HK_platform_rect")]
@@ -23,14 +24,46 @@ namespace DecorationMaster.MyBehaviour
     
     [Decoration("HK_laser_turret")]
     [Decoration("HK_quake_floor")]
+
     public class DefaultBehaviour : Resizeable
     {
         [Serializable]
         public class SharedItem : ResizableItem
         {
+            
         }
     }
 
+    [Decoration("HK_trap_spike")]
+    [Decoration("HK_zap_cloud")]
+    public class DelayResizableBehaviour : Resizeable
+    {
+        [Serializable]
+        public class DelayResizeItem : ResizableItem
+        {
+            [Handle(Operation.SetTimeOffset)]
+            [FloatConstraint(0f, 2f)]
+            public float time_offset { get; set; } = 0;
+        }
+
+        public override void HandleInit(Item i)
+        {
+            try
+            {
+                GameManager.instance.StartCoroutine(DelaySpawn(((DelayResizeItem)i).time_offset));
+            }
+            catch
+            {
+                base.HandleInit(i);
+            }
+            IEnumerator DelaySpawn(float t)
+            {
+                yield return new WaitForSeconds(t);
+                base.HandleInit(i);
+            }
+               
+        }
+    }
     
     public class UnVisableBehaviour : CustomDecoration
     {

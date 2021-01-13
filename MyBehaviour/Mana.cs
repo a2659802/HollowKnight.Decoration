@@ -705,11 +705,15 @@ namespace DecorationMaster.MyBehaviour
         }
         private void OnTriggerExit2D(Collider2D col)
         {
-            HeroExit?.Invoke();
+            int layer = col.gameObject.layer;
+            if (layer == (int)GlobalEnums.PhysLayers.HERO_BOX || layer == (int)GlobalEnums.PhysLayers.PLAYER)
+                HeroExit?.Invoke();
         }
         private void OnTriggerStay2D(Collider2D col)
         {
-            HeroStay?.Invoke();
+            int layer = col.gameObject.layer;
+            if (layer == (int)GlobalEnums.PhysLayers.HERO_BOX || layer == (int)GlobalEnums.PhysLayers.PLAYER)
+                HeroStay?.Invoke();
         }
     }
 }

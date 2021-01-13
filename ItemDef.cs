@@ -139,9 +139,9 @@ namespace DecorationMaster
         [Decoration("edge")]
         [Decoration("white_spike")]
         [Decoration("white_thorn")]
-        [Decoration("HK_Lconveyor")]
-        [Decoration("HK_Rconveyor")]
         [Decoration("HK_shadow_gate")]
+        [Decoration("hazard_saver")]
+        [Decoration("jarcol_floor")]
         public class DefatulResizeItem : ResizableItem { }
 
         [Serializable]
@@ -159,6 +159,8 @@ namespace DecorationMaster
             [IntConstraint(0, 360)]
             public int angle { get; set; } = 0;
         }
+
+        
 
         [Serializable]
         public class BindingItem : ResizableItem { }
@@ -273,6 +275,17 @@ namespace DecorationMaster
             [IntConstraint(1, AudioBehaviours.NoteMax)]
             [Handle(Operation.SetNote)]
             public int Note { get; set; } = 1;
+        }
+
+        [Serializable]
+        [Decoration("HK_Lconveyor")]
+        [Decoration("HK_Rconveyor")]
+        public class ConveyorItem : ResizableItem
+        {
+            [Description("设置传送带的速度")]
+            [Handle(Operation.SetSpeed)]
+            [IntConstraint(1, 20)]
+            public int speed { get; set; } = 8;
         }
     }
 }

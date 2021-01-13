@@ -6,7 +6,7 @@ using TMPro;
 using DecorationMaster.UI;
 using System;
 using System.Collections;
-
+using Modding;
 namespace DecorationMaster.MyBehaviour
 {
     public class OtherBehaviour
@@ -478,14 +478,14 @@ namespace DecorationMaster.MyBehaviour
                 var go = Instantiate(ObjectLoader.InstantiableObjects["HK_Hconveyor"],transform);
                 go.transform.localPosition = new Vector3(0, 2f, -2.4f);
                 
-                var cgo = new GameObject();
+                var cgo = new GameObject("box");
                 cgo.transform.SetParent(go.transform);
                 cgo.layer = (int)GlobalEnums.PhysLayers.TERRAIN;
                 cgo.transform.localScale = Vector3.one;
 
                 var col = cgo.AddComponent<BoxCollider2D>();
                 var conv = cgo.AddComponent<ConveyorBelt>();
-                conv.speed = -8;
+                //conv.speed = -8;
                 col.size = new Vector2(10.61741f, 2.202475f);
                 col.offset = new Vector2(-0.358706f, -2.418878f);
                 col.transform.localPosition = Vector3.zero;
@@ -498,7 +498,8 @@ namespace DecorationMaster.MyBehaviour
                 go.SetActive(true);
 
                 if (SetupMode)
-                    go.AddComponent<ShowColliders>();
+                    gameObject.AddComponent<ShowColliders>();
+
             }
             public override void HandleSize(float size)
             {
@@ -506,6 +507,17 @@ namespace DecorationMaster.MyBehaviour
             }
             public override void HandleRot(float angle)
             { 
+            }
+            [Handle(Operation.SetSpeed)]
+            public void HandleSpeed(int speed)
+            {
+                var cony = gameObject.GetComponentInChildren<ConveyorBelt>();
+                cony.speed = -speed;
+            }
+            public override void HandleInit(Item i)
+            {
+                gameObject.SetActive(true);
+                base.HandleInit(i);
             }
         }
         [Decoration("HK_Rconveyor")]
@@ -516,14 +528,15 @@ namespace DecorationMaster.MyBehaviour
                 var go = Instantiate(ObjectLoader.InstantiableObjects["HK_Hconveyor"], transform);
                 go.transform.localPosition = new Vector3(0, -2f, -2.4f);
 
-                var cgo = new GameObject();
+                var cgo = new GameObject("box");
                 cgo.transform.SetParent(go.transform);
                 cgo.layer = (int)GlobalEnums.PhysLayers.TERRAIN;
                 cgo.transform.localScale = Vector3.one;
 
                 var col = cgo.AddComponent<BoxCollider2D>();
-                var conv = cgo.AddComponent<ConveyorBelt>();
-                conv.speed = 8;
+                if(gameObject.GetComponent<ConveyorBelt>() == null)
+                    cgo.AddComponent<ConveyorBelt>();
+               
                 col.size = new Vector2(10.61741f, 2.202475f);
                 col.offset = new Vector2(-0.358706f, -2.418878f);
                 col.transform.localPosition = Vector3.zero;
@@ -537,7 +550,8 @@ namespace DecorationMaster.MyBehaviour
 
                 go.SetActive(true);
                 if(SetupMode)
-                    go.AddComponent<ShowColliders>();
+                    gameObject.AddComponent<ShowColliders>();
+
             }
             public override void HandleSize(float size)
             {
@@ -545,6 +559,17 @@ namespace DecorationMaster.MyBehaviour
             }
             public override void HandleRot(float angle)
             {
+            }
+            [Handle(Operation.SetSpeed)]
+            public void HandleSpeed(int speed)
+            {
+                var cony = gameObject.GetComponentInChildren<ConveyorBelt>();
+                cony.speed = speed;
+            }
+            public override void HandleInit(Item i)
+            {
+                gameObject.SetActive(true);
+                base.HandleInit(i);
             }
         }
 
@@ -673,6 +698,124 @@ namespace DecorationMaster.MyBehaviour
             public override void HandleSize(float size)
             {
                 gameObject.transform.localScale = new Vector3(1, size, 1);
+            }
+        }
+    
+        [Decoration("hazard_saver")]
+        [Description("临时重生点，离开范围恢复原本的")]
+        [Description("A platform that only spawns when the knight hits a hazard, then goes away","en-us")]
+        public class HazardSaver : Resizeable
+        {
+            public Vector2 DefaultSize = Vector2.one * 10;
+            public Vector2 selfHazardPos => transform.position;
+            public Vector2 LastHazardPos;
+            private BoxCollider2D col;
+            public override void HandleSize(float size)
+            {
+                if(col == null)
+                    col = gameObject.AddComponent<BoxCollider2D>();
+                col.size = DefaultSize * size;
+            }
+            public override void Remove(object self = null)
+            {
+                Exit();
+                base.Remove(self);
+            }
+            private void Awake()
+            {
+                if(col == null)
+                    col = gameObject.AddComponent<BoxCollider2D>();
+                gameObject.layer = (int)GlobalEnums.PhysLayers.PROJECTILES;
+                
+                if(SetupMode)
+                    gameObject.AddComponent<ShowColliders>();
+
+                var ht = gameObject.AddComponent<HeroTrigger>();
+                ht.HeroEnter = Enter;
+                ht.HeroExit = Exit;
+                
+            }
+            private void Enter()
+            {
+                //On.HeroController.HazardRespawn += HeroController_HazardRespawn;
+                On.GameManager.HazardRespawn += GameManager_HazardRespawn;
+                LastHazardPos = PlayerData.instance.hazardRespawnLocation;
+                HeroController.instance.SetHazardRespawn(selfHazardPos,true);
+
+                Logger.LogDebug("Enter");
+            }
+            private void OnDestroy()
+            {
+                Exit();
+            }
+            private void GameManager_HazardRespawn(On.GameManager.orig_HazardRespawn orig, GameManager self)
+            {
+                SpawnPlatform();
+                orig(self);
+            }
+
+            private void Exit()
+            {
+                On.GameManager.HazardRespawn -= GameManager_HazardRespawn;
+                if ((Vector2)PlayerData.instance.hazardRespawnLocation == selfHazardPos)
+                    HeroController.instance.SetHazardRespawn(LastHazardPos, true);
+
+                Logger.LogDebug("Exit");
+            }
+            private void SpawnPlatform()
+            {
+                var plat = new GameObject();
+                plat.AddComponent<TempPlatform>();
+                plat.layer = 8;
+                plat.transform.position = selfHazardPos + new Vector2(0, -1);
+                plat.SetActive(true);
+                plat.transform.localScale *= 0.8f;
+                Logger.LogDebug("Spawn Hazard Platform");
+            }
+            
+            private class TempPlatform : MonoBehaviour
+            {
+                private float dt = 3;
+                private float t = 0;
+                private SpriteRenderer sr;
+                private BoxCollider2D col;
+                private void Awake()
+                {
+                    sr = gameObject.AddComponent<SpriteRenderer>();
+                    var tex = GUIController.Instance.images["seal_wall"];
+                    sr.sprite = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0.5f, 0.5f));
+                    col = gameObject.AddComponent<BoxCollider2D>();
+                    col.size = new Vector2(1, 4.5f);
+                    gameObject.layer = 8;
+                    gameObject.transform.eulerAngles = new Vector3(0, 0, 90*3);
+                }
+                private void Update()
+                {
+                    t += Time.deltaTime;
+                    sr.color = new Color(1, 1, 1, (dt - t) / dt);
+                    if (dt - t < 0.1)
+                    {
+                        Destroy(gameObject);
+                    }
+
+                }
+            }
+        }
+    
+        [Decoration("jarcol_floor")]
+        [Description("A floor","en-us")]
+        public class JarcolFloor:Resizeable
+        {
+            private void Awake()
+            {
+                var sr = gameObject.AddComponent<SpriteRenderer>();
+                var col = gameObject.AddComponent<BoxCollider2D>();
+                var tex = GUIController.Instance.images["jarcol_floor"];
+                sr.sprite = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), Vector2.one * 0.5f);
+                col.size = new Vector2(11.30954f, 0.8839264f);
+                col.offset = new Vector2(0.007995605f, 0.1063919f);
+                gameObject.layer = 8;
+                
             }
         }
     }

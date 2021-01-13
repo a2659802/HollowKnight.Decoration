@@ -66,7 +66,8 @@ namespace DecorationMaster.UI
 
             DescriptionPanel.BuildMenu(canvas);
             PickPanel.BuildMenu(canvas);
-            
+            HUD.BuildMenu(canvas);
+
             ItemManager.Instance.SwitchGroup(0);
         }
 

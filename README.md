@@ -26,6 +26,11 @@ unless you understand what it is!
 this is the following:
 - Hazard Respawn Remover : to remove original game's respawn trigger
 - Scene Remove : to remove the WHOLE things in the room except custom items
+
+**FAQ**
+Q:what does the chinese characters while game start showing mean?
+A:it genally about that you can't sell you level or packge levels on other commodities. Because I notice that someone sell their hollow knight skins, I Object to this.
+
 ###TODO:
 ~ ADD UI / Inspector 
 ~ ADD More Object 

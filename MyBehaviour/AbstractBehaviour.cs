@@ -8,6 +8,7 @@ using System.Reflection;
 using System.Text;
 using UnityEngine;
 using DecorationMaster.Util;
+using DecorationMaster.UI;
 namespace DecorationMaster.MyBehaviour
 {
     public abstract class Editable : MonoBehaviour, IHitResponder
@@ -53,9 +54,6 @@ namespace DecorationMaster.MyBehaviour
         {
             item?.Setup(op, val);
 
-            /*var handlers = this.GetType().GetMethods(BindingFlags.Public | BindingFlags.Instance)
-                .Where(x => x.GetCustomAttributes(typeof(HandleAttribute), true).OfType<HandleAttribute>()
-                .Where(y => y.handleType == op).Any());*/
             var handlers = ReflectionCache.GetMethods(GetType(), op);
             if (handlers == null)
                 return null;
@@ -86,30 +84,10 @@ namespace DecorationMaster.MyBehaviour
             gameObject.transform.position = new Vector3(val.x, val.y, gameObject.transform.position.z);
         }
         [Handle(Operation.Serialize)]
-        public void HandleInit(Item i)
+        public virtual void HandleInit(Item i)
         {
             if (item != i)
                 item = i;
-
-            //search all Handleable Property in item
-           /* var handlableProps = i.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance)
-                .Where(x => x.GetCustomAttributes(typeof(HandleAttribute), true).OfType<HandleAttribute>().Any());
-
-            foreach(var prop in handlableProps)
-            {
-                HandleAttribute attr = prop.GetCustomAttributes(typeof(HandleAttribute), true).OfType<HandleAttribute>().FirstOrDefault();
-                if (attr == null || attr.handleType==Operation.None)
-                    continue;
-                try
-                {
-                    Setup(attr.handleType, prop.GetValue(i, null));
-                }
-                catch(Exception e)
-                {
-                    Logger.LogError($"An Exception occur while Setup:Op:{attr.handleType},val:{prop.GetValue(i, null)}");
-                    throw e;
-                }
-            }*/
 
             if(ReflectionCache.ItemPropCache.ContainsKey(i.GetType()))
             {
@@ -251,23 +229,30 @@ namespace DecorationMaster.MyBehaviour
         private void OnEnable()
         {
             if (BindBoolValue != null)
+            {
+                HUD.AddBindIcon(gameObject);
                 ModHooks.Instance.GetPlayerBoolHook += Bind;
+            }
         }
         private void OnDisable()
         {
             if (BindBoolValue != null)
+            { 
                 ModHooks.Instance.GetPlayerBoolHook -= Bind;
+            }
         }
         public bool Bind(string name)
         {
             return name == BindBoolValue ? false : PlayerData.instance.GetBoolInternal(name);
         }
+
     }
     
     public abstract class BreakableBoolBinding : BoolBinding
     {
         private void Awake()
         {
+            gameObject.name += this.GetType().Name;
             gameObject.AddComponent<NonBouncer>();
         }
         public override void Hit(HitInstance hit)
@@ -283,7 +268,10 @@ namespace DecorationMaster.MyBehaviour
         private void OnEnable()
         {
             if (BindIntValue != null)
+            {
+                HUD.AddBindIcon(gameObject);
                 ModHooks.Instance.GetPlayerIntHook += Bind;
+            }
         }
         private void OnDisable()
         {
@@ -299,6 +287,7 @@ namespace DecorationMaster.MyBehaviour
     {
         private void Awake()
         {
+            gameObject.name += this.GetType().Name;
             gameObject.AddComponent<NonBouncer>();
         }
         public override void Hit(HitInstance hit)

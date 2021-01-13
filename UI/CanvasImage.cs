@@ -88,7 +88,10 @@ namespace DecorationMaster.UI
                 active = b;
             }
         }
-
+        public void SetColor(Color c)
+        {
+            imageObj.GetComponent<CanvasRenderer>().SetColor(c);
+        }
         public void SetRenderIndex(int idx)
         {
             imageObj.transform.SetSiblingIndex(idx);

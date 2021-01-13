@@ -65,7 +65,7 @@ namespace DecorationMaster
             BehaviourProcessor.RegisterBehaviour<Bench>();
             BehaviourProcessor.RegisterSharedBehaviour<DefaultBehaviour>();
             BehaviourProcessor.RegisterSharedBehaviour<UnVisableBehaviour>();
-
+            BehaviourProcessor.RegisterSharedBehaviour<DelayResizableBehaviour>();
             #endregion
 
             #region InitGUI
@@ -102,14 +102,24 @@ namespace DecorationMaster
             }
             IEnumerator _respawn()
             {
-
+                var bench = GameObject.FindGameObjectWithTag("RespawnPoint");
                 var trigger = UnityEngine.Object.FindObjectOfType<HazardRespawnTrigger>();
-
                 yield return new WaitForSeconds(1f);
 
                 if (HeroController.instance.transform.position.x < -19900)
                 {
-                    PlayerData.instance.SetHazardRespawn(trigger.respawnMarker);
+                    if(bench!=null)
+                    {
+                        HeroController.instance.SetHazardRespawn(bench.transform.position, true);
+                    }
+                    else if(trigger != null)
+                    {
+                        PlayerData.instance.SetHazardRespawn(trigger.respawnMarker);
+                    }
+                    else
+                    {
+                        LogError("Can't Respawn currectly");
+                    }
                     Respawn();
                 }
                
@@ -314,36 +324,6 @@ namespace DecorationMaster
                     
             }
            
-            /*
-            if (Input.GetKeyDown(KeyCode.Keypad0))
-            {
-                return 1;
-            }
-            else if (Input.GetKeyDown(KeyCode.Keypad1))
-            {
-                return 2;
-            }
-            else if (Input.GetKeyDown(KeyCode.Keypad2))
-            {
-                return 3;
-            }
-            else if (Input.GetKeyDown(KeyCode.Keypad3))
-            {
-                return 4;
-            }
-            else if (Input.GetKeyDown(KeyCode.Keypad4))
-            {
-                return 5;
-            }
-            else if (Input.GetKeyDown(KeyCode.Keypad5))
-            {
-                return 6;
-            }
-            else if (Input.GetKeyDown(KeyCode.Keypad6))
-            {
-                return 7;
-            }*/
-
             return -1;
         }
         public static Vector3 GetMousePos()
@@ -397,7 +377,7 @@ namespace DecorationMaster
         public KeyCode ToggleEdit => Settings.ToggleEditKey;
         public KeyCode SwitchGroup => Settings.SwitchGroupKey;
 
-        public const float Version = 0.33f;
+        public const float Version = 0.35f;
     }
     public static class Logger
     {

@@ -1,4 +1,5 @@
 ﻿using DecorationMaster.Attr;
+using DecorationMaster.UI;
 using Modding;
 using System;
 using System.Collections;
@@ -123,6 +124,7 @@ namespace DecorationMaster.MyBehaviour
         {
             private void OnEnable()
             {
+                HUD.AddBindIcon(gameObject);
                 On.HeroController.Bounce += NoBonce;
             }
 

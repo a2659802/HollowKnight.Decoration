@@ -35,8 +35,10 @@ namespace DecorationMaster
 
         public static void TestGo(GameObject go)
         {
-			
-        }
+			var door = GameObject.Find("GG_Challenge_Door");
+
+			door.transform.position = HeroController.instance.transform.position;
+		}
 		public static void TestOnce()
         {
         }

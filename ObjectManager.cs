@@ -9,6 +9,7 @@ using System.Reflection;
 using UnityEngine;
 using Object = UnityEngine.Object;
 using HutongGames.PlayMaker.Actions;
+using ModCommon;
 namespace DecorationMaster
 {
     // Create a objectpool name InstantiableObjects which can be access with name
@@ -22,6 +23,7 @@ namespace DecorationMaster
         
         public static readonly Dictionary<(string, Func<GameObject, GameObject>), (string, string)> ObjectList = new Dictionary<(string, Func<GameObject, GameObject>), (string, string)>
         {
+            {("zap_cloud",null),("Fungus3_archive_02","Zap Cloud") },
             {("bench",null),("Crossroads_47","RestBench") },
             {("quake_floor",null),("Crossroads_52", "Quake Floor") },
             {("inspect_region",null),("White_Palace_18","Inspect Region")},
