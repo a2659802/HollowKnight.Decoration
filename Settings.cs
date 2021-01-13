@@ -100,6 +100,8 @@ namespace DecorationMaster
 
         SetOrder,
         SetTimeOffset,
+
+        SetRate,
     }
     
     [Serializable]

@@ -23,6 +23,7 @@ namespace DecorationMaster
         
         public static readonly Dictionary<(string, Func<GameObject, GameObject>), (string, string)> ObjectList = new Dictionary<(string, Func<GameObject, GameObject>), (string, string)>
         {
+            {("crystal_dropping",null),("Mines_31","Pt Crystal Dropping (13)")},
             {("zap_cloud",null),("Fungus3_archive_02","Zap Cloud") },
             {("bench",null),("Crossroads_47","RestBench") },
             {("quake_floor",null),("Crossroads_52", "Quake Floor") },
@@ -53,7 +54,7 @@ namespace DecorationMaster
                 
                 ),("Mines_31","conveyor_belt_0mid (3)")
             },
-            {("laser_turret", (go)=>{
+{("laser_turret", (go)=>{
                 var fsm = go.LocateMyFSM("Laser Bug");
                 fsm.AddAction
                 (

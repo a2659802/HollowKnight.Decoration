@@ -53,6 +53,7 @@ namespace DecorationMaster
 
             #region Init GameObject
             ObjectLoader.Load(preloadedObjects);
+            BehaviourProcessor.RegisterBehaviour<Particle>();
             BehaviourProcessor.RegisterBehaviour<Draw>();
             BehaviourProcessor.RegisterBehaviour<OtherBehaviour>();
             BehaviourProcessor.RegisterBehaviour<AreaBehaviour>();
@@ -377,7 +378,7 @@ namespace DecorationMaster
         public KeyCode ToggleEdit => Settings.ToggleEditKey;
         public KeyCode SwitchGroup => Settings.SwitchGroupKey;
 
-        public const float Version = 0.35f;
+        public const float Version = 0.36f;
     }
     public static class Logger
     {
