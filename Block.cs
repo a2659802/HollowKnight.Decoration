@@ -13,11 +13,17 @@ namespace DecorationMaster
 {
     class Block
     {
+        enum BlockOp
+        {
+            COPY,
+            DELETE,
+        }
         public List<GameObject> InRangeObjs = new List<GameObject>();
         public Vector2 start = Vector2.one * -1;
         public Vector2 end;
         private GameObject tmp;
         private static Block _instance;
+        private BlockOp op = BlockOp.COPY;
         public static Block Instance { get {
                 if (_instance == null)
                     _instance = new Block();
@@ -138,8 +144,18 @@ namespace DecorationMaster
             {
                 return;
             }
-            //Camera.main.WorldToScreenPoint
 
+            SelectInRange();
+            if(op == BlockOp.COPY)
+                CopyInRange();
+            else if(op == BlockOp.DELETE)
+            {
+                //TODO
+            }
+            MyCursor.cursorTexture = GUIController.Instance.images["arrow"];
+        }
+        private void SelectInRange()
+        {
             var gos = UnityEngine.Object.FindObjectsOfType<CustomDecoration>().Select(x => x.gameObject);
             InRangeObjs.Clear();
             foreach (var go in gos)
@@ -151,27 +167,26 @@ namespace DecorationMaster
                     //Logger.Log(go.name);
                 }
             }
-            
+        }
+        private void CopyInRange()
+        {
             //var x = (int)(end.x + start.x) / 2;
             //var y = (int)(start.y + end.y) / 2;
             //SetCursorPos(x, 1080 - y);
+
+            //Logger.LogDebug($"Start:{start}.End:{end},Mid:{x},{y}");
             tmp = new GameObject();
             tmp.transform.position = DecorationMaster.GetMousePos();
             tmp.AddComponent<SpriteRenderer>().sprite = Sprite.Create(new Texture2D(20, 20), new Rect(0, 0, 20, 20), Vector2.one * 0.5f);
-            
+
             foreach (var go in InRangeObjs)
             {
                 var clone = go.GetComponent<CustomDecoration>().CopySelf();
                 clone.SetActive(true);
-                //Logger.LogDebug($"1-{go.transform.position},{clone.transform.position}");
-                //clone.GetComponent<CustomDecoration>().enabled = false;
-                //Logger.LogDebug($"2-{go.transform.position},{clone.transform.position}");
                 clone.transform.SetParent(tmp.transform);
             }
+
             tmp.AddComponent<BlockMover>();
-            //Logger.LogDebug($"Start:{start}.End:{end},Mid:{x},{y}");
-            
-            MyCursor.cursorTexture = GUIController.Instance.images["arrow"];
         }
         private bool is_in_range(Vector2 dest)
         {

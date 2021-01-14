@@ -17,7 +17,7 @@ namespace DecorationMaster.MyBehaviour
         public virtual void Hit(HitInstance damageInstance)
         {
            // Logger.LogDebug($"Hit Mode:{SetupMode}");
-            if (SetupMode)// && damageInstance.AttackType==AttackTypes.Nail
+            if (SetupMode && ((DecorationMaster.instance.Settings.allowSpellRemove) || damageInstance.AttackType == AttackTypes.Nail))
                 Remove();
         }
         public abstract void Add(object self=null); //add this item to global
