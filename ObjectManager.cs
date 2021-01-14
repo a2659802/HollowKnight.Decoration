@@ -44,7 +44,7 @@ namespace DecorationMaster
                     return go;
                 }),
                 ("White_Palace_18","saw_collection/wp_saw")
-            },
+            },/*
             {
                 ("Hconveyor", (go) =>
                 {

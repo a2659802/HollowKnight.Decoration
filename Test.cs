@@ -41,6 +41,7 @@ namespace DecorationMaster
 		}
 		public static void TestOnce()
         {
+			
         }
 		public IEnumerator Dump(string sceneName = null)
 		{

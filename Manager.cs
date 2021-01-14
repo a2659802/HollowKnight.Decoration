@@ -223,12 +223,11 @@ namespace DecorationMaster
     {
         //private static GameObject arrow;
         private static bool draw = false;
-        private static Texture2D cursorTexture;
+        public static Texture2D cursorTexture;
         public static Vector3 CursorPosition;
         private void Awake()
         {
-            var tex = GUIController.Instance.images["arrow"];
-            cursorTexture = tex;
+            cursorTexture = GUIController.Instance.images["arrow"];
         }
         private void OnGUI()
         {

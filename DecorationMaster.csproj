@@ -340,6 +340,9 @@
   <ItemGroup>
     <EmbeddedResource Include="images\icons\hazard_saver.png" />
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="images\UIelements\arrow2.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>echo copying

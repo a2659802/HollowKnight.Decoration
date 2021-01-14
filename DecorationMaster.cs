@@ -272,7 +272,10 @@ namespace DecorationMaster
                     Logger.LogDebug("Auto Save");
                 }
             }
-            //Test.TestOnce();
+            if((Input.GetKey(KeyCode.LeftControl)|| Input.GetKey(KeyCode.RightControl)) && Input.GetKeyDown(KeyCode.C))
+            {
+                Block.Instance.Select();
+            }
 
             if (Input.GetKeyDown(ToggleEdit))    // Toggle Edit Model
             {
@@ -378,7 +381,7 @@ namespace DecorationMaster
         public KeyCode ToggleEdit => Settings.ToggleEditKey;
         public KeyCode SwitchGroup => Settings.SwitchGroupKey;
 
-        public const float Version = 0.36f;
+        public const float Version = 0.40f;
     }
     public static class Logger
     {
