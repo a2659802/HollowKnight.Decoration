@@ -275,7 +275,7 @@ namespace DecorationMaster
             if((Input.GetKey(KeyCode.LeftControl)|| Input.GetKey(KeyCode.RightControl)))
             {
                 if (Input.GetKeyDown(KeyCode.C))
-                    Block.Instance.Select();
+                    ItemManager.Instance.CopyBlock();
                 else if (Input.GetKeyDown(KeyCode.Z))
                     ItemManager.Instance.DiscardLast();
             }

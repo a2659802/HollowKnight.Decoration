@@ -192,10 +192,13 @@ namespace DecorationMaster
         }
         public void AddBlock(IEnumerable<GameObject> block)
         {
+            if (block == null)
+                return;
             var array = block.ToArray();
             for (int i = 0; i < array.Length; i++)
                 array[i].GetComponent<CustomDecoration>().Setup(Operation.ADD, null);
-            RecordHistory(array);
+            if(array.Length>0)
+                RecordHistory(array);
         }
         public void RecordHistory(GameObject[] h)
         {
@@ -204,7 +207,9 @@ namespace DecorationMaster
         }
         public void DiscardLast()
         {
-            Logger.LogDebug("Try Discarding");
+            if (!setupMode)
+                return;
+            //Logger.LogDebug("Try Discarding");
             var last = AddedHistory.Pop();
             if(last!=null && last.Length>0)
             {
@@ -212,8 +217,15 @@ namespace DecorationMaster
                     if(last[i] != null)
                         last[i].GetComponent<CustomDecoration>().Remove();
 
-                Logger.LogDebug("Discard last added");
+                //Logger.LogDebug("Discard last added");
             }
+        }
+        public void CopyBlock()
+        {
+            if (!setupMode)
+                return;
+
+            Block.Instance.Select();
         }
         public void ClearHistory()
         {
