@@ -9,6 +9,8 @@ using System.Reflection;
 using DecorationMaster.UI;
 using DecorationMaster.MyBehaviour;
 using DecorationMaster.Attr;
+using System.Collections;
+
 namespace DecorationMaster
 {
     public class ItemManager
@@ -36,6 +38,8 @@ namespace DecorationMaster
         public const int GroupMax = 6;
         public int CurrentGroup { get; private set; } = 1;
         public bool setupMode { get; private set; }
+
+        public CircleStack<GameObject[]> AddedHistory = new CircleStack<GameObject[]>(DecorationMaster.instance.Settings.HistroyMaxCount);
         public static ItemManager Instance {
             get
             {
@@ -89,7 +93,17 @@ namespace DecorationMaster
                 group.Add(group_idx, a);
             }
 
+            UnityEngine.SceneManagement.SceneManager.activeSceneChanged += SceneManager_activeSceneChanged;
         }
+        ~ItemManager()
+        {
+            UnityEngine.SceneManagement.SceneManager.activeSceneChanged -= SceneManager_activeSceneChanged;
+        }
+        private void SceneManager_activeSceneChanged(UnityEngine.SceneManagement.Scene arg0, UnityEngine.SceneManagement.Scene arg1)
+        {
+            ClearHistory();
+        }
+
         public int SwitchGroup(int span = 1)
         {
             var next_group = CurrentGroup + span;
@@ -170,8 +184,40 @@ namespace DecorationMaster
         }
         public void AddCurrent()
         {
+            if (currentSelect == null)
+                return;
             Operate(Operation.ADD, null);
+            RecordHistory(new GameObject[] { currentSelect });
             currentSelect = null;
+        }
+        public void AddBlock(IEnumerable<GameObject> block)
+        {
+            var array = block.ToArray();
+            for (int i = 0; i < array.Length; i++)
+                array[i].GetComponent<CustomDecoration>().Setup(Operation.ADD, null);
+            RecordHistory(array);
+        }
+        public void RecordHistory(GameObject[] h)
+        {
+            AddedHistory.Push(h);
+            Logger.LogDebug("Add Histroy");
+        }
+        public void DiscardLast()
+        {
+            Logger.LogDebug("Try Discarding");
+            var last = AddedHistory.Pop();
+            if(last!=null && last.Length>0)
+            {
+                for (int i = 0; i < last.Length; i++)
+                    if(last[i] != null)
+                        last[i].GetComponent<CustomDecoration>().Remove();
+
+                Logger.LogDebug("Discard last added");
+            }
+        }
+        public void ClearHistory()
+        {
+            AddedHistory.Clear();
         }
         public void RemoveCurrent()
         {
@@ -201,7 +247,7 @@ namespace DecorationMaster
             Object.DontDestroyOnLoad(SetupFlag);
 
         }
-        private class HookCursor : MonoBehaviour
+        /*private class HookCursor : MonoBehaviour
         {
             private void OnEnable()
             {
@@ -217,7 +263,7 @@ namespace DecorationMaster
                 On.InputHandler.OnGUI -= InputHandler_OnGUI;
             }
         }
-        
+        */
     }
     public class MyCursor : MonoBehaviour
     {
@@ -250,4 +296,50 @@ namespace DecorationMaster
         }
 
     }
+
+    public class CircleStack<T>
+    {
+        //int max_count { get => array.Length; }
+        private int idx;
+        private T[] array;
+        public CircleStack(int max_capacity)
+        {
+            idx = 0;
+            //max_count = max_capacity;
+            array = new T[max_capacity];
+        }
+        public void Push(T item)
+        {
+            array[idx] = item;
+            idx = (idx + 1) % array.Length;
+        }
+        public T Pop()
+        {
+            if (idx == 0)
+                idx = array.Length - 1;
+            else
+                idx = (idx - 1) % array.Length;
+
+            T item = array[idx];
+            array[idx] = default;
+
+            return item;
+        }
+        public T Peek()
+        {
+            if (idx == 0)
+                idx = array.Length - 1;
+            else
+                idx = (idx - 1) % array.Length;
+            return array[idx];
+        }
+    
+        public void Clear()
+        {
+            for (int i = 0; i < array.Length; i++)
+                array[i] = default;
+            idx = 0;
+        }
+    }
+
 }

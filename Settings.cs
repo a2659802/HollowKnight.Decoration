@@ -19,6 +19,7 @@ namespace DecorationMaster
         public bool MemeItem = false;
         public bool showDesc = true;
         public bool agreeLicense = false;
+        public int HistroyMaxCount = 5;
         public KeyCode ToggleEditKey = KeyCode.CapsLock;
         public KeyCode SwitchGroupKey = KeyCode.Tab;
         public KeyCode SetPrefabKey = KeyCode.Space;

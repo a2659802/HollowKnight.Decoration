@@ -106,14 +106,18 @@ namespace DecorationMaster
 
                     var cd = go.GetComponent<CustomDecoration>();
                     cd.Setup(Operation.SetPos, (Vector2)go.transform.position);
-                    cd.Setup(Operation.ADD,null);
+                    //cd.Setup(Operation.ADD,null);
                     cd.enabled = true;
                 }
+                ItemManager.Instance.AddBlock(list);
                 Destroy(gameObject);
             }
         }
         public void Select()
         {
+            if (Inspector.IsToggle())
+                Inspector.Hide();
+            ItemManager.Instance.RemoveCurrent();
             start = Vector2.one * -1;
             UnityEngine.Object.Destroy(tmp);
             tmp = new GameObject();

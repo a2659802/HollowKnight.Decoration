@@ -272,9 +272,12 @@ namespace DecorationMaster
                     Logger.LogDebug("Auto Save");
                 }
             }
-            if((Input.GetKey(KeyCode.LeftControl)|| Input.GetKey(KeyCode.RightControl)) && Input.GetKeyDown(KeyCode.C))
+            if((Input.GetKey(KeyCode.LeftControl)|| Input.GetKey(KeyCode.RightControl)))
             {
-                Block.Instance.Select();
+                if (Input.GetKeyDown(KeyCode.C))
+                    Block.Instance.Select();
+                else if (Input.GetKeyDown(KeyCode.Z))
+                    ItemManager.Instance.DiscardLast();
             }
 
             if (Input.GetKeyDown(ToggleEdit))    // Toggle Edit Model
