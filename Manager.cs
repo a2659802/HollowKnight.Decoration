@@ -18,11 +18,11 @@ namespace DecorationMaster
         public delegate void SelectChanged(CustomDecoration d);
         public event SelectChanged OnChanged;
         private static ItemManager _instance;
-        private  GameObject _setup_flag_backing;
+        private GameObject _setup_flag_backing;
         public GameObject currentSelect { get; private set; }
         public delegate void GroupSwitchHandler(string[] nextGroup);
         public event GroupSwitchHandler GroupSwitchEventHandler;
-        private  GameObject SetupFlag { get
+        private GameObject SetupFlag { get
             {
                 if (_setup_flag_backing != null)
                     return _setup_flag_backing;
@@ -47,7 +47,7 @@ namespace DecorationMaster
                     _instance = new ItemManager();
                 return _instance;
 
-             } 
+            }
         }
         private ItemManager()
         {
@@ -58,14 +58,14 @@ namespace DecorationMaster
             {
                 deGo = ObjectLoader.InstantiableObjects.Where(x => x.Value.GetComponent<CustomDecoration>() != null);
             }
-            else if(DecorationMaster.instance.Settings.MemeItem)
+            else if (DecorationMaster.instance.Settings.MemeItem)
             {
                 deGo = ObjectLoader.InstantiableObjects.Where(x =>
                 {
                     var cd = x.Value.GetComponent<CustomDecoration>();
                     return (
                     (cd != null)
-                    && (cd.GetType().GetCustomAttributes(typeof(AdvanceDecoration), false).Length == 0)
+                    && (!cd.GetType().IsDefined(typeof(AdvanceDecoration), false))
                     );
                 });
             }
@@ -75,16 +75,16 @@ namespace DecorationMaster
                 {
                     var cd = x.Value.GetComponent<CustomDecoration>();
                     return (
-                    (cd != null) 
-                    && (cd.GetType().GetCustomAttributes(typeof(AdvanceDecoration), false).Length == 0)
-                    && (cd.GetType().GetCustomAttributes(typeof(MemeDecoration), false).Length == 0)
+                    (cd != null)
+                    && (!cd.GetType().IsDefined(typeof(AdvanceDecoration), false))
+                    && (!cd.GetType().IsDefined(typeof(MemeDecoration), false))
                     );
                 });
             }
 
             var Names = deGo.Select(x => x.Key);
             int group_idx = 0;
-            
+
             while (Names.Any())
             {
                 group_idx++;
@@ -118,7 +118,7 @@ namespace DecorationMaster
         }
         public bool ToggleSetup()
         {
-            if(HeroController.instance == null)
+            if (HeroController.instance == null)
             {
                 setupMode = false;
                 return setupMode;
@@ -148,16 +148,40 @@ namespace DecorationMaster
 
             if (idx < 1 || idx > group[CurrentGroup].Length)
                 return null;
-             
+
             string poolname = group[CurrentGroup][idx - 1];
             GameObject go = ObjectLoader.CloneDecoration(poolname);
-            currentSelect = go;
-            CustomDecoration cd = go?.GetComponent<CustomDecoration>();
-            go?.SetActive(true);
+            //currentSelect = go;
+            //CustomDecoration cd = go?.GetComponent<CustomDecoration>();
+            //go?.SetActive(true);
 
+            //OnChanged?.Invoke(cd);
+            var cd = _select_go(go);
+            return cd;
+        }
+        public CustomDecoration Select(Item i)
+        {
+            if (!setupMode)
+                return null;
+
+            if (currentSelect != null)
+                RemoveCurrent();
+
+            GameObject go = ObjectLoader.CloneDecoration(i);
+            var cd = _select_go(go);
+            return cd;
+        }
+
+        private CustomDecoration _select_go(GameObject go)
+        {
+            currentSelect = go;
+            var cd = go?.GetComponent<CustomDecoration>();
+            go?.SetActive(true);
             OnChanged?.Invoke(cd);
             return cd;
         }
+
+        [Obsolete("Do not use")]
         public CustomDecoration Select(GameObject prefab)
         {
             if (prefab == null)
@@ -165,10 +189,11 @@ namespace DecorationMaster
             if (currentSelect != null)
                 return currentSelect.GetComponent<CustomDecoration>();
             var clone = prefab.GetComponent<CustomDecoration>().Setup(Operation.COPY, null) as GameObject;
-            currentSelect = clone;
+            /*currentSelect = clone;
             currentSelect.SetActive(true);
             var cd = clone.GetComponent<CustomDecoration>();
-            OnChanged?.Invoke(cd);
+            OnChanged?.Invoke(cd);*/
+            var cd = _select_go(clone);
             return cd;
         }
         internal void orig_Operate(Operation op,object val)

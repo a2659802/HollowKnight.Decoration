@@ -23,11 +23,28 @@ namespace DecorationMaster
         
         public static readonly Dictionary<(string, Func<GameObject, GameObject>), (string, string)> ObjectList = new Dictionary<(string, Func<GameObject, GameObject>), (string, string)>
         {
+            
+            {("lore_tablet_1",(go)=>{
+                //go.GetComponent<BoxCollider2D>().offset= new Vector2(-0.2f,-1);
+                var lit = go.transform.Find("lit_tablet").gameObject;
+                var sprite = lit.GetComponent<SpriteRenderer>().sprite;
+                var ngo = new GameObject();
+                ngo.AddComponent<SpriteRenderer>().sprite = sprite;
+                var localPos = lit.transform.localPosition;
+                lit.transform.SetParent(null);
+                ngo.transform.SetParent(go.transform);
+                ngo.transform.localPosition = localPos;
+                Object.Destroy(lit);
+
+                return go;
+            }),("Tutorial_01","_Props/Tut_tablet_top (1)") },
+            
+            /*{("inspect_region",null),("White_Palace_18","Inspect Region")},
+            {("garden_plat_s",null),("Fungus3_13",("Royal Gardens Plat S")) }
             {("crystal_dropping",null),("Mines_31","Pt Crystal Dropping (13)")},
             {("zap_cloud",null),("Fungus3_archive_02","Zap Cloud") },
             {("bench",null),("Crossroads_47","RestBench") },
             {("quake_floor",null),("Crossroads_52", "Quake Floor") },
-            {("inspect_region",null),("White_Palace_18","Inspect Region")},
             {("shadow_gate",(go)=>{
                 foreach(Transform t in go.transform)
                 {
@@ -171,7 +188,7 @@ namespace DecorationMaster
             }
             return go;
         }
-
+        public static GameObject CloneDecoration(Item prefab) => CloneDecoration(prefab.pname, prefab);
         public static void Load(Dictionary<string, Dictionary<string, GameObject>> preloadedObjects)
         {
             static GameObject Spawnable(GameObject obj, Func<GameObject, GameObject> modify)
@@ -328,6 +345,7 @@ namespace DecorationMaster
             //ItemDescriptor.Register(td,poolname);
         }
         
+        //T is a class which includes a lot of sub-class in type CustomDecoration
         public static void RegisterBehaviour<T>()
         {
             var behaviours = typeof(T).GetNestedTypes(BindingFlags.Public).Where(x => x.IsSubclassOf(typeof(CustomDecoration)));

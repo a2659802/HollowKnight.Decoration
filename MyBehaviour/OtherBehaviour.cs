@@ -61,6 +61,27 @@ namespace DecorationMaster.MyBehaviour
 
         }
 
+        [Description("碑文")]
+        [Decoration("HK_lore_tablet_1")]
+        public class LoreTablet1 : Resizeable
+        {
+            [Handle(Operation.SetText)]
+            public void UpdateDialogue(string text)
+            {
+                if (string.IsNullOrEmpty(text))
+                    return;
+                string val = text;
+                string key = $"LoreTablet1_{val.GetHashCode()}";
+                if (DLanguage.MyLan.ContainsKey(key))
+                    DLanguage.MyLan[key] = val;
+                else
+                    DLanguage.MyLan.Add(key, val);
+
+                //inspect.GetComponent<PlayMakerFSM>().FsmVariables.GetFsmString("Game Text Convo").Value = key;
+                gameObject.LocateMyFSM("Inspection").FsmVariables.GetFsmString("Convo Name").Value = key;
+            }
+        }
+
         [Description("由于放置时它把自己炸死会出BUG，所以我把血量设为了9999")]
         [Description("it has 9999 HP lol", "en-us")]
         [Decoration("HK_turret")]

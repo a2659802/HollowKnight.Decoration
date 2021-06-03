@@ -20,7 +20,7 @@ namespace DecorationMaster
         public bool showDesc = true;
         public bool agreeLicense = false;
         public bool allowSpellRemove = false;
-        public int HistroyMaxCount = 5;
+        public int HistroyMaxCount = 10;
         public KeyCode ToggleEditKey = KeyCode.CapsLock;
         public KeyCode SwitchGroupKey = KeyCode.Tab;
         public KeyCode SetPrefabKey = KeyCode.Space;
@@ -104,6 +104,10 @@ namespace DecorationMaster
         SetTimeOffset,
 
         SetRate,
+
+        SetId,
+        SetDst,
+        SetText,
     }
     
     [Serializable]

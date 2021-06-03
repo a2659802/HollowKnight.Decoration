@@ -16,6 +16,7 @@ namespace DecorationMaster
         enum BlockOp
         {
             COPY,
+            MOVE,
             DELETE,
         }
         public List<GameObject> InRangeObjs = new List<GameObject>();
@@ -79,6 +80,8 @@ namespace DecorationMaster
         }
         private class BlockMover : MonoBehaviour
         {
+            public Action Cancel;
+            public Action Confirm;
             private IEnumerator Start()
             {
                 yield return null;
@@ -92,11 +95,17 @@ namespace DecorationMaster
                 transform.position = DecorationMaster.GetMousePos();
                 if(Input.GetMouseButtonUp((int)MouseButton.Right))
                 {
-                    Destroy(gameObject);
+                    if (Cancel == null)
+                        Destroy(gameObject);
+                    else
+                        Cancel.Invoke();
                 }
                 else if (Input.GetMouseButtonUp((int)MouseButton.Left))
                 {
-                    SetupAll();
+                    if (Confirm == null)
+                        SetupAll();
+                    else
+                        Confirm.Invoke();
                 }
             }
             private void SetupAll()
@@ -146,9 +155,11 @@ namespace DecorationMaster
             }
 
             SelectInRange();
-            if(op == BlockOp.COPY)
+            if (op == BlockOp.COPY)
                 CopyInRange();
-            else if(op == BlockOp.DELETE)
+            else if (op == BlockOp.MOVE)
+                MoveInRange();
+            else if (op == BlockOp.DELETE)
             {
                 //TODO
             }
@@ -184,6 +195,45 @@ namespace DecorationMaster
                 var clone = go.GetComponent<CustomDecoration>().CopySelf();
                 clone.SetActive(true);
                 clone.transform.SetParent(tmp.transform);
+            }
+
+            tmp.AddComponent<BlockMover>();
+        }
+        private void MoveInRange()
+        {
+            tmp = new GameObject();
+            tmp.transform.position = DecorationMaster.GetMousePos();
+            tmp.AddComponent<SpriteRenderer>().sprite = Sprite.Create(new Texture2D(20, 20), new Rect(0, 0, 20, 20), Vector2.one * 0.5f);
+
+            foreach (var go in InRangeObjs)
+            {
+                //var clone = go.GetComponent<CustomDecoration>().CopySelf();
+                //clone.SetActive(true);
+                //clone.transform.SetParent(tmp.transform);
+                go.transform.SetParent(tmp.transform);
+            }
+            var oriPos = tmp.transform.position;
+            tmp.AddComponent<BlockMover>().Cancel = () => {
+                tmp.transform.position = oriPos;
+                foreach(Transform child in tmp.transform)
+                {
+                    child.transform.SetParent(null);
+                }
+                UnityEngine.Object.Destroy(tmp);
+            };
+        }
+        private void DeleteInRange()
+        {
+            tmp = new GameObject();
+            tmp.transform.position = DecorationMaster.GetMousePos();
+            tmp.AddComponent<SpriteRenderer>().sprite = Sprite.Create(new Texture2D(20, 20), new Rect(0, 0, 20, 20), Vector2.one * 0.5f);
+
+            foreach (var go in InRangeObjs)
+            {
+                //var clone = go.GetComponent<CustomDecoration>().CopySelf();
+                //clone.SetActive(true);
+                //clone.transform.SetParent(tmp.transform);
+                go.transform.SetParent(tmp.transform);
             }
 
             tmp.AddComponent<BlockMover>();

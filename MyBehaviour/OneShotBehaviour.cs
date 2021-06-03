@@ -32,8 +32,6 @@ namespace DecorationMaster.MyBehaviour
             {
                 
                 au = gameObject.AddComponent<AudioSource>();
-                //var sr = gameObject.AddComponent<SpriteRenderer>();
-                //var col = gameObject.AddComponent<BoxCollider2D>();
                 ht = gameObject.AddComponent<HeroTrigger>();
                 ht.HeroEnter = RecoveOneshot;
                 transform.localScale *= 2;
@@ -107,8 +105,6 @@ namespace DecorationMaster.MyBehaviour
             private void Awake()
             {
                 au = gameObject.AddComponent<AudioSource>();
-                //var sr = gameObject.AddComponent<SpriteRenderer>();
-               // var col = gameObject.AddComponent<BoxCollider2D>();
                 ht = gameObject.AddComponent<HeroTrigger>();
                 ht.HeroEnter = RecoveOneshot;
                 transform.localScale *= 2;

@@ -17,7 +17,7 @@ namespace DecorationMaster.UI
             if(!agreeLicense)
             {
                 string bundleN = "userlicense";
-                AssetBundle ab = null;  // You probably want this to be defined somewhere more global.
+                AssetBundle ab = null;  
                 Assembly asm = Assembly.GetExecutingAssembly();
                 foreach (string res in asm.GetManifestResourceNames()) 
                 {
@@ -30,7 +30,7 @@ namespace DecorationMaster.UI
                         string bundleName = Path.GetExtension(res).Substring(1);
                         if (bundleName != bundleN) continue;
                         Logger.Log("Loading bundle " + bundleName);
-                        ab = AssetBundle.LoadFromMemory(buffer); // Store this somewhere you can access again.
+                        ab = AssetBundle.LoadFromMemory(buffer); 
                     }
                 }
                 var _canvas = ab.LoadAsset<GameObject>("userlicense");

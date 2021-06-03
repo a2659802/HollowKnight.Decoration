@@ -94,6 +94,7 @@
     <Compile Include="Attr\DecorationAttribute.cs" />
     <Compile Include="Attr\ConstraintAttribute.cs" />
     <Compile Include="Attr\DescriptionAttribute.cs" />
+    <Compile Include="Attr\GlobalItem.cs" />
     <Compile Include="Attr\HandleAttribute.cs" />
     <Compile Include="Attr\InspectIgnoreAttribute.cs" />
     <Compile Include="Attr\ItemAttribute.cs" />
@@ -104,6 +105,7 @@
     <Compile Include="MyBehaviour\AudioBehaviours.cs" />
     <Compile Include="MyBehaviour\Bench.cs" />
     <Compile Include="MyBehaviour\Draw.cs" />
+    <Compile Include="MyBehaviour\Gem\TransitionGem.cs" />
     <Compile Include="MyBehaviour\Mana.cs" />
     <Compile Include="MyBehaviour\ModifyGameItem.cs" />
     <Compile Include="MyBehaviour\MovablePlatform.cs" />
@@ -116,6 +118,7 @@
     <Compile Include="UI\HUD.cs" />
     <Compile Include="UI\UserLicense.cs" />
     <Compile Include="UI\UserSettingPanel.cs" />
+    <Compile Include="Util\PrivateHelper.cs" />
     <Compile Include="Util\ReflectionCache.cs" />
     <Compile Include="Util\Extensions.cs" />
     <Compile Include="MyBehaviour\DefaultBehaviour.cs" />
@@ -139,6 +142,7 @@
     <Compile Include="Util\NameDisp.cs" />
     <Compile Include="Util\SerializeHelper.cs" />
     <Compile Include="Util\ShowColliders.cs" />
+    <Compile Include="Util\UnityStructConverter.cs" />
     <Compile Include="Util\WavUtility.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -342,6 +346,17 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="images\UIelements\arrow2.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="images\UIelements\arrow_copy.png" />
+    <EmbeddedResource Include="images\UIelements\arrow_del.png" />
+    <EmbeddedResource Include="images\UIelements\arrow_mov.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="images\objects\TP.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="images\icons\HK_lore_tablet_1.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

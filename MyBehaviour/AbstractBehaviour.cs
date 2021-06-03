@@ -120,13 +120,24 @@ namespace DecorationMaster.MyBehaviour
         [Handle(Operation.ADD)]
         public override void Add(object self = null)
         {
+            bool globalitem;
             if (self == null)
                 self = item;
 
             if (self == null)
                 throw new NullReferenceException("Item Null Exception");
+
             string sceneName = GameManager.instance.sceneName;
             item.sceneName = sceneName;
+
+            globalitem = self.GetType().IsDefined(typeof(GlobalItemAttribute), true);
+
+            if (globalitem)
+            {
+                DecorationMaster.instance.ItemData.AddItem((Item)self);
+                return;
+            }
+
             var dict = DecorationMaster.instance.SceneItemData;
             if (dict.TryGetValue(sceneName, out var _scene_data))
             {
@@ -169,7 +180,7 @@ namespace DecorationMaster.MyBehaviour
             var item_clone = item.Clone() as Item;
             //var clone = Instantiate(gameObject);
             //clone.GetComponent<CustomDecoration>().item = item_clone;
-            var clone = ObjectLoader.CloneDecoration(item.pname, item_clone);
+            var clone = ObjectLoader.CloneDecoration(item_clone);
             return clone;
         }
     }

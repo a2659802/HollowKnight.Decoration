@@ -51,7 +51,7 @@ namespace DecorationMaster.UI
         private GameObject Panel;
         private List<GameObject> PropPanels = new List<GameObject>();
         private GameObject CurrentCanvas;
-
+        private GameObject prefab;
         public InspectPanel()
         {
 
@@ -60,14 +60,15 @@ namespace DecorationMaster.UI
             var propPanel = panel.Find("PropPanel");
             Panel = panel.gameObject;
             var PropPanel = propPanel.gameObject;
-            PropPanels.Add(PropPanel);
+            //PropPanels.Add(PropPanel);
             PropPanel.transform.Find("Name").GetComponent<Text>().fontSize = 22;
             PropPanel.transform.Find("Name").GetComponent<Text>().verticalOverflow = VerticalWrapMode.Overflow;
             PropPanel.transform.Find("Name").GetComponent<Text>().horizontalOverflow = HorizontalWrapMode.Overflow;
             PropPanel.transform.Find("Value").GetComponent<InputField>().textComponent.fontSize = 18;
             PropPanel.transform.Find("Value").GetComponent<InputField>().textComponent.verticalOverflow = VerticalWrapMode.Overflow;
             PropPanel.transform.Find("Value").GetComponent<InputField>().textComponent.horizontalOverflow = HorizontalWrapMode.Overflow;
-            UpdateTextDelegate(0);//AddListener(0, UpdateTextDelegate(0));
+            prefab = PropPanel;
+            prefab.SetActive(false);
 
             UnityEngine.Object.DontDestroyOnLoad(CurrentCanvas);
 
@@ -79,7 +80,7 @@ namespace DecorationMaster.UI
         }
         public void AppendPropPanel(string name,float min = 0, float max = 1, UnityAction<float> listener = null)
         {
-            var prefab = PropPanels[PropPanels.Count - 1];
+            //var prefab = PropPanels[PropPanels.Count - 1];
             var propp = UnityEngine.Object.Instantiate(prefab);
             var idx = PropPanels.Count;
             propp.transform.SetParent(Panel.transform, false);
@@ -88,24 +89,47 @@ namespace DecorationMaster.UI
             rect.anchoredPosition = new Vector2(0, -1 * idx * (prefabRect.rect.height));
             //if (listener == null)
             //    listener = DefaultValueChange;
+            propp.SetActive(true);
             PropPanels.Add(propp);
 
             AddListener(idx, listener);
             UpdateName(idx, name);
-            UpdateSliderConstrain(name,idx, min, max);
+            UpdateSliderConstraint(name,idx, min, max);
 
         }
-        public void UpdateSliderConstrain(string name,int idx, float min, float max,bool wholeNum = false)
+        public void UpdateSliderConstraint(string name,int idx, float min, float max,bool wholeNum = false)
         {
             var PropPanel = PropPanels[idx];
-            var slider = PropPanel.transform.Find("Slider").GetComponent<Slider>();
-            slider.minValue = min;
-            slider.maxValue = max;
-            slider.wholeNumbers = wholeNum;
-
-            UpdateName(idx, $"{name}[{min},{max}]");
+            var slider = PropPanel.transform.Find("Slider")?.GetComponent<Slider>();
+            if(slider)
+            {
+                slider.minValue = min;
+                slider.maxValue = max;
+                slider.wholeNumbers = wholeNum;
+                UpdateName(idx, $"{name}[{min},{max}]");
+            }
+            
         }
-
+        public void UpdateStringConstraint(string name,int idx,uint maxlen)
+        {
+            Logger.LogDebug("On UpdateStringConstraint");
+            var PropPanel = PropPanels[idx];
+            var slider = PropPanel.transform.Find("Slider").gameObject;
+            UnityEngine.Object.DestroyImmediate(slider);
+            var inputfield = PropPanel.transform.Find("Value").GetComponent<InputField>();
+            inputfield.contentType = InputField.ContentType.Standard;
+            inputfield.lineType = InputField.LineType.SingleLine;
+            inputfield.characterLimit = (int)maxlen;
+            var rect = inputfield.gameObject.GetComponent<RectTransform>();
+            rect.anchorMax = new Vector2(0.98f, rect.anchorMax.y);
+            UpdateName(idx, $"{name}({maxlen}");
+        }
+        public void UpdateValue(int idx,string value)
+        {
+            var PropPanel = PropPanels[idx];
+            var inputfield = PropPanel.transform.Find("Value").GetComponent<InputField>();
+            inputfield.text = value;
+        }
         public void UpdateValue(int idx, float value)
         {
             var PropPanel = PropPanels[idx];
@@ -120,6 +144,17 @@ namespace DecorationMaster.UI
             var PropPanel = PropPanels[idx];
             var slider = PropPanel.transform.Find("Slider").GetComponent<Slider>();
             slider.onValueChanged.AddListener(func);
+        }
+        public void AddStrListener(int idx,UnityAction<string> func)
+        {
+            if (func == null)
+                return;
+
+
+
+            var PropPanel = PropPanels[idx];
+            var inputfield = PropPanel.transform.Find("Value").GetComponent<InputField>();
+            inputfield.onEndEdit.AddListener(func);
         }
         internal UnityAction<float> UpdateTextDelegate(int idx)
         {
@@ -216,11 +251,12 @@ namespace DecorationMaster.UI
         }
         public static void Show()
         {
+            //Idk why HeroController.PauseInput() cannot prevent input, so i use RelinquishControl instead
+            HeroController.instance.RelinquishControlNotVelocity();
             OpLock.Apply();
             try
             {
                 Item item = ItemManager.Instance.currentSelect.GetComponent<CustomDecoration>().item;
-                
 
                 if (!cache_prop.ContainsKey(item.GetType()))
                 {
@@ -231,76 +267,137 @@ namespace DecorationMaster.UI
                     var insp = new InspectPanel();
                     currentEdit = insp;
                     int idx = 0;
+
                     foreach (var kv in itemProps)
                     {
                         string name = kv.Key;
                         Type propType = kv.Value.PropertyType;
                         object value = kv.Value.GetValue(item, null);
-                        value = Convert.ToSingle(value);
                         ConstraintAttribute con = kv.Value.GetCustomAttributes(typeof(ConstraintAttribute), true).OfType<ConstraintAttribute>().FirstOrDefault();
-
+                        
                         LogProp(propType, name, value);
 
-                        if(idx == 0)
+                        /*if(idx == 0)
                         {
                             insp.UpdateName(idx,name);
                             if(con is IntConstraint)
                             {
                                 //Logger.LogDebug($"Check1 {con.Min}-{con.Max}");
-                                insp.UpdateSliderConstrain(name,idx, (float)Convert.ChangeType(con.Min, typeof(float)), Convert.ToInt32(con.Max), true);
+                                insp.UpdateSliderConstraint(name,idx, (float)Convert.ChangeType(con.Min, typeof(float)), Convert.ToInt32(con.Max), true);
+                                insp.UpdateValue(idx, Convert.ToSingle(value));
+                                insp.UpdateTextDelegate(idx);
                             }
                             else if(con is FloatConstraint)
                             {
                                 //Logger.LogDebug($"Check2 {con.Min}-{con.Max}");
-                                insp.UpdateSliderConstrain(name,idx, (float)(con.Min), (float)(con.Max), false);
+                                insp.UpdateSliderConstraint(name,idx, (float)(con.Min), (float)(con.Max), false);
+                                insp.UpdateValue(idx, Convert.ToSingle(value));
+                                insp.UpdateTextDelegate(idx);
+                            }
+                            else if(con is StringConstraint)
+                            {
+                                insp.UpdateStringConstraint(name, idx, (uint)con.Max);
                             }
                             else
                             {
                                 throw new ArgumentException();
                             }
                             //Logger.LogDebug($"Check3 {value}-{value.GetType()}");
-                            insp.UpdateValue(idx, (float)value);
+                            
+                        }*/
+
+                        insp.AppendPropPanel(name);
+
+                        if (con is StringConstraint)
+                        {
+                            insp.UpdateStringConstraint(name, idx, (uint)con.Max);
+                            insp.UpdateValue(idx, Convert.ToString(value));
+                            insp.AddStrListener(idx, v =>
+                            {
+                                if (ItemManager.Instance.currentSelect == null)
+                                    return;
+                                try
+                                {
+                                    ItemManager.Instance.currentSelect.GetComponent<CustomDecoration>().Setup(handler[kv.Value], v);
+                                }
+                                catch
+                                {
+                                    Logger.LogError("Error occour at Inspect String Value Chnaged");
+                                    Hide();
+                                }
+                            });
                         }
                         else
                         {
-                            insp.AppendPropPanel(name);
+
                             if (con is IntConstraint)
                             {
-                                insp.UpdateSliderConstrain(name,idx, (int)con.Min, (int)con.Max, true);
+                                insp.UpdateSliderConstraint(name, idx, (int)con.Min, (int)con.Max, true);
                             }
                             else if (con is FloatConstraint)
                             {
-                                insp.UpdateSliderConstrain(name,idx, (float)con.Min, (float)con.Max, false);
+                                insp.UpdateSliderConstraint(name, idx, (float)con.Min, (float)con.Max, false);
                             }
                             else
                             {
-                                throw new ArgumentException();
+                                throw new ArgumentException("Should Be Int Or Float");
                             }
-                            insp.UpdateValue(idx, (float)value);
-                            insp.UpdateTextDelegate(idx);//insp.AddListener(idx, insp.UpdateTextDelegate(idx));
 
-                        }
-                        //insp.AddListener(idx, (v) => { kv.Value.SetValue(item, Convert.ChangeType(v, kv.Value.PropertyType), null); });
-                        insp.AddListener(idx, (v) => {
-                            if (ItemManager.Instance.currentSelect == null)
-                                return;
-                            object val;
-                            try
-                            {
-                                if (kv.Value.PropertyType.IsSubclassOf(typeof(Enum)))
+                            insp.UpdateValue(idx, Convert.ToSingle(value));
+                            insp.UpdateTextDelegate(idx);
+                            insp.AddListener(idx, (v) => {
+                                if (ItemManager.Instance.currentSelect == null)
+                                    return;
+                                object val;
+                                try
                                 {
-                                    val = Enum.Parse(kv.Value.PropertyType, v.ToString("0"));
+                                    if (kv.Value.PropertyType.IsSubclassOf(typeof(Enum)))
+                                    {
+                                        val = Enum.Parse(kv.Value.PropertyType, v.ToString("0"));
+                                    }
+                                    else
+                                        val = Convert.ChangeType(v, kv.Value.PropertyType);
+                                    ItemManager.Instance.currentSelect.GetComponent<CustomDecoration>().Setup(handler[kv.Value], val);
                                 }
-                                else
-                                    val = Convert.ChangeType(v, kv.Value.PropertyType);
-                                ItemManager.Instance.currentSelect.GetComponent<CustomDecoration>().Setup(handler[kv.Value], val);
-                            }
-                            catch
-                            {
-                                Logger.LogError("Error occour at Inspect OnValue Chnaged");
-                                Hide();
-                            }
-                        });
+                                catch
+                                {
+                                    Logger.LogError("Error occour at Inspect OnValue Chnaged");
+                                    Hide();
+                                }
+                            });
+                        }
+
+                            //insp.AppendPropPanel(name);
+                            //if (con is StringConstraint)
+                            //if (con is IntConstraint)
+                            //{
+                            //    insp.UpdateSliderConstraint(name,idx, (int)con.Min, (int)con.Max, true);
+                            //    insp.UpdateValue(idx, Convert.ToSingle(value));
+                            //    insp.UpdateTextDelegate(idx);
+                            //}
+                            //else if (con is FloatConstraint)
+                            //{
+                            //    insp.UpdateSliderConstraint(name,idx, (float)con.Min, (float)con.Max, false);
+                            //    insp.UpdateValue(idx, Convert.ToSingle(value));
+                            //    insp.UpdateTextDelegate(idx);
+                            //}
+                            //else if (con is StringConstraint)
+                            //{
+                            //    insp.UpdateStringConstraint(name, idx, (uint)con.Max);
+                            //}
+                            //else
+                            //{
+                            //    throw new ArgumentException();
+                            //}
+                            //insp.UpdateValue(idx, Convert.ToSingle(value));
+                            //insp.AddListener(idx, insp.UpdateTextDelegate(idx));
+
+                        
+                        
+
+                        //insp.AddListener(idx, (v) => { kv.Value.SetValue(item, Convert.ChangeType(v, kv.Value.PropertyType), null); });
+                        
+
                         idx++;
                     }
                 }
@@ -315,10 +412,12 @@ namespace DecorationMaster.UI
                 Logger.LogError($"NulRef Error at Inspector.Show:{e}");
                 OpLock.Undo();
             }
-       
+            
+
         }
         public static void Hide()
         {
+            HeroController.instance.RegainControl();
             OpLock.Undo();
             currentEdit?.Destroy();
             currentEdit = null;

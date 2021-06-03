@@ -37,4 +37,18 @@ namespace DecorationMaster.Attr
             this.max = max;
         }
     }
+
+    //min max consider to string length
+    public sealed class StringConstraint : ConstraintAttribute
+    {
+        private uint min;
+        private uint max;
+        public override object Min => min;
+        public override object Max => max;
+        public StringConstraint(uint min,uint max)
+        {
+            this.min = min;
+            this.max = max;
+        }
+    }
 }

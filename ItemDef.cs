@@ -220,6 +220,16 @@ namespace DecorationMaster
         }
 
         [Serializable]
+        [Decoration("HK_lore_tablet_1")]
+        public class LoreTablet1 : ResizableItem
+        {
+            [Description("设置碑文的文本")]
+            [StringConstraint(1,100)]
+            [Handle(Operation.SetText)]
+            public string Text { get; set; } = "Please Input Text Here";
+        }
+
+        [Serializable]
         public class KeyGateItem : Item
         {
             [Description("设置开关编号，对应门的编号")]
@@ -242,8 +252,10 @@ namespace DecorationMaster
         [Decoration("Mana_Requirement")]
         public class ManaRequirement : KeyGateItem
         {
-            [InspectIgnore]
-            public string Requires { get; set; }
+            [StringConstraint(1, 16)]
+            [Description("设置Mana的消耗")]
+            [Handle(Operation.SetText)]
+            public string Requires { get; set; } = "C";
         }
 
         [Serializable]

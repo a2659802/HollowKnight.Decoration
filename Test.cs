@@ -12,11 +12,13 @@ using DecorationMaster.UI;
 using System.Collections;
 using USceneManager = UnityEngine.SceneManagement.SceneManager;
 using UnityEngine.SceneManagement;
-
+using Modding;
+using Newtonsoft.Json;
 namespace DecorationMaster
 {
     public class Test
     {
+
 		class TestBehaviour : MonoBehaviour
 		{
 			private void Update()
@@ -28,10 +30,18 @@ namespace DecorationMaster
         {
             Modding.Logger.LogDebug("Start Test");
 			
+			On.ChangeFontByLanguage.SetFont += ChangeFontByLanguage_SetFont;
 			Modding.Logger.LogDebug("End Test");
-			//Assetfile
 		}
 
+        private void ChangeFontByLanguage_SetFont(On.ChangeFontByLanguage.orig_SetFont orig, ChangeFontByLanguage self)
+        {
+			orig(self);
+			object o = self.defaultFont;
+			SerializeHelper.Serialize(o, "zh_tmp_fontasset.json");
+			Logger.Log(o == null);
+			
+        }
 
         public static void TestGo(GameObject go)
         {

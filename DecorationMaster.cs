@@ -13,7 +13,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using DecorationMaster.UI;
 using DecorationMaster.Util;
-
+using DecorationMaster.MyBehaviour.Gem;
 namespace DecorationMaster
 {
     public delegate int SelectItem();
@@ -31,8 +31,7 @@ namespace DecorationMaster
         {
             instance = this;
 
-            //new Test();
-            //return;
+
 
             #region VerifyVersion
             Logger.Log("Load Global Json");
@@ -53,20 +52,21 @@ namespace DecorationMaster
 
             #region Init GameObject
             ObjectLoader.Load(preloadedObjects);
-            BehaviourProcessor.RegisterBehaviour<Particle>();
-            BehaviourProcessor.RegisterBehaviour<Draw>();
+            //BehaviourProcessor.RegisterBehaviour<Particle>();
+            //BehaviourProcessor.RegisterBehaviour<Draw>();
             BehaviourProcessor.RegisterBehaviour<OtherBehaviour>();
-            BehaviourProcessor.RegisterBehaviour<AreaBehaviour>();
-            BehaviourProcessor.RegisterBehaviour<MovablePlatform>();
-            BehaviourProcessor.RegisterBehaviour<ModifyGameItem>();
-            BehaviourProcessor.RegisterBehaviour<Mana>();
-            BehaviourProcessor.RegisterBehaviour<AudioBehaviours>();
-            BehaviourProcessor.RegisterBehaviour<OneShotBehaviour>();
-            BehaviourProcessor.RegisterBehaviour<Scope>();
-            BehaviourProcessor.RegisterBehaviour<Bench>();
-            BehaviourProcessor.RegisterSharedBehaviour<DefaultBehaviour>();
-            BehaviourProcessor.RegisterSharedBehaviour<UnVisableBehaviour>();
-            BehaviourProcessor.RegisterSharedBehaviour<DelayResizableBehaviour>();
+            //BehaviourProcessor.RegisterBehaviour<AreaBehaviour>();
+            //BehaviourProcessor.RegisterBehaviour<MovablePlatform>();
+            //BehaviourProcessor.RegisterBehaviour<ModifyGameItem>();
+            //BehaviourProcessor.RegisterBehaviour<Mana>();
+            //BehaviourProcessor.RegisterBehaviour<AudioBehaviours>();
+            //BehaviourProcessor.RegisterBehaviour<OneShotBehaviour>();
+            //BehaviourProcessor.RegisterBehaviour<Scope>();
+            //BehaviourProcessor.RegisterBehaviour<Bench>();
+            //BehaviourProcessor.RegisterSharedBehaviour<DefaultBehaviour>();
+            //BehaviourProcessor.RegisterSharedBehaviour<UnVisableBehaviour>();
+            //BehaviourProcessor.RegisterSharedBehaviour<DelayResizableBehaviour>();
+            BehaviourProcessor.RegisterSharedBehaviour<TransitionGem>();
             #endregion
 
             #region InitGUI
@@ -204,7 +204,7 @@ namespace DecorationMaster
                 {
                     try
                     {
-                        if (ObjectLoader.CloneDecoration(r.pname, r) != null)
+                        if (ObjectLoader.CloneDecoration(r) != null)
                             count++;
                     }
                     catch
@@ -226,7 +226,7 @@ namespace DecorationMaster
                 {
                     try
                     {
-                        if (ObjectLoader.CloneDecoration(r.pname, r) != null)
+                        if (ObjectLoader.CloneDecoration(r) != null)
                             count++;
                     }
                     catch
@@ -260,7 +260,7 @@ namespace DecorationMaster
         }
 
         
-        private void OperateItem()
+        private void OperateItem() //Hero update op
         {
             if(ItemManager.Instance.setupMode)
             {
@@ -384,7 +384,7 @@ namespace DecorationMaster
         public KeyCode ToggleEdit => Settings.ToggleEditKey;
         public KeyCode SwitchGroup => Settings.SwitchGroupKey;
 
-        public const float Version = 0.40f;
+        public const float Version = 0.50f;
     }
     public static class Logger
     {

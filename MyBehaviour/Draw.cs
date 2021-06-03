@@ -113,7 +113,7 @@ namespace DecorationMaster.MyBehaviour
             {
                 var item_clone = item.Clone() as Item;
                 ((PointItem)item_clone).seq = 0;
-                var clone = ObjectLoader.CloneDecoration(item.pname, item_clone);
+                var clone = ObjectLoader.CloneDecoration(item_clone);
                 return clone;
             }
             [Handle(Operation.SetColorR)]
@@ -197,7 +197,7 @@ namespace DecorationMaster.MyBehaviour
             {
                 var item_clone = item.Clone() as Item;
                 ((PointItem)item_clone).seq = 0;
-                var clone = ObjectLoader.CloneDecoration(item.pname, item_clone);
+                var clone = ObjectLoader.CloneDecoration(item_clone);
                 return clone;
             }
 

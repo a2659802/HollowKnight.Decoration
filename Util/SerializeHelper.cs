@@ -28,100 +28,23 @@ namespace DecorationMaster.Util
             } }
         public static string GLOBAL_FILE_DIR => Path.Combine(DATA_DIR, "global.json");
 
-        public static void SaveGlobalSettings(object data)
-        {
-            var settings = data;
+        public static void SaveGlobalSettings(object data) => Serialize(data, GLOBAL_FILE_DIR);
+        public static T LoadGlobalSettings<T>() => DeSerialize<T>(GLOBAL_FILE_DIR);
+        public static void SaveSceneSettings(object data, string sceneName) => Serialize(data, Path.Combine(DATA_DIR, sceneName + ".json"));
+        public static T LoadSceneSettings<T>(string sceneName) => DeSerialize<T>(Path.Combine(DATA_DIR, sceneName + ".json"));
 
-            if (settings is null)
-                return;
-
-            //Log("Saving Global Settings");
-
-            if (File.Exists(GLOBAL_FILE_DIR + ".bak"))
-            {
-                File.Delete(GLOBAL_FILE_DIR + ".bak");
-            }
-
-            if (File.Exists(GLOBAL_FILE_DIR))
-            {
-                File.Move(GLOBAL_FILE_DIR, GLOBAL_FILE_DIR + ".bak");
-            }
-
-            using (FileStream fileStream = File.Create(GLOBAL_FILE_DIR))
-            {
-                using (var writer = new StreamWriter(fileStream))
-                {
-                    try
-                    {
-                        writer.Write
-                        (
-                            JsonConvert.SerializeObject
-                            (
-                                settings,
-                                Formatting.Indented,
-                                new JsonSerializerSettings
-                                {
-                                    TypeNameHandling = TypeNameHandling.Auto,
-                                }
-                            )
-                        );
-                    }
-                    catch (Exception e)
-                    {
-                        LogError(e);
-                    }
-                }
-            }
-
-            
-
-            
-        }
-        public static T LoadGlobalSettings<T>()
-        {
-            var _globalSettingsPath = GLOBAL_FILE_DIR;
-            if (!File.Exists(_globalSettingsPath))
-                return default;
-
-            Log("Loading Global Settings");
-
-            using (FileStream fileStream = File.OpenRead(_globalSettingsPath))
-            {
-                using (var reader = new StreamReader(fileStream))
-                {
-                    string json = reader.ReadToEnd();
-                    Type settingsType = typeof(T);
-                    T settings = default;
-
-                    try
-                    {
-                        settings = (T)JsonConvert.DeserializeObject(
-                            json,
-                            settingsType,
-                            new JsonSerializerSettings
-                            {
-                                TypeNameHandling = TypeNameHandling.Auto,
-                            }
-                        );
-                    }
-                    catch (Exception e)
-                    {
-                        LogError("Failed to load settings using Json.Net.");
-                        LogError(e);
-                    }
-
-                    return settings;
-                }
-            }
-        }
         static void Log(object o) => Logger.Log($"[SerializeHelper]{o}");
         static void LogError(object o) => Logger.LogError($"[SerializeHelper]{o}");
     
-        public static void SaveSceneSettings(object data,string sceneName)
+        public static void Serialize(object o,string path)
         {
-            string dir = Path.Combine(DATA_DIR, sceneName+".json");
+            JsonSerializerSettings currentSettings = new JsonSerializerSettings();
+            currentSettings.Formatting = Formatting.Indented;
+            currentSettings.TypeNameHandling = TypeNameHandling.All;
+            currentSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+            currentSettings.Converters.Add(new UnityStructConverter());
 
-            using (FileStream fileStream = File.Create(dir))
+            using (FileStream fileStream = File.Create(path))
             {
                 using (var writer = new StreamWriter(fileStream))
                 {
@@ -131,14 +54,10 @@ namespace DecorationMaster.Util
                         (
                             JsonConvert.SerializeObject
                             (
-                                data,
-                                Formatting.Indented,
-                                new JsonSerializerSettings
-                                {
-                                    TypeNameHandling = TypeNameHandling.Auto,
-                                }
+                                o,
+                                currentSettings
                             )
-                        );
+                        ) ;
                     }
                     catch (Exception e)
                     {
@@ -147,15 +66,18 @@ namespace DecorationMaster.Util
                 }
             }
         }
-        public static T LoadSceneSettings<T>(string sceneName)
+        public static T DeSerialize<T>(string path)
         {
-            string dir = Path.Combine(DATA_DIR, sceneName + ".json");
-            if (!File.Exists(dir))
+            if (!File.Exists(path))
                 return default;
 
-            Log($"Loading {sceneName} Settings");
+            JsonSerializerSettings currentSettings = new JsonSerializerSettings();
+            currentSettings.Formatting = Formatting.Indented;
+            currentSettings.TypeNameHandling = TypeNameHandling.All;
+            
+            currentSettings.Converters.Add(new UnityStructConverter());
 
-            using (FileStream fileStream = File.OpenRead(dir))
+            using (FileStream fileStream = File.OpenRead(path))
             {
                 using (var reader = new StreamReader(fileStream))
                 {
@@ -168,10 +90,7 @@ namespace DecorationMaster.Util
                         settings = (T)JsonConvert.DeserializeObject(
                             json,
                             settingsType,
-                            new JsonSerializerSettings
-                            {
-                                TypeNameHandling = TypeNameHandling.Auto,
-                            }
+                            currentSettings
                         );
                     }
                     catch (Exception e)
@@ -184,7 +103,5 @@ namespace DecorationMaster.Util
                 }
             }
         }
-    
-        
     }
 }
