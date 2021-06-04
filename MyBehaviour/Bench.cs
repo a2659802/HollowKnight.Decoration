@@ -1,4 +1,5 @@
 ﻿using DecorationMaster.Attr;
+using DecorationMaster.Util;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,19 +25,19 @@ namespace DecorationMaster.MyBehaviour
                 
                 if(string.IsNullOrEmpty(GetBenchName(item)))
                 {
-                    SetBenchName(item, BENCH_NAME_PREFIX + GetTimeStamp());
+                    SetBenchName(item, BENCH_NAME_PREFIX + IdGenerator.Unique);
                 }
                 gameObject.name = GetBenchName(item);
-                
-
             }
-            
+            public override GameObject CopySelf(object self = null)
+            {
+                var clone = base.CopySelf(self);
+                clone.name += "(copy)" + IdGenerator.Unique;
+                return clone;
+            }
+
         }
-        internal static string GetTimeStamp()
-        {
-            TimeSpan ts = DateTime.Now - new DateTime(1970, 1, 1, 0, 0, 0, 0);
-            return Convert.ToInt64(ts.TotalSeconds).ToString();
-        }
+
         internal static string GetBenchName(Item i)
         {
             return ((BenchItem)i).bench_name;

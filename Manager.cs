@@ -56,7 +56,15 @@ namespace DecorationMaster
             IEnumerable<KeyValuePair<string, GameObject>> deGo;
             if (DecorationMaster.instance.Settings.ProfessorMode)
             {
-                deGo = ObjectLoader.InstantiableObjects.Where(x => x.Value.GetComponent<CustomDecoration>() != null);
+                //deGo = ObjectLoader.InstantiableObjects.Where(x => x.Value.GetComponent<CustomDecoration>() != null);
+                deGo = ObjectLoader.InstantiableObjects.Where(x =>
+                {
+                    var cd = x.Value.GetComponent<CustomDecoration>();
+                    return (
+                    (cd != null)
+                    && (!cd.GetType().IsDefined(typeof(ObsoleteAttribute), false))
+                    );
+                });
             }
             else if (DecorationMaster.instance.Settings.MemeItem)
             {
@@ -250,8 +258,23 @@ namespace DecorationMaster
             if (!setupMode)
                 return;
 
-            Block.Instance.Select();
+            Block.Instance.Select(Block.BlockOp.COPY);
         }
+        public void MoveBlock()
+        {
+            if (!setupMode)
+                return;
+
+            Block.Instance.Select(Block.BlockOp.MOVE);
+        }
+        public void DelBlock()
+        {
+            if (!setupMode)
+                return;
+
+            Block.Instance.Select(Block.BlockOp.DELETE);
+        }
+
         public void ClearHistory()
         {
             AddedHistory.Clear();

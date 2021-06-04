@@ -8,12 +8,12 @@ using HutongGames.PlayMaker;
 using System.Runtime.InteropServices;
 using System.Collections;
 using DecorationMaster.UI;
-
+using DecorationMaster.Util;
 namespace DecorationMaster
 {
-    class Block
+    public class Block
     {
-        enum BlockOp
+        public enum BlockOp
         {
             COPY,
             MOVE,
@@ -80,8 +80,13 @@ namespace DecorationMaster
         }
         private class BlockMover : MonoBehaviour
         {
+            private bool hold = false;
             public Action Cancel;
             public Action Confirm;
+            private void Awake()
+            {
+                gameObject.name = "BlockMover";
+            }
             private IEnumerator Start()
             {
                 yield return null;
@@ -92,9 +97,13 @@ namespace DecorationMaster
             }
             private void Update()
             {
-                transform.position = DecorationMaster.GetMousePos();
+                if (DecorationMaster.GM.isPaused || DecorationMaster.GM.IsInSceneTransition)
+                    return;
+                if(!hold)
+                    transform.position = DecorationMaster.GetMousePos();
                 if(Input.GetMouseButtonUp((int)MouseButton.Right))
                 {
+                    hold = true;
                     if (Cancel == null)
                         Destroy(gameObject);
                     else
@@ -102,6 +111,7 @@ namespace DecorationMaster
                 }
                 else if (Input.GetMouseButtonUp((int)MouseButton.Left))
                 {
+                    hold = true;
                     if (Confirm == null)
                         SetupAll();
                     else
@@ -127,17 +137,41 @@ namespace DecorationMaster
                 ItemManager.Instance.AddBlock(list);
                 Destroy(gameObject);
             }
+            private void OnDestroy()
+            {
+                foreach(Transform t in transform)
+                {
+                    t.GetComponent<CustomDecoration>()?.Remove();
+                }
+            }
         }
-        public void Select()
+        public void Select(BlockOp op)
         {
             if (Inspector.IsToggle())
                 Inspector.Hide();
             ItemManager.Instance.RemoveCurrent();
             start = Vector2.one * -1;
             UnityEngine.Object.Destroy(tmp);
+            this.op = op;
             tmp = new GameObject();
             tmp.AddComponent<LineShower>();
-            MyCursor.cursorTexture = GUIController.Instance.images["arrow2"];
+            Texture2D cursorTex;
+            switch (op)
+            {
+                case BlockOp.COPY:
+                    cursorTex = GUIController.Instance.images["arrow_copy"];
+                    break;
+                case BlockOp.MOVE:
+                    cursorTex = GUIController.Instance.images["arrow_mov"];
+                    break;
+                case BlockOp.DELETE:
+                    cursorTex = GUIController.Instance.images["arrow_del"];
+                    break;
+                default:
+                    cursorTex = GUIController.Instance.images["arrow2"];
+                    break;
+            }
+            MyCursor.cursorTexture = cursorTex;
         }
         public void StartSelect(Vector2 Pos)
         {
@@ -155,13 +189,19 @@ namespace DecorationMaster
             }
 
             SelectInRange();
+
+            if(InRangeObjs.Count<1) //select nothing
+            {
+                return;
+            }
+
             if (op == BlockOp.COPY)
                 CopyInRange();
             else if (op == BlockOp.MOVE)
                 MoveInRange();
             else if (op == BlockOp.DELETE)
             {
-                //TODO
+                DeleteInRange();
             }
             MyCursor.cursorTexture = GUIController.Instance.images["arrow"];
         }
@@ -213,12 +253,32 @@ namespace DecorationMaster
                 go.transform.SetParent(tmp.transform);
             }
             var oriPos = tmp.transform.position;
-            tmp.AddComponent<BlockMover>().Cancel = () => {
+            var mover = tmp.AddComponent<BlockMover>();
+            mover.Cancel = () => {
+                Logger.LogDebug("[Block] Move Cancel");
                 tmp.transform.position = oriPos;
-                foreach(Transform child in tmp.transform)
+                ReleaseAll(tmp.transform);
+                UnityEngine.Object.Destroy(tmp);
+                
+            };
+            mover.Confirm = () =>
+            {
+                var list = new List<GameObject>();
+                foreach (Transform t in tmp.transform)
                 {
-                    child.transform.SetParent(null);
+                    list.Add(t.gameObject);
                 }
+                foreach (var go in list)
+                {
+                    go.transform.SetParent(null);
+
+                    var cd = go.GetComponent<CustomDecoration>();
+                    cd.Setup(Operation.SetPos, (Vector2)go.transform.position);
+                    //cd.Setup(Operation.ADD,null);
+                    cd.enabled = true;
+                }
+                list.Clear();
+                //ItemManager.Instance.AddBlock(list);
                 UnityEngine.Object.Destroy(tmp);
             };
         }
@@ -236,7 +296,16 @@ namespace DecorationMaster
                 go.transform.SetParent(tmp.transform);
             }
 
-            tmp.AddComponent<BlockMover>();
+            var oriPos = tmp.transform.position;
+            tmp.AddComponent<BlockMover>().Cancel = () => {
+                tmp.transform.position = oriPos;
+                ReleaseAll(tmp.transform);
+                UnityEngine.Object.Destroy(tmp);
+            };
+            tmp.GetComponent<BlockMover>().Confirm = () =>
+            {
+                UnityEngine.Object.Destroy(tmp);
+            };
         }
         private bool is_in_range(Vector2 dest)
         {
@@ -251,6 +320,21 @@ namespace DecorationMaster
             return Camera.main.WorldToScreenPoint(pos);
         }
 
+        public static void ReleaseAll(Transform parent)
+        {
+            List<Transform> children = new List<Transform>();
+            foreach (Transform child in parent)
+            {
+                children.Add(child);
+            }
+            foreach (var child in children)
+            {
+                child.SetParent(null);
+                child.GetComponent<CustomDecoration>().enabled = true;
+                Logger.LogDebug("Reset Pos");
+            }
+            children.Clear();
+        }
         //[DllImport("user32.dll")]
         //public static extern int SetCursorPos(int x, int y);
     }

@@ -7,6 +7,8 @@ using DecorationMaster.UI;
 using System;
 using System.Collections;
 using Modding;
+using System.Linq;
+
 namespace DecorationMaster.MyBehaviour
 {
     public class OtherBehaviour
@@ -211,7 +213,7 @@ namespace DecorationMaster.MyBehaviour
 
         }
 
-        
+
         [Description("看起来能破坏的墙壁")]
         [Decoration("HK_break_wall")]
         [Description("breakable wall", "en-us")]
@@ -234,7 +236,7 @@ namespace DecorationMaster.MyBehaviour
             {
                 var bw = Instantiate(ObjectLoader.InstantiableObjects["HK_break_wall"]);
                 var fsm = bw.GetComponent<PlayMakerFSM>();
-                if(fsm)
+                if (fsm)
                 {
                     fsm.RemoveTransition("Initiate", "ACTIVATE");
                     fsm.RemoveAction("Initiate", 11);
@@ -402,7 +404,7 @@ namespace DecorationMaster.MyBehaviour
                 {
                     //gameObject.AddComponent<ShowColliders>();
                     head.AddComponent<ShowColliders>();
-                }  
+                }
             }
             public void Open()
             {
@@ -428,8 +430,8 @@ namespace DecorationMaster.MyBehaviour
                     au.PlayOneShot(zote_hit);
                 }
             }
-        
-        
+
+
         }
         [Decoration("lazer_bug")]
         [Description("激光虫，放置的时候只能放在平台的左边沿，因为起始状态是向下爬，\n放其他地方会卡墙卡空气。\n(BUG好难修不管了）")]
@@ -460,17 +462,17 @@ namespace DecorationMaster.MyBehaviour
             private void Start()
             {
                 lazer.transform.position = transform.position;
-                
+
                 lazer.SetActive(true);
             }
-            
+
             private void OnDestroy()
             {
                 Logger.LogDebug("LazerBugDie");
                 Destroy(lazer);
             }
         }
-    
+
         [Decoration("edge")]
         [Description("区域线，可当地板等使用")]
         [Description("edge line. \n has collision \n can think it as floor lol", "en-us")]
@@ -488,17 +490,19 @@ namespace DecorationMaster.MyBehaviour
 
             public override void HandleSize(float size)
             {
-                gameObject.transform.localScale = new Vector3(size*10, 2, 1);
+                gameObject.transform.localScale = new Vector3(size * 10, 2, 1);
             }
         }
+
+        [Obsolete("Use Simple Conveyor instead")]
         [Decoration("HK_Lconveyor")]
         public class LeftConveyor : Resizeable
         {
             private void Awake()
             {
-                var go = Instantiate(ObjectLoader.InstantiableObjects["HK_Hconveyor"],transform);
+                var go = Instantiate(ObjectLoader.InstantiableObjects["HK_Hconveyor"], transform);
                 go.transform.localPosition = new Vector3(0, 2f, -2.4f);
-                
+
                 var cgo = new GameObject("box");
                 cgo.transform.SetParent(go.transform);
                 cgo.layer = (int)GlobalEnums.PhysLayers.TERRAIN;
@@ -524,10 +528,10 @@ namespace DecorationMaster.MyBehaviour
             }
             public override void HandleSize(float size)
             {
-                gameObject.transform.localScale = new Vector3(size , 1, 1);
+                gameObject.transform.localScale = new Vector3(size, 1, 1);
             }
             public override void HandleRot(float angle)
-            { 
+            {
             }
             [Handle(Operation.SetSpeed)]
             public void HandleSpeed(int speed)
@@ -541,6 +545,8 @@ namespace DecorationMaster.MyBehaviour
                 base.HandleInit(i);
             }
         }
+
+        [Obsolete("Use Simple Conveyor instead")]
         [Decoration("HK_Rconveyor")]
         public class RightConveyor : Resizeable
         {
@@ -555,9 +561,9 @@ namespace DecorationMaster.MyBehaviour
                 cgo.transform.localScale = Vector3.one;
 
                 var col = cgo.AddComponent<BoxCollider2D>();
-                if(gameObject.GetComponent<ConveyorBelt>() == null)
+                if (gameObject.GetComponent<ConveyorBelt>() == null)
                     cgo.AddComponent<ConveyorBelt>();
-               
+
                 col.size = new Vector2(10.61741f, 2.202475f);
                 col.offset = new Vector2(-0.358706f, -2.418878f);
                 col.transform.localPosition = Vector3.zero;
@@ -570,7 +576,7 @@ namespace DecorationMaster.MyBehaviour
                 go.transform.eulerAngles = new Vector3(180, 0, 0);
 
                 go.SetActive(true);
-                if(SetupMode)
+                if (SetupMode)
                     gameObject.AddComponent<ShowColliders>();
 
             }
@@ -594,6 +600,121 @@ namespace DecorationMaster.MyBehaviour
             }
         }
 
+        [Decoration("simple_conveyor")]
+        public class SimpleConveyor : Resizeable
+        {
+            private void Awake()
+            {
+                GameObject conv = ObjectLoader.InstantiableObjects["HK_Hconveyor"];
+                GameObject simple = conv.transform.Find("conveyor_belt_simple0004").gameObject;
+                simple = Instantiate(simple);
+                simple.transform.SetParent(transform);
+                simple.transform.localPosition = Vector3.zero;
+                simple.transform.localScale = Vector3.one;
+                simple.transform.eulerAngles = transform.eulerAngles;
+
+                gameObject.layer = (int)GlobalEnums.PhysLayers.TERRAIN;
+                var col = gameObject.AddComponent<BoxCollider2D>();
+                col.size = new Vector2(4.75f, 0.5f);
+                var mat = new PhysicsMaterial2D();
+                mat.friction = 0.2f;
+                mat.bounciness = 0;
+                col.sharedMaterial = mat;
+                
+                simple.SetActive(true);
+
+                if (SetupMode)
+                    gameObject.AddComponent<ShowColliders>();
+
+            }
+
+
+            [Handle(Operation.SetSpeed)]
+            public void HandleSpeed(int speed)
+            {
+                var cony = gameObject.GetComponent<ConveyorBelt>();
+                if(cony == null)
+                {
+                    cony = gameObject.AddComponent<ConveyorBelt>();
+                }
+
+                if (Mathf.Abs(cony.speed) - Mathf.Abs(speed) < 0.1)
+                    return;
+
+                cony.speed = -speed;
+            }
+
+            public override void HandleSize(float size)
+            {
+                gameObject.transform.localScale = new Vector3(size*2, 1, 1);
+            }
+
+            public override void HandleRot(float angle)
+            {
+                base.HandleRot(angle);
+
+                var cony = gameObject.GetComponent<ConveyorBelt>();
+                if (cony == null)
+                {
+                    cony = gameObject.AddComponent<ConveyorBelt>();
+                }
+
+                if (approach(angle,90) || approach(angle,270))
+                {
+                    cony.vertical = true;
+                }
+                else
+                {
+                    cony.vertical = false;
+                }
+                if (approach(angle, 270) || approach(angle, 180))
+                {
+                    cony.speed = ((ItemDef.ConveyorItem)item).speed;
+                }
+                else
+                {
+                    cony.speed = -((ItemDef.ConveyorItem)item).speed;
+                }
+            }
+        
+            private bool approach(float number,float target,float delta=10f)
+            {
+                return Mathf.Abs(target - number) < delta;
+            }
+        }
+
+        [Decoration("stomper_switch")]
+        [Description("A switch for toggle stomper on/off ","en-us")]
+        public class ToggleStomper :Resizeable
+        {
+            private void Awake()
+            {
+                var lever = ObjectLoader.InstantiableObjects["HK_lift_lever"];
+                lever = Instantiate(lever);
+                lever.transform.SetParent(transform);
+                lever.transform.localPosition = Vector3.zero;
+                var fsm = lever.LocateMyFSM("Call Lever");
+                fsm.RemoveAction("Send Msg", 0);
+                fsm.RemoveAction("Send Msg", 0);
+                fsm.RemoveAction("Send Msg", 0);
+                fsm.InsertMethod("Send Msg", 0, Toggle);
+                fsm.ChangeTransition("Left", "FINISHED", "Send Msg");
+                fsm.ChangeTransition("Right", "FINISHED", "Send Msg");
+
+                lever.GetComponentInChildren<tk2dSprite>().color = new Color(1, 0, 1);
+
+                lever.SetActive(true);
+            }
+            private void Toggle()
+            {
+                //Logger.Log("[Toggle] Hello World!");
+                var animators = FindObjectsOfType<Animator>().Where(x => x.gameObject.name.Contains("mines_stomper"));
+                foreach(var ani in animators)
+                {
+                    ani.enabled = !ani.enabled;
+                }
+            }
+        }
 
         [Decoration("white_thorn")]
         public class Thorn : Resizeable

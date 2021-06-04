@@ -50,6 +50,10 @@
     <Reference Include="UnityEngine">
       <HintPath>..\dll\UnityEngine.dll</HintPath>
     </Reference>
+    <Reference Include="UnityEngine.AnimationModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\dll\UnityEngine.AnimationModule.dll</HintPath>
+    </Reference>
     <Reference Include="UnityEngine.AudioModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\dll\UnityEngine.AudioModule.dll</HintPath>
@@ -90,6 +94,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Attr\AdditionItemAttribute.cs" />
     <Compile Include="Attr\AdvanceDecoration.cs" />
     <Compile Include="Attr\DecorationAttribute.cs" />
     <Compile Include="Attr\ConstraintAttribute.cs" />
@@ -118,6 +123,7 @@
     <Compile Include="UI\HUD.cs" />
     <Compile Include="UI\UserLicense.cs" />
     <Compile Include="UI\UserSettingPanel.cs" />
+    <Compile Include="Util\IdGenerator.cs" />
     <Compile Include="Util\PrivateHelper.cs" />
     <Compile Include="Util\ReflectionCache.cs" />
     <Compile Include="Util\Extensions.cs" />
@@ -357,6 +363,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="images\icons\HK_lore_tablet_1.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="images\knight_idle.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

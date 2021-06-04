@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Text;
 using DecorationMaster;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace DecorationMaster.UI
 {
@@ -34,7 +35,21 @@ namespace DecorationMaster.UI
                     }
                 }
                 var _canvas = ab.LoadAsset<GameObject>("userlicense");
-                UnityEngine.Object.Instantiate(_canvas);
+                var panel = UnityEngine.Object.Instantiate(_canvas).transform.GetChild(0);
+                if(Language.Language.CurrentLanguage() != Language.LanguageCode.ZH)
+                {
+                    panel.GetComponentInChildren<Text>().text = "No Charging\n No Paying \n Public\n\n This Mod is free, any level design whit it should not charge \n\n\n\nMod Author:a2659802";
+                }
+                {
+                    var tex = new Texture2D(1, 1);
+                    tex.SetPixel(0, 0, new Color(0.8f, 0, 0, 0.4f));
+                    tex.Apply();
+                    new CanvasButton(panel.gameObject, "close", tex, new Vector2(1920 - 60, 15), Vector2.one * 15, new Rect(0, 0, 1, 1))
+                        .AddClickEvent(_ =>
+                        {
+                            UnityEngine.Object.Destroy(panel.transform.parent.gameObject);
+                        });
+                }
                 Logger.Log("Show User License");
             }
         }

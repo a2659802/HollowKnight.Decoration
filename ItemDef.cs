@@ -15,9 +15,16 @@ using DecorationMaster.Util;
 
 namespace DecorationMaster
 {
+    public interface IAssemable
+    {
+        public void AcceptSetup(Operation op, object val);
+    }
+
     [Serializable]
     public abstract class Item : ICloneable
     {
+        //public List<Item> additionItem = new List<Item>();
+
         [InspectIgnore]
         public string sceneName { get; set; }
         [InspectIgnore]
@@ -56,10 +63,17 @@ namespace DecorationMaster
                     Logger.LogDebug($" ### Val Type:{val.GetType()},Prop Type:{prop.PropertyType}");
                     throw e;
                 }
-                
             }
+
+            //#region trigger addition item setup
+            //foreach(var i in additionItem)
+            //{
+            //    var m = i.GetType().GetInterface(nameof(IAssemable))?.GetMethod("AcceptSetup");
+            //    m?.Invoke(i, new object[] {op, val });
+            //}
+            //#endregion
         }
-        
+
         public object Clone()
         {
             IFormatter formatter = new BinaryFormatter();
@@ -120,6 +134,19 @@ namespace DecorationMaster
         [Handle(Operation.SetMana)]
         public virtual ManaType mType { get; set; }
     }
+    [Serializable]
+    public class DelayItem : Item,IAssemable
+    {
+        [Handle(Operation.SetTimeOffset)]
+        [FloatConstraint(0f, 2f)]
+        public float time_offset { get; set; } = 0;
+
+        public void AcceptSetup(Operation op, object val)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
     public class ItemDef
     {
         [Serializable]
@@ -142,6 +169,8 @@ namespace DecorationMaster
         [Decoration("HK_shadow_gate")]
         [Decoration("hazard_saver")]
         [Decoration("jarcol_floor")]
+        [Decoration("stomper_switch")]
+
         public class DefatulResizeItem : ResizableItem { }
 
         [Serializable]
@@ -159,6 +188,7 @@ namespace DecorationMaster
             [IntConstraint(0, 360)]
             public int angle { get; set; } = 0;
         }
+
 
         
 
@@ -292,6 +322,7 @@ namespace DecorationMaster
         [Serializable]
         [Decoration("HK_Lconveyor")]
         [Decoration("HK_Rconveyor")]
+        [Decoration("simple_conveyor")]
         public class ConveyorItem : ResizableItem
         {
             [Description("设置传送带的速度")]

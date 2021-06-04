@@ -24,6 +24,23 @@ namespace DecorationMaster
         public static readonly Dictionary<(string, Func<GameObject, GameObject>), (string, string)> ObjectList = new Dictionary<(string, Func<GameObject, GameObject>), (string, string)>
         {
             
+            {
+                ("lift_lever",null),("Ruins1_05","Lift Call Lever (2)")
+            },
+            {
+                ("stomper",null),
+                ("Mines_19","_Scenery/stomper_1")
+            },
+            
+            {
+                ("Hconveyor", (go) =>
+                {
+                    go.transform.localScale = Vector3.one;
+                    return go;
+                }
+
+                ),("Mines_31","conveyor_belt_0mid (3)")
+            },
             {("lore_tablet_1",(go)=>{
                 //go.GetComponent<BoxCollider2D>().offset= new Vector2(-0.2f,-1);
                 var lit = go.transform.Find("lit_tablet").gameObject;
@@ -35,12 +52,13 @@ namespace DecorationMaster
                 ngo.transform.SetParent(go.transform);
                 ngo.transform.localPosition = localPos;
                 Object.Destroy(lit);
-
+                go.GetComponent<BoxCollider2D>().offset = new Vector2(-0.2f,-1);
+                go.GetComponent<BoxCollider2D>().size = new Vector2(4,2);
                 return go;
             }),("Tutorial_01","_Props/Tut_tablet_top (1)") },
             
-            /*{("inspect_region",null),("White_Palace_18","Inspect Region")},
-            {("garden_plat_s",null),("Fungus3_13",("Royal Gardens Plat S")) }
+            {("inspect_region",null),("White_Palace_18","Inspect Region")},
+            {("garden_plat_s",null),("Fungus3_13",("Royal Gardens Plat S")) },
             {("crystal_dropping",null),("Mines_31","Pt Crystal Dropping (13)")},
             {("zap_cloud",null),("Fungus3_archive_02","Zap Cloud") },
             {("bench",null),("Crossroads_47","RestBench") },
@@ -62,16 +80,8 @@ namespace DecorationMaster
                 }),
                 ("White_Palace_18","saw_collection/wp_saw")
             },
-            {
-                ("Hconveyor", (go) =>
-                {
-                    go.transform.localScale = Vector3.one;
-                    return go;
-                }
-                
-                ),("Mines_31","conveyor_belt_0mid (3)")
-            },
-{("laser_turret", (go)=>{
+            
+            {("laser_turret", (go)=>{
                 var fsm = go.LocateMyFSM("Laser Bug");
                 fsm.AddAction
                 (
@@ -155,10 +165,6 @@ namespace DecorationMaster
             {
                 ("turret",null),
                 ("Fungus2_11","Mushroom Turret")
-            },
-            {
-                ("stomper",null),
-                ("Mines_19","_Scenery/stomper_1")
             },
             {
                 ("break_wall",null),
@@ -343,8 +349,29 @@ namespace DecorationMaster
             ReflectionCache.GetItemProps(ti, Operation.None);
             ReflectionCache.GetMethods(td, Operation.None);
             //ItemDescriptor.Register(td,poolname);
+
+            #region add addition item
+            var additions = td.GetCustomAttributes(typeof(AdditionItemAttribute), true).OfType<AdditionItemAttribute>().Select(x => x.type);
+            foreach(var a in additions)
+            {
+                if (a == ti)
+                    continue;
+                RegisterAddition(item, a);
+                Logger.LogDebug($"[{td}] Reg addition item {a}");
+            }
+            #endregion
         }
-        
+
+        private static void RegisterAddition(Item item,Type ti)
+        {
+            //if(!ti.IsSubclassOf(typeof(Item)))
+            //{
+            //    throw new ArgumentException("Try to add Error item");
+            //}
+            //var subitem = Activator.CreateInstance(ti) as Item;
+            //item.additionItem.Add(subitem);
+            
+        }
         //T is a class which includes a lot of sub-class in type CustomDecoration
         public static void RegisterBehaviour<T>()
         {

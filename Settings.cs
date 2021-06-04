@@ -15,6 +15,7 @@ namespace DecorationMaster
     public class GlobalModSettings : ModSettings
     {
         public bool CreateMode = false;
+        public bool ShowRespawnPoint = true;
         public bool ProfessorMode = false;
         public bool MemeItem = false;
         public bool showDesc = true;
@@ -64,6 +65,7 @@ namespace DecorationMaster
                 return;
             SerializeHelper.SaveSceneSettings(this, scene_name);
             modify_counter = 0;
+            Logger.LogDebug("Auto Save");
         }
     }
     public enum Operation

@@ -12,13 +12,21 @@ namespace DecorationMaster.UI
         private static float offset = 0;
         public static void AddBindIcon(GameObject parent)
         {
-            var tex = GetBindIconTex(parent);
-            var icon = panel.AddImage($"{parent.name}_{parent.GetHashCode()}",tex, new Vector2(offset, 0), new Vector2(tex.width/3,tex.height/3), new Rect(0, 0, tex.width, tex.height));
-            icon.SetColor(Color.yellow);
-            offset += tex.width / 3;
-            parent.AddComponent<Attach>();
+            if (panel.GetImage($"{parent.name}_{parent.GetHashCode()}") != null)
+                return;
+            try
+            {
+                var tex = GetBindIconTex(parent);
+                var icon = panel.AddImage($"{parent.name}_{parent.GetHashCode()}", tex, new Vector2(offset, 0), new Vector2(tex.width / 3, tex.height / 3), new Rect(0, 0, tex.width, tex.height));
+                icon.SetColor(Color.yellow);
+                offset += tex.width / 3;
+                parent.AddComponent<Attach>();
+
+                Logger.LogDebug("Added Hud Icon" + $",{parent.name}_{parent.GetHashCode()}");
+            }
+            catch
+            { }
             
-            Logger.LogDebug("Added Hud Icon");
         }
         public static void BuildMenu(GameObject canvas)
         {

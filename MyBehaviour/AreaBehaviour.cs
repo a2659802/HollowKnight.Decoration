@@ -134,6 +134,7 @@ namespace DecorationMaster.MyBehaviour
             {
                 On.HeroController.Bounce -= NoBonce;
             }
+
         }
 
         [Description("禁用能力-波\n非编辑模式下可用攻击暂时移除\n如果你不想被移除，那就放到打不到的地方")]

@@ -23,6 +23,7 @@ namespace DecorationMaster.MyBehaviour
     [Decoration("HK_laser_turret")]
     [Decoration("HK_quake_floor")]
     
+    [AdditionItem(typeof(DelayItem))]
     public class DefaultBehaviour : Resizeable
     {
         [Serializable]
@@ -62,6 +63,7 @@ namespace DecorationMaster.MyBehaviour
                
         }
     }
+    
     
     public class UnVisableBehaviour : CustomDecoration
     {

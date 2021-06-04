@@ -23,6 +23,7 @@ namespace DecorationMaster
         private static GameManager _gm;
         private GameObject UIObj;
         private Vector2 mousePos;
+        private GameObject _current_respawn = null;
 
         public static DecorationMaster instance;
         public SelectItem SelectGetter;
@@ -52,20 +53,20 @@ namespace DecorationMaster
 
             #region Init GameObject
             ObjectLoader.Load(preloadedObjects);
-            //BehaviourProcessor.RegisterBehaviour<Particle>();
-            //BehaviourProcessor.RegisterBehaviour<Draw>();
+            BehaviourProcessor.RegisterBehaviour<Particle>();
+            BehaviourProcessor.RegisterBehaviour<Draw>();
             BehaviourProcessor.RegisterBehaviour<OtherBehaviour>();
-            //BehaviourProcessor.RegisterBehaviour<AreaBehaviour>();
-            //BehaviourProcessor.RegisterBehaviour<MovablePlatform>();
-            //BehaviourProcessor.RegisterBehaviour<ModifyGameItem>();
-            //BehaviourProcessor.RegisterBehaviour<Mana>();
-            //BehaviourProcessor.RegisterBehaviour<AudioBehaviours>();
-            //BehaviourProcessor.RegisterBehaviour<OneShotBehaviour>();
-            //BehaviourProcessor.RegisterBehaviour<Scope>();
-            //BehaviourProcessor.RegisterBehaviour<Bench>();
-            //BehaviourProcessor.RegisterSharedBehaviour<DefaultBehaviour>();
-            //BehaviourProcessor.RegisterSharedBehaviour<UnVisableBehaviour>();
-            //BehaviourProcessor.RegisterSharedBehaviour<DelayResizableBehaviour>();
+            BehaviourProcessor.RegisterBehaviour<AreaBehaviour>();
+            BehaviourProcessor.RegisterBehaviour<MovablePlatform>();
+            BehaviourProcessor.RegisterBehaviour<ModifyGameItem>();
+            BehaviourProcessor.RegisterBehaviour<Mana>();
+            BehaviourProcessor.RegisterBehaviour<AudioBehaviours>();
+            BehaviourProcessor.RegisterBehaviour<OneShotBehaviour>();
+            BehaviourProcessor.RegisterBehaviour<Scope>();
+            BehaviourProcessor.RegisterBehaviour<Bench>();
+            BehaviourProcessor.RegisterSharedBehaviour<DefaultBehaviour>();
+            BehaviourProcessor.RegisterSharedBehaviour<UnVisableBehaviour>();
+            BehaviourProcessor.RegisterSharedBehaviour<DelayResizableBehaviour>();
             BehaviourProcessor.RegisterSharedBehaviour<TransitionGem>();
             #endregion
 
@@ -86,11 +87,53 @@ namespace DecorationMaster
             ModHooks.Instance.LanguageGetHook += DLanguage.MyLanguage;
             ModHooks.Instance.ApplicationQuitHook += SaveJson;
             if (Settings.CreateMode)
+            {
                 ModHooks.Instance.HeroUpdateHook += OperateItem;
+                if(Settings.ShowRespawnPoint)
+                {
+                    On.PlayerData.SetHazardRespawn_HazardRespawnMarker += ShowCurrentRespawnPoint;
+                    On.PlayerData.SetHazardRespawn_Vector3_bool += ShowCurrentRespawnPoint;
+                }
+            }
+                
             #endregion
 
             UserLicense.ShowLicense();
             
+        }
+
+        private void ShowCurrentRespawnPoint(Vector3 position)
+        {
+            if (HeroController.instance == null)
+                return;
+
+            LogDebug("Reflesh HzRespawn "+position.ToString());
+
+            UnityEngine.Object.Destroy(_current_respawn);
+
+            //GUIController.Instance.images["lineEdge"];
+            _current_respawn = new GameObject("HzShow");
+            var tex = GUIController.Instance.images["knight_idle"];
+            _current_respawn.AddComponent<SpriteRenderer>().sprite = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0.5f, 0.5f));
+
+            //_current_respawn.transform.SetPosition2D(HeroController.instance.FindGroundPoint(position, true));
+            NameDisp.Create(_current_respawn, "spawn here");
+
+            RaycastHit2D raycastHit2D = Physics2D.Raycast(position, Vector2.down, 50, 256);
+            _current_respawn.transform.SetPosition2D(raycastHit2D.point.x,raycastHit2D.point.y+0.7f);
+
+        }
+
+        private void ShowCurrentRespawnPoint(On.PlayerData.orig_SetHazardRespawn_Vector3_bool orig, PlayerData self, Vector3 position, bool facingRight)
+        {
+            orig(self, position, facingRight);
+            ShowCurrentRespawnPoint(position);
+        }
+
+        private void ShowCurrentRespawnPoint(On.PlayerData.orig_SetHazardRespawn_HazardRespawnMarker orig, PlayerData self, HazardRespawnMarker location)
+        {
+            orig(self, location);
+            ShowCurrentRespawnPoint(location.transform.position);
         }
 
         private void HeroOutBoundSave(On.GameManager.orig_PositionHeroAtSceneEntrance orig, GameManager self)
@@ -164,7 +207,7 @@ namespace DecorationMaster
                 if (SceneItemData.TryGetValue(GM.sceneName, out var currentSetting))
                     currentSetting.AutoSave();
             }
-            Logger.LogDebug("Save Json");
+            Logger.LogDebug("Save Global Json");
         }
 
         private void ShowRespawn(Scene arg0, LoadSceneMode arg1)
@@ -262,6 +305,10 @@ namespace DecorationMaster
         
         private void OperateItem() //Hero update op
         {
+            if(GM.isPaused || GM.IsInSceneTransition)
+            {
+                return;
+            }
             if(ItemManager.Instance.setupMode)
             {
                 autoSaveTimer += Time.deltaTime;
@@ -269,13 +316,17 @@ namespace DecorationMaster
                 {
                     SaveJson();
                     autoSaveTimer = 0;
-                    Logger.LogDebug("Auto Save");
+                    
                 }
             }
-            if((Input.GetKey(KeyCode.LeftControl)|| Input.GetKey(KeyCode.RightControl)))
+            if((Input.GetKey(KeyCode.LeftControl)|| Input.GetKey(KeyCode.RightControl))) // ctrl组合键
             {
                 if (Input.GetKeyDown(KeyCode.C))
                     ItemManager.Instance.CopyBlock();
+                else if (Input.GetKeyDown(KeyCode.M))
+                    ItemManager.Instance.MoveBlock();
+                else if (Input.GetKeyDown(KeyCode.D))
+                    ItemManager.Instance.DelBlock();
                 else if (Input.GetKeyDown(KeyCode.Z))
                     ItemManager.Instance.DiscardLast();
             }
@@ -297,7 +348,7 @@ namespace DecorationMaster
                 ItemManager.Instance.Operate(Operation.SetPos, mousePos);
             }
 
-            if(GM != null && !GM.isPaused && !GM.IsInSceneTransition)
+            if(GM != null)
             {
                 if (Input.GetMouseButtonUp((int)MouseButton.Left)) // Confirm Go
                 {
@@ -351,7 +402,10 @@ namespace DecorationMaster
             UnityEngine.SceneManagement.SceneManager.sceneLoaded -= AutoSaveModification;
             ModHooks.Instance.LanguageGetHook -= DLanguage.MyLanguage;
             ModHooks.Instance.ApplicationQuitHook -= SaveJson;
+
             ModHooks.Instance.HeroUpdateHook -= OperateItem;
+            On.PlayerData.SetHazardRespawn_HazardRespawnMarker -= ShowCurrentRespawnPoint;
+            On.PlayerData.SetHazardRespawn_Vector3_bool -= ShowCurrentRespawnPoint;
             UnityEngine.Object.Destroy(UIObj);
             #endregion
 
